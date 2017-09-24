@@ -103,7 +103,7 @@ namespace Tassel.Service.Controllers {
             if (!succeed02) {
                 return this.JsonFormat(false, JsonStatus.WeiboInfosFetchFailed, error02, null);
             }
-            var (user, succ03, error03) = this.weibo.TryCreateOrGetUserByWeibo(infos);
+            var (user, succ03, error03) = this.weibo.TryCreateOrUpdateUserByWeibo(infos);
             if (!succ03) {
                 return this.JsonFormat(false, JsonStatus.WeiboUserCheckFailed, error03, null);
             }

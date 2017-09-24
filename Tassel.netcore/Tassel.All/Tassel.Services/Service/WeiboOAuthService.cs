@@ -24,14 +24,22 @@ namespace Tassel.Services.Service {
             this.db = db;
         }
 
-        public (User, bool, string) TryCreateOrGetUserByWeibo(WeiboUser wuser) {
+        public (User, bool, string) TryCreateOrUpdateUserByWeibo(WeiboUser wuser) {
             var usrr = db.Users.Where(i => i.WeiboID == wuser.idstr).FirstOrDefault();
-            if (usrr != null)
-                return (usrr, true, "user is exist already");
-            usrr = IdentityProvider.CreateUserByWeibo(wuser);
-            var wusr = WeiboUserProvider.CreateUser(wuser);
-            db.Add(usrr);
-            db.Add(wusr);
+            if (usrr != null) {
+                var wusr = db.WeiboUsers.Where(i => i.UID == wuser.idstr).FirstOrDefault();
+                if (wusr == null) {
+                    db.Add(WeiboUserProvider.CreateUser(wuser));
+                } else {
+                    var id = wusr.ID;
+                    wusr = WeiboUserProvider.CreateUser(wuser);
+                    wusr.ID = id;
+                    db.Update(wusr);
+                }
+            } else {
+                db.Add(IdentityProvider.CreateUserByWeibo(wuser));
+                db.Add(WeiboUserProvider.CreateUser(wuser));
+            }
             if (db.SaveChanges() <= 0)
                 return (null, false, "save user informations failed");
             return (usrr, true, null);
