@@ -11,9 +11,10 @@ using Tassel.Model.Models;
 namespace Tassel.Model.Migrations
 {
     [DbContext(typeof(APIDB))]
-    partial class APIDBModelSnapshot : ModelSnapshot
+    [Migration("20170924125714_newcs")]
+    partial class newcs
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

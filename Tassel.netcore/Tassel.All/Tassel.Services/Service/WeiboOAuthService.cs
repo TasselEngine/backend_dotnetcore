@@ -29,8 +29,7 @@ namespace Tassel.Services.Service {
             if (usrr != null)
                 return (usrr, true, "user is exist already");
             usrr = IdentityProvider.CreateUserByWeibo(wuser);
-            var wusr = WeiboUserProvider.CreateUser(
-                wuser.idstr, wuser.screen_name, wuser.description, wuser.domain, wuser.avatar_large);
+            var wusr = WeiboUserProvider.CreateUser(wuser);
             db.Add(usrr);
             db.Add(wusr);
             if (db.SaveChanges() <= 0)

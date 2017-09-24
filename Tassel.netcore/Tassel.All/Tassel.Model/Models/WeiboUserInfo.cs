@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
+using Wallace.Core.Helpers.Providers;
 
 namespace Tassel.Model.Models {
 
@@ -28,6 +29,12 @@ namespace Tassel.Model.Models {
         [Column("avatar_url")]
         public string AvatarUrl { get; set; }
 
+        [Column("cover_image_phone")]
+        public string CoverMobile { get; set; }
+
+        [Column("cover_image")]
+        public string Cover { get; set; }
+
         [Column("c_time")]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime CreateTime { get; set; } = DateTime.UtcNow;
@@ -39,13 +46,15 @@ namespace Tassel.Model.Models {
 
     public static class WeiboUserProvider {
 
-        public static WeiboDBUser CreateUser(string uid, string screen_name, string description, string domain, string avatar_url) {
+        public static WeiboDBUser CreateUser(WeiboUser wuser) {
             return new WeiboDBUser {
-                UID = uid,
-                ScreenName = screen_name,
-                Description = description,
-                Domain = domain,
-                AvatarUrl = avatar_url,
+                UID = wuser.idstr,
+                ScreenName = wuser.screen_name,
+                Description = wuser.description,
+                Domain = wuser.domain,
+                AvatarUrl = wuser.avatar_large,
+                Cover = wuser.cover_image,
+                CoverMobile = wuser.cover_image_phone
             };
         }
 
