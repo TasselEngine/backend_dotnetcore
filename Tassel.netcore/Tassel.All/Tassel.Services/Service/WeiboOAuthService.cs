@@ -31,10 +31,7 @@ namespace Tassel.Services.Service {
                 if (wusr == null) {
                     db.Add(WeiboUserProvider.CreateUser(wuser));
                 } else {
-                    var id = wusr.ID;
-                    wusr = WeiboUserProvider.CreateUser(wuser);
-                    wusr.ID = id;
-                    db.Update(wusr);
+                    db.Update(wusr.Update(wuser));
                 }
             } else {
                 db.Add(IdentityProvider.CreateUserByWeibo(wuser));

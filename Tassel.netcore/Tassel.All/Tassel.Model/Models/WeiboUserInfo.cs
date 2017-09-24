@@ -58,6 +58,17 @@ namespace Tassel.Model.Models {
             };
         }
 
+        public static WeiboDBUser Update(this WeiboDBUser wuser, WeiboUser newUser) {
+            wuser.AvatarUrl = newUser.avatar_large;
+            wuser.Cover = newUser.cover_image;
+            wuser.CoverMobile = newUser.cover_image_phone;
+            wuser.Description = newUser.description;
+            wuser.Domain = newUser.domain;
+            wuser.ScreenName = newUser.screen_name;
+            wuser.UpdateTime = DateTime.UtcNow;
+            return wuser;
+        }
+
     }
 
 }
