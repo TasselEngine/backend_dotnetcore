@@ -54,6 +54,9 @@ namespace Tassel.Model.Models {
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime? UpdateTime { get; set; }
 
+        [Column("is_3rd")]
+        public bool IsThirdPart { get; set; } = false;
+
         [Column("weibo_id")]
         public string WeiboID { get; set; }
 
