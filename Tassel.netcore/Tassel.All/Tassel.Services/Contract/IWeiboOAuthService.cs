@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using Tassel.Model.Models;
-using Wallace.Core.Helpers.Providers;
+using WeiboOAuth2.Provider.Src;
 
 namespace Tassel.Services.Contract {
     public interface IWeiboOAuthService<TUser> : IWeiboOAuthV2Provider<WeiboSuccessToken, WeiboUser> {

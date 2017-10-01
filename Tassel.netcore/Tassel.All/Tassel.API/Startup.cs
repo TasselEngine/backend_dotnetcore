@@ -16,7 +16,7 @@ using Tassel.Services.Contract;
 using System.IdentityModel.Tokens.Jwt;
 using Tassel.Services.Service;
 using Tassel.Model.Models;
-using Wallace.Core.Helpers.Providers;
+using WeiboOAuth2.Provider.Src;
 
 namespace Tassel.Service {
     public class Startup {

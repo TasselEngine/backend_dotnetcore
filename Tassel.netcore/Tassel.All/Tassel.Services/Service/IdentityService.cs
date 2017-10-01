@@ -14,7 +14,6 @@ using System.Threading.Tasks;
 using System.Net.Http;
 using System.Diagnostics;
 using System.IO;
-using Wallace.Core.Helpers.Providers;
 using Tassel.Model.Utils;
 
 namespace Tassel.Services.Service {

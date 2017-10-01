@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
-using Wallace.Core.Helpers.Providers;
+using WeiboOAuth2.Provider.Src;
 
 namespace Tassel.Model.Models {
 
