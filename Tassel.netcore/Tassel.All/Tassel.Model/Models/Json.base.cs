@@ -39,18 +39,19 @@ namespace Tassel.Model.Models {
 
     public enum JsonStatus {
         Succeed = 0,
-        LoginFailed = 1,
-        RegisterFailed = 2,
-        UserNotFound = 3,
-        UserExist = 4,
-        WeiboAccessFailed = 120,
-        WeiboInfosFetchFailed = 121,
-        WeiboUserCheckFailed = 122,
-        WeiboDetailsNotFound = 123,
-        WeiboRevokeFailed = 124,
-        WeiboRevokeException = 125,
-        BearerCheckFailed = 254,
-        Error = 255
+        Error = 10000,
+        LoginFailed = 20001,
+        RegisterFailed = 20002,
+        UserNotFound = 20003,
+        UserExist = 20004,
+        UserNotLogin = 20005,
+        BearerCheckFailed = 20006,
+        WeiboAccessFailed = 21001,
+        WeiboInfosFetchFailed = 21002,
+        WeiboUserCheckFailed = 21003,
+        WeiboDetailsNotFound = 21004,
+        WeiboRevokeFailed = 21005,
+        WeiboRevokeException = 21006,
     }
 
     public class JsonErrorMaps {
@@ -61,6 +62,7 @@ namespace Tassel.Model.Models {
             { JsonStatus.RegisterFailed, "register failed." },
             { JsonStatus.UserNotFound, "user not found." },
             { JsonStatus.UserExist, "user is exist." },
+            { JsonStatus.UserNotLogin, "user is not login." },
             { JsonStatus.WeiboAccessFailed, "try to get weibo access_token failed." },
             { JsonStatus.WeiboInfosFetchFailed, "try to fetch weibo user info failed." },
             { JsonStatus.WeiboUserCheckFailed, "try to checkin weibo user failed." },

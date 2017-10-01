@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
-using WeiboOAuth2.Provider.Src;
 
 namespace Tassel.Model.Models {
 
@@ -45,37 +44,6 @@ namespace Tassel.Model.Models {
         [Column("u_time")]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime? UpdateTime { get; set; }
-    }
-
-    public static class WeiboUserProvider {
-
-        public static WeiboDBUser CreateUser(WeiboUser wuser, string access_token) {
-            return new WeiboDBUser {
-                UID = wuser.idstr,
-                ScreenName = wuser.screen_name,
-                Description = wuser.description,
-                Domain = wuser.domain,
-                AvatarUrl = wuser.avatar_large,
-                Cover = wuser.cover_image,
-                CoverMobile = wuser.cover_image_phone,
-                AccessToken = access_token
-            };
-        }
-
-        public static WeiboDBUser Update(this WeiboDBUser wuser, WeiboUser newUser, string access_token = null) {
-            wuser.AvatarUrl = newUser.avatar_large;
-            wuser.Cover = newUser.cover_image;
-            wuser.CoverMobile = newUser.cover_image_phone;
-            wuser.Description = newUser.description;
-            wuser.Domain = newUser.domain;
-            wuser.ScreenName = newUser.screen_name;
-            wuser.UpdateTime = DateTime.UtcNow;
-            if (!string.IsNullOrEmpty(access_token)) {
-                wuser.AccessToken = access_token;
-            }
-            return wuser;
-        }
-
     }
 
 }

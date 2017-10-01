@@ -39,7 +39,6 @@ using Tassel.Services.Contract;
 using System.IdentityModel.Tokens.Jwt;
 using Tassel.API.Utils.Authorization;
 using Tassel.API.VM.Identity;
-using Microsoft.AspNetCore.Http;
 
 namespace Tassel.Service.Controllers {
 
@@ -61,15 +60,15 @@ namespace Tassel.Service.Controllers {
         public JsonResult GetUser() {
             this.HttpContext.GetStringEntry(TokenClaimsKey.UUID, out var uuid);
             if(uuid==null)
-                return this.JsonFormat(false, JsonStatus.Error,"user not login.");
+                return this.JsonFormat(false, JsonStatus.UserNotLogin);
             var (user, succeed, error) = this.identity.GetUserDetailsByID(uuid);
             if(user==null)
-                return this.JsonFormat(false, JsonStatus.UserNotFound, "user infos not found.");
-            var content = new UserVM { User = user };
+                return this.JsonFormat(false, JsonStatus.UserNotFound);
+            var content = new UserVM (user);
             var status = JsonStatus.Succeed;
             if (user.IsThirdPart) {
-                if (!string.IsNullOrEmpty(user.WeiboID)) { // Load weibo user details. To extend this method if more 3rd-part added.
-                    (content.More, succeed, error) = this.weibo.SearchWeiboUserInfoByUID(user.WeiboID);
+                if (content.UserType == UserVMType.Weibo) { // Load weibo user details. To extend this method if more 3rd-part added.
+                    (succeed, error) = content.Create(this.weibo.SearchWeiboUserInfoByUID).Check;
                     status = succeed ? JsonStatus.Succeed : JsonStatus.WeiboDetailsNotFound;
                 } else { // No 3rd-part user infos found, action failed.
                     succeed = false;

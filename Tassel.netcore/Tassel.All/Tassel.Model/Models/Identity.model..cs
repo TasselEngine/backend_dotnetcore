@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.Serialization;
-using System.Security.Cryptography;
-using System.Text;
-using WeiboOAuth2.Provider.Src;
 
 namespace Tassel.Model.Models {
+
+    public enum GuidType { N, D, B, P }
+
+    public enum Gender { Male, Female }
 
     [Table("users")]
     public class User {
@@ -30,6 +31,9 @@ namespace Tassel.Model.Models {
         [Column("email")]
         [EmailAddress(ErrorMessage = "Please input the correct email address.")]
         public string Email { get; set; }
+
+        [Column("display_name")]
+        public string DisplayName { get; set; }
 
         [Column("f_name")]
         public string FamilyName { get; set; }
@@ -69,73 +73,6 @@ namespace Tassel.Model.Models {
         [Column("avatar")]
         public string Avatar { get; set; }
 
-    }
-
-    public enum GuidType { N, D, B, P }
-
-    public enum Gender { Male, Female }
-
-    public static class IdentityProvider {
-
-        public static User CreateUser(string username, string password, Gender gender, string avatar) {
-            using (var md5 = MD5.Create()) {
-                return new User {
-                    UUID = CreateGuid(GuidType.N),
-                    UserName = username,
-                    Password = CreateMD5(password),
-                    Gender = gender,
-                    Avatar = avatar,
-                    RoleID = 3,
-                };
-            }
-        }
-
-        public static User CreateUserByWeibo(WeiboUser wuser) {
-            var uuid = CreateGuid(GuidType.N);
-            return new User {
-                UUID = uuid,
-                UserName = "WUSER_" + uuid,
-                Gender = wuser.gender == "m" ? Gender.Male : Gender.Female,
-                WeiboID = wuser.idstr,
-                RoleID = 3,
-                IsThirdPart = true
-            };
-        }
-
-        public static User CreateUser(string username, string password)
-            => CreateUser(username, password, Gender.Male, null);
-
-        public static string CreateMD5(string input) {
-            if (input == null)
-                return null;
-            using (var md5 = MD5.Create()) {
-                return BitConverter
-                    .ToString(md5.ComputeHash(Encoding.UTF8.GetBytes(input)))
-                    .Replace("-", "")
-                    .ToLower();
-            }
-        }
-
-        public static string CreateGuid(GuidType type = GuidType.D)
-            => Guid.NewGuid().ToString(
-                type == GuidType.B ? "B" :
-                type == GuidType.D ? "D" :
-                type == GuidType.N ? "N" :
-                "P");
-
-    }
-
-    [DataContract]
-    public class ApplicationJsonParam {
-
-        [DataMember(Name = "user")]
-        public string UserName { get; set; }
-
-        [DataMember(Name = "psd")]
-        public string Password { get; set; }
-
-        [DataMember(Name = "wuid")]
-        public string WeiboUID { get; set; }
     }
 
 }

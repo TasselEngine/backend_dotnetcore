@@ -15,6 +15,7 @@ using Wallace.Core.Helpers.Controllers;
 using System.Text;
 using Wallace.Core.Helpers.Format;
 using Tassel.API.VM.Token;
+using Tassel.API.VM.Identity;
 
 namespace Tassel.Service.Utils.Middlewares {
 
@@ -85,7 +86,7 @@ namespace Tassel.Service.Utils.Middlewares {
                     param.Password = context.Request.Form["psd"];
                 }
             } else {
-                var user = JsonHelper.FromJson<ApplicationJsonParam>(await GetContentAsync(context));
+                var user = JsonHelper.FromJson<JwtProviderParam>(await GetContentAsync(context));
                 if (type == ProviderType.Weibo) {
                     param.WeiboUid = user.WeiboUID;
                 } else {
@@ -120,24 +121,10 @@ namespace Tassel.Service.Utils.Middlewares {
                 model.Status = JsonStatus.Succeed;
                 model.Message = null;
 
-                var weibo = default(dynamic);
-                var wechat = default(dynamic);
-                var qq = default(dynamic);
-                if (type == ProviderType.Weibo) {
-                    (weibo, _, _) = this.weibo.SearchWeiboUserInfoByUID(param.WeiboUid);
-                }
-
                 model.Content = new TokenProviderVM {
                     Token = new JwtSecurityTokenHandler().WriteToken(identity.GenerateToken(user, opts)),
                     Expires = (int)opts.Expiration.TotalSeconds,
-                    Details = new TokenUserDetailsVM {
-                        User = user,
-                        More = new ThirdPartUserInfosVM {
-                            Weibo = weibo,
-                            Wechat = wechat,
-                            QQ = qq
-                        }
-                    },
+                    Details = new UserVM(user).Create(this.weibo.SearchWeiboUserInfoByUID)
                 };
 
                 await context.Response.WriteAsync(JsonConvert.SerializeObject(model, new JsonSerializerSettings {

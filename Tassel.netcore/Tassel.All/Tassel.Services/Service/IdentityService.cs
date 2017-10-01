@@ -11,8 +11,6 @@ using System.Security.Claims;
 using System.Linq;
 using Microsoft.AspNetCore.Hosting;
 using System.Threading.Tasks;
-using System.Net.Http;
-using System.Diagnostics;
 using System.IO;
 using Tassel.Model.Utils;
 

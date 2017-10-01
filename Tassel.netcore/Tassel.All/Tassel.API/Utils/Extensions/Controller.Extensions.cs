@@ -17,7 +17,7 @@ namespace Tassel.API.Utils.Extensions {
             dynamic content = default(dynamic))
             => c.JsonFormat(new JsonBase {
                Status = status,
-               Message = c.GetErrorMessage(succeed, error),
+               Message = c.GetErrorMessage(succeed, error??JsonErrorMaps.TryGet(status)),
                Content = content
            });
 

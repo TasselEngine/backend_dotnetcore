@@ -3,33 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Threading.Tasks;
+using Tassel.API.VM.Identity;
 
 namespace Tassel.API.VM.Token {
-
-    [DataContract]
-    public class TokenUserDetailsVM {
-
-        [DataMember(Name = "user")]
-        public dynamic User { get; set; }
-
-        [DataMember(Name = "more")]
-        public ThirdPartUserInfosVM More { get; set; }
-
-    }
-
-    [DataContract]
-    public class ThirdPartUserInfosVM {
-
-        [DataMember(Name = "weibo")]
-        public dynamic Weibo { get; set; }
-
-        [DataMember(Name = "wechat")]
-        public dynamic Wechat { get; set; }
-
-        [DataMember(Name = "qq")]
-        public dynamic QQ { get; set; }
-
-    }
 
     [DataContract]
     public class TokenProviderVM {
@@ -40,8 +16,22 @@ namespace Tassel.API.VM.Token {
         [DataMember(Name = "expires")]
         public int Expires { get; set; }
 
-        [DataMember(Name = "details")]
-        public TokenUserDetailsVM Details { get; set; }
+        [DataMember(Name = "user")]
+        public UserVM Details { get; set; }
 
     }
+
+    [DataContract]
+    public class JwtProviderParam {
+
+        [DataMember(Name = "user")]
+        public string UserName { get; set; }
+
+        [DataMember(Name = "psd")]
+        public string Password { get; set; }
+
+        [DataMember(Name = "wuid")]
+        public string WeiboUID { get; set; }
+    }
+
 }
