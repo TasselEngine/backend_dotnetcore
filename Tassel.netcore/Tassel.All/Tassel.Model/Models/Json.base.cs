@@ -11,7 +11,7 @@ namespace Tassel.Model.Models {
 
         public JsonBase() {
             this.Status = JsonStatus.Error;
-            this.Message = "";
+            this.Message = null;
             this.Content = null;
         }
 
@@ -54,7 +54,7 @@ namespace Tassel.Model.Models {
         WeiboRevokeException = 21006,
     }
 
-    public class JsonErrorMaps {
+    public static class JsonErrorMaps {
 
         private static Dictionary<JsonStatus, string> maps = new Dictionary<JsonStatus, string> {
             {JsonStatus.Succeed, "success" },
@@ -73,7 +73,7 @@ namespace Tassel.Model.Models {
         };
 
         public static string TryGet(JsonStatus type) {
-            return maps.GetValueOrDefault(type);
+            return maps.GetValueOrDefault(type) ?? "";
         }
 
     }

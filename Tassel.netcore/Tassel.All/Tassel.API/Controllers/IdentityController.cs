@@ -39,6 +39,7 @@ using Tassel.Services.Contract;
 using System.IdentityModel.Tokens.Jwt;
 using Tassel.API.Utils.Authorization;
 using Tassel.API.VM.Identity;
+using Tassel.Model.Utils;
 
 namespace Tassel.Service.Controllers {
 
@@ -61,10 +62,22 @@ namespace Tassel.Service.Controllers {
             this.HttpContext.GetStringEntry(TokenClaimsKey.UUID, out var uuid);
             if(uuid==null)
                 return this.JsonFormat(false, JsonStatus.UserNotLogin);
+            return this.GetUser(uuid);
+        }
+
+        [HttpGet("all")]
+        [AdminAuthorize]
+        public JsonResult GetAll() {
+            return this.JsonFormat(true, content: this.identity.GetUsersListByFilter(i => true));
+        }
+
+        [HttpGet("{uuid}")]
+        [UserAuthorize]
+        public JsonResult GetUser(string uuid) {
             var (user, succeed, error) = this.identity.GetUserDetailsByID(uuid);
-            if(user==null)
+            if (user == null)
                 return this.JsonFormat(false, JsonStatus.UserNotFound);
-            var content = new UserVM (user);
+            var content = new UserVM(user);
             var status = JsonStatus.Succeed;
             if (user.IsThirdPart) {
                 if (content.UserType == UserVMType.Weibo) { // Load weibo user details. To extend this method if more 3rd-part added.
@@ -78,31 +91,13 @@ namespace Tassel.Service.Controllers {
             return this.JsonFormat(succeed, status, error, content);
         }
 
-        [HttpGet("all")]
-        [AdminAuthorize]
-        public JsonResult GetAll() {
-            return this.JsonFormat(true, content: this.identity.GetUsersListByFilter(i => true));
+        [HttpPut("{uuid}")]
+        public void Put(string uuid, [FromBody]UpdateUser user) {
         }
 
-        [HttpGet("{id}")]
-        [UserAuthorize]
-        public JsonResult GetUser(string id) {
-            var (user, succeed, error) = this.identity.GetUserDetailsByID(id);
-            var status = succeed ? JsonStatus.Succeed : JsonStatus.UserNotFound;
-            return this.JsonFormat(succeed, status, error, user);
-        }
-
-        [HttpPut("{id}")]
-        public void Put(string id, [FromBody]UpdateUser user) {
-        }
-
-        /// <summary>
-        /// It's unavaliable to delete an user.
-        /// </summary>
-        /// <param name="id"></param>
-        [HttpDelete("{id}")]
-        public JsonResult Delete(string id) {
-            return this.JsonFormat(false, error: "deleting user is unavaliable.");
+        [HttpDelete("{uuid}")]
+        public JsonResult Delete(string uuid) {
+            return this.JsonFormat(false, error: Errors.DeleteNotAllowed);
         }
 
         [HttpGet("weibo_access")]
@@ -119,9 +114,9 @@ namespace Tassel.Service.Controllers {
             return this.JsonFormat(true, JsonStatus.Succeed, null, new { wuid = infos.idstr });
         }
 
-        [HttpGet("weibo_details/{uid}")]
-        public JsonResult WeiboDetails(string uid) {
-            var (wuser, succeed, error) = this.weibo.SearchWeiboUserInfoByUID(uid);
+        [HttpGet("weibo_details/{wuid}")]
+        public JsonResult WeiboDetails(string wuid) {
+            var (wuser, succeed, error) = this.weibo.SearchWeiboUserInfoByUID(wuid);
             var status = succeed ? JsonStatus.Succeed : JsonStatus.WeiboDetailsNotFound;
             return this.JsonFormat(succeed, status, error, wuser);
         }

@@ -55,7 +55,9 @@ namespace Tassel.Services.Service {
             return this.db.Users.Where(whereLambada).Select(i => new {
                 UUID = i.UUID,
                 UserName = i.UserName,
+                DisplayName = i.DisplayName,
                 Gender = i.Gender,
+                Avatar = i.Avatar,
                 RoleID = i.RoleID
             });
         }
