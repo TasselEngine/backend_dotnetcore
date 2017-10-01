@@ -47,6 +47,9 @@ namespace Tassel.Model.Models {
         WeiboInfosFetchFailed = 121,
         WeiboUserCheckFailed = 122,
         WeiboDetailsNotFound = 123,
+        WeiboRevokeFailed = 124,
+        WeiboRevokeException = 125,
+        BearerCheckFailed = 254,
         Error = 255
     }
 
@@ -61,6 +64,9 @@ namespace Tassel.Model.Models {
             { JsonStatus.WeiboAccessFailed, "try to get weibo access_token failed." },
             { JsonStatus.WeiboInfosFetchFailed, "try to fetch weibo user info failed." },
             { JsonStatus.WeiboUserCheckFailed, "try to checkin weibo user failed." },
+            { JsonStatus.BearerCheckFailed, "bearer token check failed."},
+            { JsonStatus.WeiboRevokeFailed, "revoke oauth 2.0 failed." },
+            { JsonStatus.WeiboRevokeException, "revoke from oauth 2.0 doesn't work well." },
             { JsonStatus.Error, "unknown error." },
         };
 

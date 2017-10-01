@@ -1,8 +1,8 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
-using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -16,6 +16,7 @@ namespace Wallace.Core.Helpers.Providers {
     public interface IWeiboOAuthV2Provider<TToken, TWeiboUser> {
         Task<(TToken, bool, string)> GetWeiboTokenByCodeAsync(string code, string redirect_url);
         Task<(TWeiboUser, bool, string)> GetWeiboUserInfosAsync(string uid, string access_token);
+        Task<(RevokeOAuth2Return, bool, string)> RevokeOAuth2Access(string access_token);
     }
 
     public class WeiboOAuthV2Provider : IWeiboOAuthV2Provider<WeiboSuccessToken, WeiboUser> {
@@ -39,16 +40,16 @@ namespace Wallace.Core.Helpers.Providers {
                         try {
                             fail_token = JsonConvert.DeserializeObject<WeiboErrorToken>(conStr);
                         } catch {
-                            return (default(WeiboSuccessToken), false, "try get error message from response failed.");
+                            return (default(WeiboSuccessToken), false, WeiboOAuth2Errors.GetErrorMessageFailed);
                         }
                         return succ_token == null || succ_token.AccessToken == null ?
                             (default(WeiboSuccessToken), false, fail_token?.ErrorDescription) :
                             (succ_token, true, null);
                     } catch {
-                        return (default(WeiboSuccessToken), false, "try read weibo access token from response failed.");
+                        return (default(WeiboSuccessToken), false, WeiboOAuth2Errors.DeserializeAccessTokenFailed);
                     }
                 } catch {
-                    return (default(WeiboSuccessToken), false, "get weibo access token failed.");
+                    return (default(WeiboSuccessToken), false, WeiboOAuth2Errors.GetAccessTokenFailed);
                 }
             }
         }
@@ -58,48 +59,112 @@ namespace Wallace.Core.Helpers.Providers {
                 try {
                     var result = await client.GetAsync($"https://api.weibo.com/2/users/show.json?access_token={access_token}&uid={uid}");
                     var conStr = await result.Content.ReadAsStringAsync();
-                    return (JsonConvert.DeserializeObject<WeiboUser>(conStr), true, conStr);
+                    try {
+                        return (JsonConvert.DeserializeObject<WeiboUser>(conStr), true, conStr);
+                    } catch {
+                        return (default(WeiboUser), false, WeiboOAuth2Errors.DeserializeWeiboUserInfosFailed);
+                    }
                 } catch {
-                    return (null, false, "get weibo user infos failed.");
+                    return (default(WeiboUser), false, WeiboOAuth2Errors.GetWeiboUserInfosFailed);
+                }
+            }
+        }
+
+        public async Task<(RevokeOAuth2Return, bool, string)> RevokeOAuth2Access(string access_token) {
+            using (var client = new HttpClient()) {
+                try {
+                    var result = await client.GetAsync($"https://api.weibo.com/oauth2/revokeoauth2?access_token={access_token}");
+                    var conStr = await result.Content.ReadAsStringAsync();
+                    try {
+                        return (JsonConvert.DeserializeObject<RevokeOAuth2Return>(conStr), true, null);
+                    } catch {
+                        return (default(RevokeOAuth2Return), false, WeiboOAuth2Errors.DeserializeRevokeTokenFailed);
+                    }
+                } catch {
+                    return (default(RevokeOAuth2Return), false, WeiboOAuth2Errors.GetRevokeTokenFailed);
                 }
             }
         }
     }
 
-    [DataContract]
+    [JsonObject]
     public class WeiboErrorToken {
-        [DataMember(Name = "error")]
+
+        [JsonProperty("error")]
         public string Error { get; set; }
 
-        [DataMember(Name = "error_code")]
+        [JsonProperty("error_code")]
         public int ErrorCode { get; set; }
 
-        [DataMember(Name = "request")]
+        [JsonProperty("request")]
         public string Request { get; set; }
 
-        [DataMember(Name = "error_uri")]
+        [JsonProperty("error_uri")]
         public string ErrorUri { get; set; }
 
-        [DataMember(Name = "error_description")]
+        [JsonProperty("error_description")]
         public string ErrorDescription { get; set; }
+
     }
 
-    [DataContract]
+    [JsonObject]
     public class WeiboSuccessToken {
-        [DataMember(Name = "access_token")]
+
+        [JsonProperty("access_token")]
         public string AccessToken { get; set; }
 
-        [DataMember(Name = "remind_in")]
+        [JsonProperty("remind_in")]
         public string RemindIn { get; set; }
 
-        [DataMember(Name = "expires_in")]
+        [JsonProperty("expires_in")]
         public int ExpiresIn { get; set; }
 
-        [DataMember(Name = "uid")]
+        [JsonProperty("uid")]
         public string Uid { get; set; }
 
-        [DataMember(Name = "isRealName")]
+        [JsonProperty("isRealName")]
         public bool IsRealName { get; set; }
+
+    }
+
+    [JsonObject]
+    public class RevokeOAuth2Return {
+
+        [JsonProperty("result")]
+        private string ReturnStr = "false";
+        public bool ShouldDeserializeReturnStr() { return true; }
+        public bool ShouldSerializeReturnStr() { return false; }
+
+        [JsonProperty("return")]
+        public bool Return { get => ReturnStr == "true"; }
+        public bool ShouldDeserializeReturn() { return false; }
+        public bool ShouldSerializeReturn() { return true; }
+
+        [JsonProperty("error")]
+        public string Error { get; set; }
+
+        [JsonProperty("error_code")]
+        public int ErrorCode { get; set; }
+
+        [JsonProperty("request")]
+        public string Request { get; set; }
+
+        [JsonProperty("error_uri")]
+        public string ErrorUri { get; set; }
+
+        [JsonProperty("error_description")]
+        public string ErrorDescription { get; set; }
+
+    }
+
+    public static class WeiboOAuth2Errors {
+        public const string GetErrorMessageFailed = "try get error message from response failed.";
+        public const string GetAccessTokenFailed = "get weibo access token failed.";
+        public const string GetWeiboUserInfosFailed = "get weibo user infos failed.";
+        public const string GetRevokeTokenFailed = "revoke failed. unknown error.";
+        public const string DeserializeAccessTokenFailed = "try read weibo access token from response failed.";
+        public const string DeserializeWeiboUserInfosFailed = "try read weibo userinfos from response failed.";
+        public const string DeserializeRevokeTokenFailed = "try read weibo revoke message from response failed.";
     }
 
     public class WeiboUser {

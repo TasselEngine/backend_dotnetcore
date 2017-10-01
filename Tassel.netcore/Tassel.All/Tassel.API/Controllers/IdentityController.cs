@@ -39,6 +39,7 @@ using Tassel.Services.Contract;
 using System.IdentityModel.Tokens.Jwt;
 using Tassel.API.Utils.Authorization;
 using Tassel.API.VM.Identity;
+using Microsoft.AspNetCore.Http;
 
 namespace Tassel.Service.Controllers {
 
@@ -58,12 +59,24 @@ namespace Tassel.Service.Controllers {
         [HttpGet]
         [UserAuthorize]
         public JsonResult GetUser() {
-            var uuid = this.HttpContext.Items.FirstOrDefault(i => i.Key == (object)TokenClaimsKey.UUID).Value as string;
+            this.HttpContext.GetStringEntry(TokenClaimsKey.UUID, out var uuid);
             if(uuid==null)
                 return this.JsonFormat(false, JsonStatus.Error,"user not login.");
             var (user, succeed, error) = this.identity.GetUserDetailsByID(uuid);
-            var status = succeed ? JsonStatus.Succeed : JsonStatus.UserNotFound;
-            return this.JsonFormat(succeed, status, error, user);
+            if(user==null)
+                return this.JsonFormat(false, JsonStatus.UserNotFound, "user infos not found.");
+            var content = new UserVM { User = user };
+            var status = JsonStatus.Succeed;
+            if (user.IsThirdPart) {
+                if (!string.IsNullOrEmpty(user.WeiboID)) { // Load weibo user details. To extend this method if more 3rd-part added.
+                    (content.More, succeed, error) = this.weibo.SearchWeiboUserInfoByUID(user.WeiboID);
+                    status = succeed ? JsonStatus.Succeed : JsonStatus.WeiboDetailsNotFound;
+                } else { // No 3rd-part user infos found, action failed.
+                    succeed = false;
+                    status = JsonStatus.WeiboDetailsNotFound;
+                }
+            }
+            return this.JsonFormat(succeed, status, error, content);
         }
 
         [HttpGet("all")]
@@ -96,17 +109,14 @@ namespace Tassel.Service.Controllers {
         [HttpGet("weibo_access")]
         public async Task<JsonResult> WeiboAccess(string code, string redirect_url) {
             var (result, succeed, error) = await this.weibo.GetWeiboTokenByCodeAsync(code, redirect_url);
-            if (!succeed) {
+            if (!succeed) 
                 return this.JsonFormat(false, JsonStatus.WeiboAccessFailed, error, null);
-            }
             var (infos, succeed02, error02) = await this.weibo.GetWeiboUserInfosAsync(result.Uid, result.AccessToken);
-            if (!succeed02) {
+            if (!succeed02) 
                 return this.JsonFormat(false, JsonStatus.WeiboInfosFetchFailed, error02, null);
-            }
-            var (user, succ03, error03) = this.weibo.TryCreateOrUpdateUserByWeibo(infos);
-            if (!succ03) {
+            var (user, succ03, error03) = this.weibo.TryCreateOrUpdateUserByWeibo(infos, result.AccessToken);
+            if (!succ03) 
                 return this.JsonFormat(false, JsonStatus.WeiboUserCheckFailed, error03, null);
-            }
             return this.JsonFormat(true, JsonStatus.Succeed, null, new { wuid = infos.idstr });
         }
 
@@ -115,6 +125,17 @@ namespace Tassel.Service.Controllers {
             var (wuser, succeed, error) = this.weibo.SearchWeiboUserInfoByUID(uid);
             var status = succeed ? JsonStatus.Succeed : JsonStatus.WeiboDetailsNotFound;
             return this.JsonFormat(succeed, status, error, wuser);
+        }
+
+        [HttpGet("weibo_revoke/{access_token}")]
+        public async Task<JsonResult > WeiboOAuth2Revoke(string access_token) {
+            var (result, succeed, error) = await this.weibo.RevokeOAuth2Access(access_token);
+            var status = succeed ? JsonStatus.Succeed : JsonStatus.WeiboRevokeFailed;
+            if (result != null && !result.Return) {
+                status = JsonStatus.WeiboRevokeException;
+                error = JsonErrorMaps.TryGet(status);
+            }
+            return this.JsonFormat(succeed, status, error, result);
         }
 
     }

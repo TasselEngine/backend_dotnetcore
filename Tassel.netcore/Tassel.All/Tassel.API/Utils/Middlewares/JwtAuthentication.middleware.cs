@@ -14,6 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Wallace.Core.Helpers.Controllers;
 using System.Text;
 using Wallace.Core.Helpers.Format;
+using Tassel.API.VM.Token;
 
 namespace Tassel.Service.Utils.Middlewares {
 
@@ -126,15 +127,15 @@ namespace Tassel.Service.Utils.Middlewares {
                     (weibo, _, _) = this.weibo.SearchWeiboUserInfoByUID(param.WeiboUid);
                 }
 
-                model.Content = new {
-                    token = new JwtSecurityTokenHandler().WriteToken(identity.GenerateToken(user, opts)),
-                    expires = (int)opts.Expiration.TotalSeconds,
-                    details = new {
-                        user = user,
-                        more = new {
-                            weibo = weibo,
-                            wechat = wechat,
-                            qq = qq
+                model.Content = new TokenProviderVM {
+                    Token = new JwtSecurityTokenHandler().WriteToken(identity.GenerateToken(user, opts)),
+                    Expires = (int)opts.Expiration.TotalSeconds,
+                    Details = new TokenUserDetailsVM {
+                        User = user,
+                        More = new ThirdPartUserInfosVM {
+                            Weibo = weibo,
+                            Wechat = wechat,
+                            QQ = qq
                         }
                     },
                 };

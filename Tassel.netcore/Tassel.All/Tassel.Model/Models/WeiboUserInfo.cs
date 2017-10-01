@@ -17,6 +17,9 @@ namespace Tassel.Model.Models {
         [Column("uid")]
         public string UID { get; set; }
 
+        [Column("access_token")]
+        public string AccessToken { get; set; }
+
         [Column("screen_name")]
         public string ScreenName { get; set; }
 
@@ -46,7 +49,7 @@ namespace Tassel.Model.Models {
 
     public static class WeiboUserProvider {
 
-        public static WeiboDBUser CreateUser(WeiboUser wuser) {
+        public static WeiboDBUser CreateUser(WeiboUser wuser, string access_token) {
             return new WeiboDBUser {
                 UID = wuser.idstr,
                 ScreenName = wuser.screen_name,
@@ -54,11 +57,12 @@ namespace Tassel.Model.Models {
                 Domain = wuser.domain,
                 AvatarUrl = wuser.avatar_large,
                 Cover = wuser.cover_image,
-                CoverMobile = wuser.cover_image_phone
+                CoverMobile = wuser.cover_image_phone,
+                AccessToken = access_token
             };
         }
 
-        public static WeiboDBUser Update(this WeiboDBUser wuser, WeiboUser newUser) {
+        public static WeiboDBUser Update(this WeiboDBUser wuser, WeiboUser newUser, string access_token = null) {
             wuser.AvatarUrl = newUser.avatar_large;
             wuser.Cover = newUser.cover_image;
             wuser.CoverMobile = newUser.cover_image_phone;
@@ -66,6 +70,9 @@ namespace Tassel.Model.Models {
             wuser.Domain = newUser.domain;
             wuser.ScreenName = newUser.screen_name;
             wuser.UpdateTime = DateTime.UtcNow;
+            if (!string.IsNullOrEmpty(access_token)) {
+                wuser.AccessToken = access_token;
+            }
             return wuser;
         }
 

@@ -98,6 +98,7 @@ namespace Tassel.Model.Models {
                 Gender = wuser.gender == "m" ? Gender.Male : Gender.Female,
                 WeiboID = wuser.idstr,
                 RoleID = 3,
+                IsThirdPart = true
             };
         }
 

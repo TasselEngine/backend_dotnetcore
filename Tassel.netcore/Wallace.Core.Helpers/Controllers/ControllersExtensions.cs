@@ -10,7 +10,7 @@ namespace Wallace.Core.Helpers.Controllers {
 
     public static class ControllersExtensions {
 
-        public static JsonResult JsonFormat(this Controller c, object model)
+        public static JsonResult JsonFormat(this Controller c, dynamic model)
             => c.Json(model,
                 new JsonSerializerSettings {
                     ContractResolver = new LowercaseContractResolver(),

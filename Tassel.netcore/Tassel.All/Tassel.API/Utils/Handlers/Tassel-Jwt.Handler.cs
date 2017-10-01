@@ -19,6 +19,7 @@ using Newtonsoft.Json;
 using Wallace.Core.Helpers.Controllers;
 using System.IdentityModel.Tokens.Jwt;
 using Tassel.Service.Utils.Extensionss;
+using Tassel.API.Utils.Extensions;
 
 namespace Tassel.API.Utils.Handlers {
     /// <summary>
@@ -98,8 +99,9 @@ namespace Tassel.API.Utils.Handlers {
                             if (validJwt == null)
                                 throw new ArgumentException("Invalid JWT");
                             var uuid = validJwt.Claims.FirstOrDefault(i => i.Type == TokenClaimsKey.UUID);
-                            if (uuid != null)
-                                this.Context.Items.Add(TokenClaimsKey.UUID, uuid.Value);
+                            if (uuid != null) {
+                                this.Context.SetStringEntry(TokenClaimsKey.UUID, uuid.Value);
+                            }
 
                         } catch (ArgumentException ex) {
                             if (validationFailures == null) {
@@ -218,8 +220,8 @@ namespace Tassel.API.Utils.Handlers {
             }
 
             await Response.WriteAsync(JsonConvert.SerializeObject(new JsonBase {
-                Status = JsonStatus.Error,
-                Message = "Bearer token check failed."
+                Status = JsonStatus.BearerCheckFailed,
+                Message = JsonErrorMaps.TryGet(JsonStatus.BearerCheckFailed)
             }, new JsonSerializerSettings {
                 ContractResolver = new LowercaseContractResolver(),
                 ReferenceLoopHandling = ReferenceLoopHandling.Ignore,

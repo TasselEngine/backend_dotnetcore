@@ -13,8 +13,8 @@ namespace Tassel.API.Utils.Extensions {
             this Controller c, 
             bool succeed, 
             JsonStatus status = JsonStatus.Succeed, 
-            string error = "", 
-            object content = null)
+            string error = default(string), 
+            dynamic content = default(dynamic))
             => c.JsonFormat(new JsonBase {
                Status = status,
                Message = c.GetErrorMessage(succeed, error),
