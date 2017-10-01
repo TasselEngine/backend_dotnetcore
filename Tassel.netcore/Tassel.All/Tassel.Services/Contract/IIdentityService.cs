@@ -5,7 +5,6 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using Tassel.Model.Models;
-using Wallace.Core.Helpers.Providers;
 
 namespace Tassel.Services.Contract {
     public interface IIdentityService<TToken, TOptions, TUser> {
