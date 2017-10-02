@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using Tassel.Model.Models;
-using WeiboOAuth2.Provider.Src;
+using WeiboOAuth2.Provider;
 
 namespace Tassel.Model.Utils {
 

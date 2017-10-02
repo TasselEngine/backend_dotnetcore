@@ -124,7 +124,7 @@ namespace Tassel.Service.Utils.Middlewares {
                 model.Content = new TokenProviderVM {
                     Token = new JwtSecurityTokenHandler().WriteToken(identity.GenerateToken(user, opts)),
                     Expires = (int)opts.Expiration.TotalSeconds,
-                    Details = new UserVM(user).Create(this.weibo.SearchWeiboUserInfoByUID)
+                    Details = new UserVM(user).Create(this.weibo.SearchWeiboUserInfoByUID).User
                 };
 
                 await context.Response.WriteAsync(JsonConvert.SerializeObject(model, new JsonSerializerSettings {

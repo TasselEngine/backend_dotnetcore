@@ -87,5 +87,11 @@ namespace Tassel.Services.Service {
             return (usrr, true, null);
         }
 
+        public (bool, string) TryUpdate(User user) {
+            db.Add(user);
+            if (db.SaveChanges() <= 0)
+                return (false, Errors.UpdateUserFailed);
+            return (true, null);
+        }
     }
 }

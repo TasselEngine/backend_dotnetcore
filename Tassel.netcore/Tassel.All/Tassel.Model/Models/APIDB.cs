@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System.Linq;
-using Tassel.Model.Models;
+using Tassel.Model.Utils;
 
 namespace Tassel.Model.Models {
     public class APIDB : DbContext {

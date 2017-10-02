@@ -92,7 +92,26 @@ namespace Tassel.Service.Controllers {
         }
 
         [HttpPut("{uuid}")]
-        public void Put(string uuid, [FromBody]UpdateUser user) {
+        [UserAuthorize]
+        public void Put(string uuid, [FromBody]UpdateUser uuser) {
+        }
+
+        [HttpPut("user_native/{uuid}")]
+        [UserAuthorize]
+        public JsonResult UserNative(string uuid, [FromBody]NativeUser nuser) {
+            this.HttpContext.GetStringEntry(TokenClaimsKey.UUID, out var p_uuid);
+            if (p_uuid == null)
+                return this.JsonFormat(false, JsonStatus.UserNotLogin);
+            if(uuid != p_uuid)
+                return this.JsonFormat(false, JsonStatus.UserNotMatched);
+            var (user, succeed, error) = this.identity.GetUserDetailsByID(uuid);
+            if (user == null)
+                return this.JsonFormat(false, JsonStatus.UserNotFound);
+            user.UserName = nuser.UserName;
+            user.Password = IdentityProvider.CreateMD5(nuser.Password);
+            user.DisplayName = nuser.DisplayName;
+            (succeed, error) = this.identity.TryUpdate(user);
+            return this.JsonFormat(succeed, succeed ? JsonStatus.Succeed : JsonStatus.UserUpdateFailed, error);
         }
 
         [HttpDelete("{uuid}")]

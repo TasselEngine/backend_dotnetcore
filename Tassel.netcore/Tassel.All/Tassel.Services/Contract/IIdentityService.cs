@@ -21,5 +21,7 @@ namespace Tassel.Services.Contract {
 
         (TUser,bool, string) GetUserDetailsByID(string uuid);
 
+        (bool, string) TryUpdate(TUser user);
+
     }
 }

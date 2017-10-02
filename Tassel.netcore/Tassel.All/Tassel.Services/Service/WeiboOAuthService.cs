@@ -5,7 +5,7 @@ using System.Text;
 using Tassel.Model.Models;
 using Tassel.Model.Utils;
 using Tassel.Services.Contract;
-using WeiboOAuth2.Provider.Src;
+using WeiboOAuth2.Provider;
 
 namespace Tassel.Services.Service {
 

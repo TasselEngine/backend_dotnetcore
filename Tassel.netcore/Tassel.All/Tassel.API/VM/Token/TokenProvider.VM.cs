@@ -17,7 +17,7 @@ namespace Tassel.API.VM.Token {
         public int Expires { get; set; }
 
         [DataMember(Name = "user")]
-        public UserVM Details { get; set; }
+        public DynamicUser Details { get; set; }
 
     }
 
