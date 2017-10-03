@@ -10,13 +10,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using Tassel.Services.Contract;
 using Microsoft.Extensions.DependencyInjection;
-using Wallace.Core.Helpers.Controllers;
 using System.Text;
-using Wallace.Core.Helpers.Format;
+using BWS.Utils.NetCore.Format;
 using Tassel.API.VM.Token;
 using Tassel.API.VM.Identity;
 using Tassel.Service.Utils.Helpers;
 using Tassel.Services.Utils.Constants;
+using BWS.Utils.NetCore.Seriailzation.ContractResolvers;
 
 namespace Tassel.Service.Utils.Middlewares {
 

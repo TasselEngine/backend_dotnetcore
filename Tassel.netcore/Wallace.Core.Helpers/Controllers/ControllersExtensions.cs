@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using System.Linq;
 
-namespace Wallace.Core.Helpers.Controllers {
+namespace BWS.Utils.AspNetCore.Controllers {
 
     public static class ControllersExtensions {
 

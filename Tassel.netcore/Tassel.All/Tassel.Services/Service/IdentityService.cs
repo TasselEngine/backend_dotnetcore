@@ -6,7 +6,7 @@ using Tassel.Service.Utils.Helpers;
 using Tassel.Services.Contract;
 using System.Linq.Expressions;
 using Tassel.Model.Models;
-using Wallace.Core.Helpers.Format;
+using BWS.Utils.NetCore.Format;
 using System.Security.Claims;
 using System.Linq;
 using Microsoft.AspNetCore.Hosting;

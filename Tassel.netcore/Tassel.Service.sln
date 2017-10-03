@@ -9,8 +9,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tassel.Services", "Tassel.A
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tassel.Model", "Tassel.All\Tassel.Model\Tassel.Model.csproj", "{BD510AD2-846B-47B3-9B6B-36BC08D8B646}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wallace.Core.Helpers", "Wallace.Core.Helpers\Wallace.Core.Helpers.csproj", "{04100245-659E-488E-B84E-D315733B821D}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,10 +27,6 @@ Global
 		{BD510AD2-846B-47B3-9B6B-36BC08D8B646}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BD510AD2-846B-47B3-9B6B-36BC08D8B646}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BD510AD2-846B-47B3-9B6B-36BC08D8B646}.Release|Any CPU.Build.0 = Release|Any CPU
-		{04100245-659E-488E-B84E-D315733B821D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{04100245-659E-488E-B84E-D315733B821D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{04100245-659E-488E-B84E-D315733B821D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{04100245-659E-488E-B84E-D315733B821D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

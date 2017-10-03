@@ -16,10 +16,10 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Tassel.Model.Models;
 using Newtonsoft.Json;
-using Wallace.Core.Helpers.Controllers;
 using System.IdentityModel.Tokens.Jwt;
 using Tassel.API.Utils.Extensions;
 using Tassel.Services.Utils.Constants;
+using BWS.Utils.NetCore.Seriailzation.ContractResolvers;
 
 namespace Tassel.API.Utils.Handlers {
     /// <summary>

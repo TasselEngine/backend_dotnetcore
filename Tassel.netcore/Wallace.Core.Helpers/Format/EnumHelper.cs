@@ -1,12 +1,12 @@
 ﻿using Microsoft.Extensions.Localization;
+using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Serialization;
 using System.Text;
 
-namespace Wallace.Core.Helpers.Format {
+namespace BWS.Utils.AspNetCore.Format {
     public static class EnumHelper {
 
         public static T Parse<T>(string content) where T : struct
@@ -37,17 +37,17 @@ namespace Wallace.Core.Helpers.Format {
 
     }
 
-    [DataContract]
+    [JsonObject]
     class EnumEntry<T> {
 
         public EnumEntry(T entry) => _entry = entry;
 
         readonly T _entry;
 
-        [DataMember(Name ="key")]
+        [JsonProperty("key")]
         public int Key { get => _entry.GetHashCode(); }
 
-        [DataMember(Name = "value")]
+        [JsonProperty("value")]
         public string Value { get => _entry.ToString(); }
     }
 

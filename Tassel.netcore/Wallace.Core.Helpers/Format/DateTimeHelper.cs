@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Wallace.Core.Helpers.Format {
+namespace BWS.Utils.AspNetCore.Format {
     public static class DateTimeHelper {
 
         public static long ToUnix(this DateTime date)

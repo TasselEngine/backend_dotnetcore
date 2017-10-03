@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace Wallace.Core.Helpers.Format {
+namespace BWS.Utils.AspNetCore.Format {
     public static class RegexHelper {
 
         public static Match NamesMatch(string expre,string content) => new Regex(expre).Match(content);

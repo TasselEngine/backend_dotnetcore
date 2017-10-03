@@ -32,7 +32,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Tassel.API.Utils.Extensions;
-using Wallace.Core.Helpers.Controllers;
+using BWS.Utils.AspNetCore.Controllers;
 using Tassel.Model.Models;
 using Tassel.Services.Contract;
 using System.IdentityModel.Tokens.Jwt;

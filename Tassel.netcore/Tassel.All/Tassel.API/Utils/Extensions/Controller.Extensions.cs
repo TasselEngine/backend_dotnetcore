@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Wallace.Core.Helpers.Controllers;
+using BWS.Utils.AspNetCore.Controllers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
