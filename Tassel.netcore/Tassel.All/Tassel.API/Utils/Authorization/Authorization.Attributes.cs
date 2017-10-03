@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Tassel.Service.Utils.Extensionss;
+using Tassel.Services.Utils.Constants;
 
 namespace Tassel.API.Utils.Authorization {
 

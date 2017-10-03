@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Threading.Tasks;
-using Tassel.Service.Utils.Extensionss;
 using Tassel.Services.Contract;
 using Microsoft.Extensions.DependencyInjection;
 using Wallace.Core.Helpers.Controllers;
@@ -16,6 +15,8 @@ using System.Text;
 using Wallace.Core.Helpers.Format;
 using Tassel.API.VM.Token;
 using Tassel.API.VM.Identity;
+using Tassel.Service.Utils.Helpers;
+using Tassel.Services.Utils.Constants;
 
 namespace Tassel.Service.Utils.Middlewares {
 

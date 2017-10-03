@@ -18,8 +18,8 @@ using Tassel.Model.Models;
 using Newtonsoft.Json;
 using Wallace.Core.Helpers.Controllers;
 using System.IdentityModel.Tokens.Jwt;
-using Tassel.Service.Utils.Extensionss;
 using Tassel.API.Utils.Extensions;
+using Tassel.Services.Utils.Constants;
 
 namespace Tassel.API.Utils.Handlers {
     /// <summary>

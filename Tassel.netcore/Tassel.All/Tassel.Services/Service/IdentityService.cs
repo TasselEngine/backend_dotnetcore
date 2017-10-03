@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
-using Tassel.Service.Utils.Extensionss;
+using Tassel.Service.Utils.Helpers;
 using Tassel.Services.Contract;
 using System.Linq.Expressions;
 using Tassel.Model.Models;
@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Hosting;
 using System.Threading.Tasks;
 using System.IO;
 using Tassel.Model.Utils;
+using Tassel.Services.Utils.Constants;
 
 namespace Tassel.Services.Service {
     public class IdentityService : IIdentityService<JwtSecurityToken, TokenProviderOptions, User> {

@@ -9,7 +9,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Tassel.Service.Utils.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using Tassel.Service.Utils.Extensionss;
 using Tassel.API.Utils.Extensions;
 using Tassel.Service.Utils.Middlewares;
 using Tassel.Services.Contract;
@@ -17,6 +16,9 @@ using System.IdentityModel.Tokens.Jwt;
 using Tassel.Services.Service;
 using Tassel.Model.Models;
 using WeiboOAuth2.Provider;
+using Tassel.API.Utils.Helpers;
+using Tassel.Services.Utils.Constants;
+using Tassel.Service.Utils.Helpers;
 
 namespace Tassel.Service {
     public class Startup {
@@ -44,7 +46,7 @@ namespace Tassel.Service {
                         ValidateIssuer = true,
                         ValidateAudience = true,
                         ValidateLifetime = true,
-                        IssuerSigningKey = TokenDecoder.CreateKey(Configuration),
+                        IssuerSigningKey = TokenProvider.CreateKey(Configuration),
                         ValidIssuer = TokenProviderEntry.Issuer,
                         ValidAudience = TokenProviderEntry.Audience,
                         ClockSkew = TimeSpan.Zero
@@ -76,7 +78,7 @@ namespace Tassel.Service {
             app.AddTasselTokenCreator(new TokenProviderOptions {
                 Audience = TokenProviderEntry.Audience,
                 Issuer = TokenProviderEntry.Issuer,
-                SigningCredentials = new SigningCredentials(TokenDecoder.CreateKey(Configuration), SecurityAlgorithms.HmacSha256),
+                SigningCredentials = new SigningCredentials(TokenProvider.CreateKey(Configuration), SecurityAlgorithms.HmacSha256),
             });
 
         }

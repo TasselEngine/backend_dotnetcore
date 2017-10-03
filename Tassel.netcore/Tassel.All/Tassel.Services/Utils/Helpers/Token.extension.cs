@@ -7,52 +7,9 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Tassel.Services.Utils.Constants;
 
-namespace Tassel.Service.Utils.Extensionss {
-
-    public struct PolicyRole {
-        public const string Core = "CORE";
-        public const string Admin = "Admin";
-        public const string User = "User";
-    }
-
-    public struct TokenClaimsKey {
-        public const string RoleID = "role_id";
-        public const string Gender = "gender";
-        public const string UserName = "u_name";
-        public const string Password = "psd";
-        public const string UUID = "uuid";
-    }
-
-    public struct TokenProviderEntry {
-        public const string Issuer = "Tassel_ISS";
-        public const string Audience = "Tassel_AUDN";
-        public const string TokenName = "smhs_token";
-        public const string CookieScheme = "Tassel_Cookie";
-        public const string RegisterPath = "/api/user/register";
-        public const string LoginPath = "/api/user/login";
-        public const string WeiboCheckPath = "/api/user/weibo_checkin";
-        public const string AccessDenied = "/403";
-    }
-
-    public class CustomJwtDataFormat : ISecureDataFormat<AuthenticationTicket> {
-
-        private readonly string algorithm;
-        private readonly TokenValidationParameters param;
-
-        public CustomJwtDataFormat(TokenValidationParameters param, string algorithm = SecurityAlgorithms.HmacSha256) {
-            this.algorithm = algorithm;
-            this.param = param;
-        }
-
-        public AuthenticationTicket Unprotect(string protectedText) => Unprotect(protectedText, null);
-
-        public AuthenticationTicket Unprotect(string protectedText, string purpose) => new TokenDecoder(param, algorithm).Unprotect(protectedText);
-
-        public string Protect(AuthenticationTicket data) => throw new NotImplementedException();
-
-        public string Protect(AuthenticationTicket data, string purpose) => throw new NotImplementedException();
-    }
+namespace Tassel.Service.Utils.Helpers {
 
     public class TokenDecoder {
 
