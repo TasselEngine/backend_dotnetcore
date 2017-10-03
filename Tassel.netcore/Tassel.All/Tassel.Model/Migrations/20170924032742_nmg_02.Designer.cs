@@ -7,7 +7,6 @@ using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Storage.Internal;
 using System;
 using Tassel.Model.Models;
-using Tassel.Model.Models;
 
 namespace Tassel.Model.Migrations
 {

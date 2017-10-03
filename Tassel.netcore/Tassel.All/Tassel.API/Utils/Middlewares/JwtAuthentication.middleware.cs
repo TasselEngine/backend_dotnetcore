@@ -38,7 +38,6 @@ namespace Tassel.Service.Utils.Middlewares {
 
         private readonly RequestDelegate skip;
         private readonly TokenProviderOptions opts;
-        private IWeiboOAuthService<User> weibo;
         private IIdentityService<JwtSecurityToken, TokenProviderOptions, User> identity;
         private IServiceProvider serviceProvider;
 
@@ -102,7 +101,6 @@ namespace Tassel.Service.Utils.Middlewares {
             using (var scope = scopeFactory.CreateScope()) {
 
                 this.identity = scope.ServiceProvider.GetRequiredService<IIdentityService<JwtSecurityToken, TokenProviderOptions, User>>();
-                this.weibo = scope.ServiceProvider.GetRequiredService<IWeiboOAuthService<User>>();
 
                 var (user, error) = GetIdentity(param, type);
                 if (error != null) {
@@ -125,7 +123,7 @@ namespace Tassel.Service.Utils.Middlewares {
                 model.Content = new TokenProviderVM {
                     Token = new JwtSecurityTokenHandler().WriteToken(identity.GenerateToken(user, opts)),
                     Expires = (int)opts.Expiration.TotalSeconds,
-                    Details = new UserVM(user).Create(this.weibo.SearchWeiboUserInfoByUID).User
+                    Details = new UserVM(user).Create(this.identity.WeiboService.SearchWeiboUserInfoByUID).User
                 };
 
                 await context.Response.WriteAsync(JsonConvert.SerializeObject(model, new JsonSerializerSettings {
@@ -142,15 +140,12 @@ namespace Tassel.Service.Utils.Middlewares {
             var (user, ok, error) =
                 type == ProviderType.Register ? identity.TryRegister(param.UserName, param.Password) :
                 type == ProviderType.Login ? identity.TryLogin(param.UserName, param.Password) :
-                type == ProviderType.Weibo ? weibo.TryGetUserByWeibo(param.WeiboUid) :
+                type == ProviderType.Weibo ? identity.WeiboService.TryGetUserByWeibo(param.WeiboUid) :
                 (null, false, "failed");
             if (ok)
                 return (user, null);
             return (null, error);
         }
-
-        public static long ToUnixEpochDate(DateTime date)
-            => (long)Math.Round((date.ToUniversalTime() - new DateTimeOffset(1970, 1, 1, 0, 0, 0, TimeSpan.Zero)).TotalSeconds);
 
     }
 }

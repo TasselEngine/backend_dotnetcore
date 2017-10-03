@@ -10,7 +10,6 @@ using Wallace.Core.Helpers.Format;
 using System.Security.Claims;
 using System.Linq;
 using Microsoft.AspNetCore.Hosting;
-using System.Threading.Tasks;
 using System.IO;
 using Tassel.Model.Utils;
 using Tassel.Services.Utils.Constants;
@@ -20,11 +19,15 @@ namespace Tassel.Services.Service {
 
         private APIDB db;
         private IHostingEnvironment env;
+        private IWeiboOAuthService<User> _WEOBO_SRV;
 
-        public IdentityService(APIDB db, IHostingEnvironment env) {
+        public IdentityService(APIDB db, IHostingEnvironment env, IWeiboOAuthService<User> WEOBO_SRV) {
             this.db = db;
             this.env = env;
+            this._WEOBO_SRV = WEOBO_SRV;
         }
+
+        public IWeiboOAuthService<User> WeiboService => this._WEOBO_SRV;
 
         public JwtSecurityToken GenerateToken(User user, TokenProviderOptions options) {
             return new JwtSecurityToken(

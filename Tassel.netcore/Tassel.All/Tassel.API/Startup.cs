@@ -33,9 +33,9 @@ namespace Tassel.Service {
 
             services.AddApplicationDbContext(Configuration);
 
-            services.AddScoped<IIdentityService<JwtSecurityToken, TokenProviderOptions, User>, IdentityService>();
             services.AddScoped<IWeiboOAuthV2Option, WeiboOAuthV2Option>();
             services.AddScoped<IWeiboOAuthService<User>, WeiboOAuthService>();
+            services.AddScoped<IIdentityService<JwtSecurityToken, TokenProviderOptions, User>, IdentityService>();
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddTasselJwtBearer(options => {

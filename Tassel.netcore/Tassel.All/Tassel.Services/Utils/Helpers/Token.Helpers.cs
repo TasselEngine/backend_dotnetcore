@@ -8,6 +8,8 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Tassel.Services.Utils.Constants;
+using Microsoft.AspNetCore.Http;
+using System.Linq;
 
 namespace Tassel.Service.Utils.Helpers {
 
@@ -59,7 +61,7 @@ namespace Tassel.Service.Utils.Helpers {
         private readonly string algorithm;
         private readonly TokenValidationParameters param;
 
-        public AuthenticationTicket Unprotect(string cookie) {
+        public AuthenticationTicket Unprotect(string cookie, HttpContext context) {
             var handler = new JwtSecurityTokenHandler();
             var principal = default(ClaimsPrincipal);
             try {
@@ -67,8 +69,10 @@ namespace Tassel.Service.Utils.Helpers {
                 var validJwt = validToken as JwtSecurityToken;
                 if (validJwt == null)
                     throw new ArgumentException("Invalid JWT");
-                if (!validJwt.Header.Alg.Equals(algorithm, StringComparison.Ordinal))
-                    throw new ArgumentException($"Algorithm must be '{algorithm}'");
+                var uuid = validJwt.Claims.FirstOrDefault(i => i.Type == TokenClaimsKey.UUID);
+                if (uuid != null) {
+                    context.Items.Add(TokenClaimsKey.UUID, uuid.Value);
+                }
 
                 // TO DO : add more logic if need.
 

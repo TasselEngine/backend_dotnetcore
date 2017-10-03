@@ -9,6 +9,8 @@ using Tassel.Model.Models;
 namespace Tassel.Services.Contract {
     public interface IIdentityService<TToken, TOptions, TUser> {
 
+        IWeiboOAuthService<TUser> WeiboService { get; }
+
         (TUser, bool, string) TryRegister(string user, string psd, Gender gender = Gender.Male, string avatar = null);
 
         (TUser, bool, string) TryLogin(string user, string psd);
