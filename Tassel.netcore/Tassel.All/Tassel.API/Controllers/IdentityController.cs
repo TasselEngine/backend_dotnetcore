@@ -77,12 +77,15 @@ namespace Tassel.Service.Controllers {
             var content = new UserVM(user);
             var status = JsonStatus.Succeed;
             if (user.IsThirdPart) {
-                if (content.UserType == UserVMType.Weibo) { // Load weibo user details. To extend this method if more 3rd-part added.
+                if (content.UserType == UserVMType.Weibo) { 
+                    // Load weibo user details. To extend this method if more 3rd-part added.
                     (succeed, error) = content.Create(this.identity.WeiboService.SearchWeiboUserInfoByUID).Check;
                     status = succeed ? JsonStatus.Succeed : JsonStatus.WeiboDetailsNotFound;
-                } else { // No 3rd-part user infos found, action failed.
+                } else { 
+                    // No 3rd-part user infos found, action failed.
                     succeed = false;
-                    status = JsonStatus.WeiboDetailsNotFound;
+                    status = JsonStatus.ThirdPartUserNotExist;
+                    error = JsonErrorMaps.TryGet(status);
                 }
             }
             return this.JsonFormat(succeed, status, error, content);
@@ -103,49 +106,51 @@ namespace Tassel.Service.Controllers {
                 return this.JsonFormat(false, JsonStatus.UserNotMatched);
             var (user, succeed, error) = this.identity.GetUserDetailsByID(uuid);
             if (user == null)
-                return this.JsonFormat(false, JsonStatus.UserNotFound);
+                return this.JsonFormat(false, JsonStatus.UserNotFound, error);
             user.UserName = nuser.UserName;
             user.Password = IdentityProvider.CreateMD5(nuser.Password);
             user.DisplayName = nuser.DisplayName;
             (succeed, error) = this.identity.TryUpdate(user);
-            return this.JsonFormat(succeed, succeed ? JsonStatus.Succeed : JsonStatus.UserUpdateFailed, error);
+            if(!succeed)
+                return this.JsonFormat(false, JsonStatus.UserUpdateFailed, error);
+            return this.JsonFormat(true);
         }
 
         [HttpDelete("{uuid}")]
         public JsonResult Delete(string uuid) {
-            return this.JsonFormat(false, error: Errors.DeleteNotAllowed);
+            return this.JsonFormat(false, JsonStatus.DeleteNotAllowed, Errors.DeleteNotAllowed);
         }
 
         [HttpGet("weibo_access")]
         public async Task<JsonResult> WeiboAccess(string code, string redirect_url) {
             var (result, succeed, error) = await this.identity.WeiboService.GetWeiboTokenByCodeAsync(code, redirect_url);
             if (!succeed) 
-                return this.JsonFormat(false, JsonStatus.WeiboAccessFailed, error, null);
-            var (infos, succeed02, error02) = await this.identity.WeiboService.GetWeiboUserInfosAsync(result.Uid, result.AccessToken);
-            if (!succeed02) 
-                return this.JsonFormat(false, JsonStatus.WeiboInfosFetchFailed, error02, null);
+                return this.JsonFormat(false, JsonStatus.WeiboAccessFailed, error);
+            var (infos, succ02, error02) = await this.identity.WeiboService.GetWeiboUserInfosAsync(result.Uid, result.AccessToken);
+            if (!succ02) 
+                return this.JsonFormat(false, JsonStatus.WeiboInfosFetchFailed, error02);
             var (user, succ03, error03) = this.identity.WeiboService.TryCreateOrUpdateUserByWeibo(infos, result.AccessToken);
             if (!succ03) 
-                return this.JsonFormat(false, JsonStatus.WeiboUserCheckFailed, error03, null);
-            return this.JsonFormat(true, JsonStatus.Succeed, null, new { wuid = infos.idstr });
+                return this.JsonFormat(false, JsonStatus.WeiboUserCheckFailed, error03);
+            return this.JsonFormat(true, JsonStatus.Succeed, content : new { wuid = infos.idstr });
         }
 
         [HttpGet("weibo_details/{wuid}")]
         public JsonResult WeiboDetails(string wuid) {
             var (wuser, succeed, error) = this.identity.WeiboService.SearchWeiboUserInfoByUID(wuid);
-            var status = succeed ? JsonStatus.Succeed : JsonStatus.WeiboDetailsNotFound;
-            return this.JsonFormat(succeed, status, error, wuser);
+            if(!succeed)
+                return this.JsonFormat(false, JsonStatus.WeiboDetailsNotFound, error);
+            return this.JsonFormat(true, content : wuser);
         }
 
         [HttpGet("weibo_revoke/{access_token}")]
         public async Task<JsonResult > WeiboOAuth2Revoke(string access_token) {
             var (result, succeed, error) = await this.identity.WeiboService.RevokeOAuth2Access(access_token);
-            var status = succeed ? JsonStatus.Succeed : JsonStatus.WeiboRevokeFailed;
-            if (result != null && !result.Return) {
-                status = JsonStatus.WeiboRevokeException;
-                error = JsonErrorMaps.TryGet(status);
-            }
-            return this.JsonFormat(succeed, status, error, result);
+            if(!succeed)
+                return this.JsonFormat(false, JsonStatus.WeiboRevokeFailed, error, result);
+            if (result != null && !result.Return)
+                return this.JsonFormat(true, JsonStatus.WeiboRevokeException, error, result);
+            return this.JsonFormat(true, content : result);
         }
 
     }
