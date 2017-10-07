@@ -45,7 +45,7 @@ namespace Tassel.API.VM.Identity {
 
         public UserVM Create(WeiboUserDetailsHandler handler) {
             if (!this.is_base_crt)
-                this.Create();
+                this.Create(true);
             var (wuser, succeed, error) = handler(user.WeiboID);
             this.check = (succeed, error);
             this.User.ScreenName = wuser.ScreenName;
@@ -56,7 +56,7 @@ namespace Tassel.API.VM.Identity {
             return this;
         }
 
-        public UserVM Create() {
+        public UserVM Create(bool isInit = false) {
             if (this.is_base_crt)
                 return this;
             if (user == null)
@@ -77,7 +77,7 @@ namespace Tassel.API.VM.Identity {
                 IsThirdPart = this.user.IsThirdPart,
                 UserType = this.type,
             };
-            this.is_base_crt = true;
+            this.is_base_crt = !isInit;
             return this;
         }
 
