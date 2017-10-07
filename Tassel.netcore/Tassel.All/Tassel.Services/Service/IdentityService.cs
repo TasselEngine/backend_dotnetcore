@@ -49,7 +49,14 @@ namespace Tassel.Services.Service {
         }
 
         public (User, bool, string) GetUserDetailsByID(string uuid) {
-            var usr = db.Users.Where(i => i.UUID == uuid).FirstOrDefault();
+            var usr = db.Users.Find(uuid);
+            if (usr == null)
+                return (null, false, Errors.UserNotFound);
+            return (usr, true, null);
+        }
+
+        public (User, bool, string) GetUserDetailsByUserName(string uname) {
+            var usr = db.Users.Where(i => i.UserName == uname).FirstOrDefault();
             if (usr == null)
                 return (null, false, Errors.UserNotFound);
             return (usr, true, null);

@@ -88,7 +88,7 @@ namespace Tassel.Service.Controllers {
                     error = JsonErrorMaps.TryGet(status);
                 }
             }
-            return this.JsonFormat(succeed, status, error, content);
+            return this.JsonFormat(succeed, status, error, content.User);
         }
 
         [HttpPut("{uuid}")]
@@ -96,7 +96,7 @@ namespace Tassel.Service.Controllers {
         public void Put(string uuid, [FromBody]UpdateUser uuser) {
         }
 
-        [HttpPut("user_native/{uuid}")]
+        [HttpPut("native/{uuid}")]
         [UserAuthorize]
         public JsonResult UserNative(string uuid, [FromBody]NativeUser nuser) {
             this.HttpContext.GetStringEntry(TokenClaimsKey.UUID, out var p_uuid);
@@ -114,6 +114,22 @@ namespace Tassel.Service.Controllers {
             if(!succeed)
                 return this.JsonFormat(false, JsonStatus.UserUpdateFailed, error);
             return this.JsonFormat(true);
+        }
+
+        [HttpGet("query/{uuid}")]
+        public JsonResult UserQuery(string uuid) {
+            var (user, succeed, error) = this.identity.GetUserDetailsByID(uuid);
+            if (!succeed)
+                return this.JsonFormat(false, JsonStatus.UserNotFound, error);
+            return this.JsonFormat(true, content : user);
+        }
+
+        [HttpGet("check/{uname}")]
+        public JsonResult UserCheck(string uname) {
+            var (user, succeed, error) = this.identity.GetUserDetailsByUserName(uname);
+            if (!succeed)
+                return this.JsonFormat(true);
+            return this.JsonFormat(false, JsonStatus.UserExist);
         }
 
         [HttpDelete("{uuid}")]
