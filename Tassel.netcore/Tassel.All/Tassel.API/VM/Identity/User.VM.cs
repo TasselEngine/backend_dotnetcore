@@ -18,6 +18,7 @@ namespace Tassel.API.VM.Identity {
             this.user = user;
             if (user == null)
                 throw new ArgumentNullException("user shouldn't be empty");
+            this.Create();
             if (!user.IsThirdPart) { return; }
             this.type =
                 !string.IsNullOrEmpty(user.WeiboID) ? UserVMType.Weibo :
@@ -34,13 +35,17 @@ namespace Tassel.API.VM.Identity {
 
         private (bool, string) check = (true, null);
         [JsonIgnore]
-        public (bool ,string) Check { get => this.check; }
+        public (bool, string) Check { get => this.check; }
+
+        private bool is_base_crt = false;
+        public bool IsBaseCreated { get => this.is_base_crt; }
 
         [JsonProperty("user")]
         public DynamicUser User { get; private set; }
 
         public UserVM Create(WeiboUserDetailsHandler handler) {
-            this.Create();
+            if (!this.is_base_crt)
+                this.Create();
             var (wuser, succeed, error) = handler(user.WeiboID);
             this.check = (succeed, error);
             this.User.ScreenName = wuser.ScreenName;
@@ -52,6 +57,8 @@ namespace Tassel.API.VM.Identity {
         }
 
         public UserVM Create() {
+            if (this.is_base_crt)
+                return this;
             if (user == null)
                 throw new InvalidOperationException("user shouldn't be empty");
             this.User = new DynamicUser {
@@ -70,6 +77,7 @@ namespace Tassel.API.VM.Identity {
                 IsThirdPart = this.user.IsThirdPart,
                 UserType = this.type,
             };
+            this.is_base_crt = true;
             return this;
         }
 
@@ -122,18 +130,23 @@ namespace Tassel.API.VM.Identity {
 
         [JsonProperty("access_token")]
         public string AccessToken { get; set; }
+        public bool ShouldSerializeAccessToken() => this.UserType != UserVMType.Base;
 
         [JsonProperty("screen_name")]
         public string ScreenName { get; set; }
+        public bool ShouldSerializeScreenName() => this.UserType != UserVMType.Base;
 
         [JsonProperty("desc")]
         public string Description { get; set; }
+        public bool ShouldSerializeDescription() => this.UserType != UserVMType.Base;
 
         [JsonProperty("domain")]
         public string Domain { get; set; }
+        public bool ShouldSerializeDomain() => this.UserType != UserVMType.Base;
 
         [JsonProperty("avatar_url")]
         public string AvatarUrl { get; set; }
+        public bool ShouldSerializeAvatarUrl() => this.UserType != UserVMType.Base;
 
     }
 }

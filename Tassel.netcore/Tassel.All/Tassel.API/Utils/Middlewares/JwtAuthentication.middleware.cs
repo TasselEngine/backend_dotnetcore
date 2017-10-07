@@ -107,7 +107,7 @@ namespace Tassel.Service.Utils.Middlewares {
                     model.Message = error;
                     model.Status = type == ProviderType.Register ? JsonStatus.RegisterFailed : JsonStatus.LoginFailed;
                     model.Content = new {
-                        RedirectUrl = type == ProviderType.Register ? TokenProviderEntry.RegisterPath : TokenProviderEntry.LoginPath
+                        RedirectUrl = context.Request.Path
                     };
                     await context.Response.WriteAsync(JsonConvert.SerializeObject(model, new JsonSerializerSettings {
                         ContractResolver = new LowercaseContractResolver(),
@@ -120,10 +120,17 @@ namespace Tassel.Service.Utils.Middlewares {
                 model.Status = JsonStatus.Succeed;
                 model.Message = null;
 
+                var vmProvider = new UserVM(user);
+                if(type == ProviderType.Weibo) {
+                    vmProvider = vmProvider.Create(this.identity.WeiboService.SearchWeiboUserInfoByUID);
+                }
+
+                System.Diagnostics.Debug.WriteLine(JsonConvert.SerializeObject(user));
+
                 model.Content = new TokenProviderVM {
                     Token = new JwtSecurityTokenHandler().WriteToken(identity.GenerateToken(user, opts)),
                     Expires = (int)opts.Expiration.TotalSeconds,
-                    Details = new UserVM(user).Create(this.identity.WeiboService.SearchWeiboUserInfoByUID).User
+                    Details = vmProvider.User
                 };
 
                 await context.Response.WriteAsync(JsonConvert.SerializeObject(model, new JsonSerializerSettings {
