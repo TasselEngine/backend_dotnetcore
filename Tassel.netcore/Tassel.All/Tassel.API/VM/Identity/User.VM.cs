@@ -18,7 +18,7 @@ namespace Tassel.API.VM.Identity {
             this.user = user;
             if (user == null)
                 throw new ArgumentNullException("user shouldn't be empty");
-            this.Create();
+            this.Create(true);
             if (!user.IsThirdPart) { return; }
             this.type =
                 !string.IsNullOrEmpty(user.WeiboID) ? UserVMType.Weibo :
@@ -45,7 +45,7 @@ namespace Tassel.API.VM.Identity {
 
         public UserVM Create(WeiboUserDetailsHandler handler) {
             if (!this.is_base_crt)
-                this.Create(true);
+                this.Create();
             var (wuser, succeed, error) = handler(user.WeiboID);
             this.check = (succeed, error);
             this.User.ScreenName = wuser.ScreenName;
