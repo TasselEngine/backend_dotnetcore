@@ -5,20 +5,23 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Tassel.Model.Models;
 using MongoDB.Driver;
+using Tassel.API.Utils.Extensions;
 
 namespace Tassel.API.Controllers {
     [Route("api/status")]
     public class StatusController : Controller {
 
         private IMongoDatabase mdb;
+        private IMongoCollection<Status> status;
 
         public StatusController(MongoDBContext mongo) {
             this.mdb = mongo.DB;
+            this.status = this.mdb.GetCollection<Status>("status");
         }
 
-        [HttpGet]
-        public IEnumerable<string> Get() {
-            return new string[] { "value1", "value2" };
+        [HttpGet("all")]
+        public JsonResult Get() {
+            return this.JsonFormat(true, content: this.status.AsQueryable().Where(i => true));
         }
 
         [HttpGet("{id}")]
@@ -26,8 +29,10 @@ namespace Tassel.API.Controllers {
             return "value";
         }
 
-        [HttpPost]
-        public void Post([FromBody]string value) {
+        [HttpPost("create")]
+        public async Task<JsonResult> PostAsync() {
+            await this.status.InsertOneAsync(new Status { Content = "abcdefg", Creator = new StatusCreator { UUID = "sadwarb", UserName = "miao17game" } });
+            return this.JsonFormat(true);
         }
 
         [HttpPut("{id}")]
