@@ -33,6 +33,8 @@ namespace Tassel.Service {
 
             services.AddApplicationDbContext(Configuration);
 
+            services.AddMongoDbContext(Configuration);
+
             services.AddScoped<IWeiboOAuthV2Option, WeiboOAuthV2Option>();
             services.AddScoped<IWeiboOAuthService<User>, WeiboOAuthService>();
             services.AddScoped<IIdentityService<JwtSecurityToken, TokenProviderOptions, User>, IdentityService>();
