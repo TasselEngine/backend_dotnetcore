@@ -10,7 +10,8 @@ namespace Tassel.Model.Models.BsonModels {
     public enum ModelType {
         Default = 0,
         User = 1,
-        Status = 2
+        Comment = 2,
+        Status = 3
     }
 
     [JsonObject]
@@ -49,6 +50,8 @@ namespace Tassel.Model.Models.BsonModels {
         [BsonElement("content")]
         [JsonProperty("details")]
         public string Content { get; set; }
+
+        public override ModelType Type { get; } = ModelType.Comment;
 
         [BsonElement("creator")]
         [JsonProperty("creator")]
