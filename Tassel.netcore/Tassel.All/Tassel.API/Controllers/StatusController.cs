@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Tassel.Model.Models;
+using Tassel.Model.Models.BsonModels;
 using MongoDB.Driver;
 using Tassel.API.Utils.Extensions;
+using Tassel.Model.Models;
 
 namespace Tassel.API.Controllers {
     [Route("api/status")]
@@ -31,7 +32,7 @@ namespace Tassel.API.Controllers {
 
         [HttpPost("create")]
         public async Task<JsonResult> PostAsync() {
-            await this.status.InsertOneAsync(new Status { Content = "abcdefg", Creator = new StatusCreator { UUID = "sadwarb", UserName = "miao17game" } });
+            await this.status.InsertOneAsync(new Status { Content = "abcdefg", Creator = new BaseCreator { UUID = "sadwarb", UserName = "miao17game" } });
             return this.JsonFormat(true);
         }
 
