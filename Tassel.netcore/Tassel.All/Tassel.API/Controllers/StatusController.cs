@@ -7,22 +7,25 @@ using Tassel.Model.Models.BsonModels;
 using MongoDB.Driver;
 using Tassel.API.Utils.Extensions;
 using Tassel.Model.Models;
+using Tassel.Services.Service;
+using Tassel.Services.Contract;
 
 namespace Tassel.API.Controllers {
     [Route("api/status")]
     public class StatusController : Controller {
 
-        private IMongoDatabase mdb;
-        private IMongoCollection<Status> status;
+        private IStatusService status;
 
-        public StatusController(MongoDBContext mongo) {
-            this.mdb = mongo.DB;
-            this.status = this.mdb.GetCollection<Status>("status");
+        public StatusController(IStatusService status) {
+            this.status = status;
         }
 
         [HttpGet("all")]
         public JsonResult Get() {
-            return this.JsonFormat(true, content: this.status.AsQueryable().Where(i => true));
+            var (coll, succeed, error) = this.status.GetCollections();
+            if(!succeed)
+                return this.JsonFormat(false, JsonStatus.StatusCollectionLoadFailed, error.Read());
+            return this.JsonFormat(true, content: coll);
         }
 
         [HttpGet("{id}")]
@@ -32,7 +35,21 @@ namespace Tassel.API.Controllers {
 
         [HttpPost("create")]
         public async Task<JsonResult> PostAsync() {
-            await this.status.InsertOneAsync(new Status { Content = "abcdefg", Creator = new BaseCreator { UUID = "sadwarb", UserName = "miao17game" } });
+            // TEST
+            var (_, succeed, error) = await this.status.InsertOneAsync(new Status {
+                Content = "hahahahahahahah",
+                Creator = new BaseCreator { UUID = "4525224", UserName = "baba" },
+                Likes = new List<BaseCreator> {
+                   new BaseCreator { UUID = "4525224", UserName = "baba" },
+                   new BaseCreator { UUID = "3452344", UserName = "hehe" },
+                },
+                Comments = new List<BaseComment> {
+                    new BaseComment { Content = "6666666666", Creator = new BaseCreator { UUID = "4525224", UserName = "baba" } },
+                    new BaseComment { Content = "2333333333", Creator = new BaseCreator { UUID = "3452344", UserName = "hehe" } },
+                }
+            });
+            if(!succeed)
+                return this.JsonFormat(false, JsonStatus.StatusInsertFailed, error.Read());
             return this.JsonFormat(true);
         }
 

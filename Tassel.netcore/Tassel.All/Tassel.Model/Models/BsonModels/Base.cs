@@ -14,6 +14,10 @@ namespace Tassel.Model.Models.BsonModels {
         Status = 3
     }
 
+    public static class ModelCollectionName {
+        public const string Status = "status";
+    }
+
     [JsonObject]
     public class BaseModel {
 

@@ -19,6 +19,7 @@ using WeiboOAuth2.Provider;
 using Tassel.API.Utils.Helpers;
 using Tassel.Services.Utils.Constants;
 using Tassel.Service.Utils.Helpers;
+using Tassel.Model.Utils;
 
 namespace Tassel.Service {
     public class Startup {
@@ -38,6 +39,7 @@ namespace Tassel.Service {
             services.AddScoped<IWeiboOAuthV2Option, WeiboOAuthV2Option>();
             services.AddScoped<IWeiboOAuthService<User>, WeiboOAuthService>();
             services.AddScoped<IIdentityService<JwtSecurityToken, TokenProviderOptions, User>, IdentityService>();
+            services.AddScoped<IStatusService, StatusService>();
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddTasselJwtBearer(options => {
