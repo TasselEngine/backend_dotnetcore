@@ -23,7 +23,7 @@ namespace Tassel.Model.Models.BsonModels {
 
         [BsonId]
         [JsonProperty("id")]
-        public string ID { get; set; } = IdentityProvider.CreateGuid();
+        public string ID { get; set; } = IdentityProvider.CreateGuid(GuidType.N);
 
         [BsonElement("type")]
         [JsonProperty("type")]
@@ -32,6 +32,10 @@ namespace Tassel.Model.Models.BsonModels {
         [BsonElement("c_time")]
         [JsonProperty("create_time")]
         public DateTime CreateTime { get; set; } = DateTime.UtcNow;
+
+        [BsonElement("u_time")]
+        [JsonProperty("update_time")]
+        public DateTime? UpdateTime { get; set; }
 
     }
 
@@ -49,13 +53,7 @@ namespace Tassel.Model.Models.BsonModels {
     }
 
     [JsonObject]
-    public class BaseComment : BaseModel {
-
-        [BsonElement("content")]
-        [JsonProperty("details")]
-        public string Content { get; set; }
-
-        public override ModelType Type { get; } = ModelType.Comment;
+    public class BaseCreateModel: BaseModel {
 
         [BsonElement("creator")]
         [JsonProperty("creator")]
@@ -64,23 +62,31 @@ namespace Tassel.Model.Models.BsonModels {
     }
 
     [JsonObject]
-    public class BasePageEntry : BaseModel {
-
-        [BsonElement("content")]
-        [JsonProperty("details")]
-        public string Content { get; set; }
-
-        [BsonElement("creator")]
-        [JsonProperty("creator")]
-        public BaseCreator Creator { get; set; }
+    public class BaseLikesModel : BaseCreateModel {
 
         [BsonElement("likes")]
         [JsonProperty("like_users")]
         public IEnumerable<BaseCreator> Likes { get; set; } = new List<BaseCreator>();
 
-        [BsonElement("comments")]
-        [JsonProperty("comments")]
-        public IEnumerable<BaseComment> Comments { get; set; } = new List<BaseComment>();
+    }
+
+    [JsonObject]
+    public class Comment : BaseCreateModel {
+
+        [BsonElement("content")]
+        [JsonProperty("details")]
+        public string CommentContent { get; set; }
+
+        public override ModelType Type { get; } = ModelType.Comment;
+
+    }
+
+    [JsonObject]
+    public class BasePageEntry : BaseLikesModel {
+
+        [BsonElement("content")]
+        [JsonProperty("details")]
+        public string Content { get; set; }
 
     }
 

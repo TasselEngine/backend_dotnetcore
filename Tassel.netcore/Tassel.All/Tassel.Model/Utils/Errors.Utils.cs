@@ -40,5 +40,6 @@ namespace Tassel.Model.Utils {
         public const string UpdateUserFailed = "update user infos failed.";
         public const string InsertOneFailed = "insert entry failed.";
         public const string GetEntryCollFailed = "get bson collection failed.";
+        public const string QueryEntryFailed = "find entry(s) failed";
     }
 }

@@ -23,14 +23,19 @@ namespace Tassel.API.Controllers {
         [HttpGet("all")]
         public JsonResult Get() {
             var (coll, succeed, error) = this.status.GetCollections();
-            if(!succeed)
+            if (!succeed)
                 return this.JsonFormat(false, JsonStatus.StatusCollectionLoadFailed, error.Read());
             return this.JsonFormat(true, content: coll);
         }
 
         [HttpGet("{id}")]
-        public string Get(int id) {
-            return "value";
+        public async Task<JsonResult> Get(string id) {
+            var (entry, succeed, error) = await this.status.FindOneByIDAsync(id);
+            if(!succeed)
+                return this.JsonFormat(false, JsonStatus.Error, error.Read());
+            if (entry == null)
+                return this.JsonFormat(false, JsonStatus.StatusNotFound);
+            return this.JsonFormat(true, content: entry);
         }
 
         [HttpPost("create")]
@@ -38,17 +43,9 @@ namespace Tassel.API.Controllers {
             // TEST
             var (_, succeed, error) = await this.status.InsertOneAsync(new Status {
                 Content = "hahahahahahahah",
-                Creator = new BaseCreator { UUID = "4525224", UserName = "baba" },
-                Likes = new List<BaseCreator> {
-                   new BaseCreator { UUID = "4525224", UserName = "baba" },
-                   new BaseCreator { UUID = "3452344", UserName = "hehe" },
-                },
-                Comments = new List<BaseComment> {
-                    new BaseComment { Content = "6666666666", Creator = new BaseCreator { UUID = "4525224", UserName = "baba" } },
-                    new BaseComment { Content = "2333333333", Creator = new BaseCreator { UUID = "3452344", UserName = "hehe" } },
-                }
+                Creator = new BaseCreator { UUID = "4525224", UserName = "baba" }
             });
-            if(!succeed)
+            if (!succeed)
                 return this.JsonFormat(false, JsonStatus.StatusInsertFailed, error.Read());
             return this.JsonFormat(true);
         }
