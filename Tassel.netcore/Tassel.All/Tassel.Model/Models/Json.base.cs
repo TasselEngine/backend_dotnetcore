@@ -47,6 +47,8 @@ namespace Tassel.Model.Models {
         StatusCollectionLoadFailed = 40001,
         StatusInsertFailed = 40002,
         StatusNotFound = 40003,
+
+        CommentAddFailed = 50001,
     }
 
     public static class JsonErrorMaps {
@@ -73,6 +75,7 @@ namespace Tassel.Model.Models {
             [JsonStatus.StatusCollectionLoadFailed] = "read status collection failed",
             [JsonStatus.StatusInsertFailed] = "add status failed.",
             [JsonStatus.StatusNotFound] = "status with the id is not found.",
+            [JsonStatus.CommentAddFailed] = "add comment failed.",
         };
 
         public static string TryGet(JsonStatus type) {

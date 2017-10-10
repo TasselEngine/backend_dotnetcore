@@ -15,6 +15,7 @@ namespace Tassel.Model.Models.BsonModels {
     }
 
     public static class ModelCollectionName {
+        public const string Comment = "comments";
         public const string Status = "status";
     }
 
@@ -79,6 +80,14 @@ namespace Tassel.Model.Models.BsonModels {
 
         public override ModelType Type { get; } = ModelType.Comment;
 
+        [BsonElement("parent_type")]
+        [JsonIgnore]
+        public ModelType ParentType { get; set; } = ModelType.Default;
+
+        [BsonElement("parent_id")]
+        [JsonIgnore]
+        public string ParentID { get; set; }
+
     }
 
     [JsonObject]
@@ -87,6 +96,10 @@ namespace Tassel.Model.Models.BsonModels {
         [BsonElement("content")]
         [JsonProperty("details")]
         public string Content { get; set; }
+
+        [BsonIgnore]
+        [JsonProperty("comments")]
+        public IEnumerable<Comment> Comments { get; set; } = new List<Comment>();
 
     }
 
