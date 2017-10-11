@@ -14,6 +14,10 @@ namespace Tassel.Model.Models.BsonModels {
 
         public override ModelType Type { get; } = ModelType.Status;
 
+        [BsonElement("imgs")]
+        [JsonProperty("images")]
+        public IEnumerable<BaseImage> Images { get; set; } = new List<BaseImage>();
+
     }
 
 }

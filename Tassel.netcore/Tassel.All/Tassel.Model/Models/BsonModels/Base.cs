@@ -11,11 +11,13 @@ namespace Tassel.Model.Models.BsonModels {
         Default = 0,
         User = 1,
         Comment = 2,
-        Status = 3
+        LikeEntry = 3,
+        Status = 4
     }
 
     public static class ModelCollectionName {
         public const string Comment = "comments";
+        public const string Likes = "likes";
         public const string Status = "status";
     }
 
@@ -24,10 +26,10 @@ namespace Tassel.Model.Models.BsonModels {
 
         [BsonId]
         [JsonProperty("id")]
-        public string ID { get; set; } = IdentityProvider.CreateGuid(GuidType.N);
+        public virtual string ID { get; set; } = IdentityProvider.CreateGuid(GuidType.N);
 
         [BsonElement("type")]
-        [JsonProperty("type")]
+        [JsonIgnore]
         public virtual ModelType Type { get; } = ModelType.Default;
 
         [BsonElement("c_time")]
@@ -36,7 +38,7 @@ namespace Tassel.Model.Models.BsonModels {
 
         [BsonElement("u_time")]
         [JsonProperty("update_time")]
-        public DateTime? UpdateTime { get; set; }
+        public virtual DateTime? UpdateTime { get; set; }
 
     }
 
@@ -65,9 +67,9 @@ namespace Tassel.Model.Models.BsonModels {
     [JsonObject]
     public class BaseLikesModel : BaseCreateModel {
 
-        [BsonElement("likes")]
+        [BsonIgnore]
         [JsonProperty("like_users")]
-        public IEnumerable<BaseCreator> Likes { get; set; } = new List<BaseCreator>();
+        public IEnumerable<LikesEntry> Likes { get; set; } = new List<LikesEntry>();
 
     }
 
@@ -87,6 +89,49 @@ namespace Tassel.Model.Models.BsonModels {
         [BsonElement("parent_id")]
         [JsonIgnore]
         public string ParentID { get; set; }
+
+    }
+
+    public class BaseImage {
+
+        [BsonElement("is_file")]
+        [JsonProperty("is_file")]
+        public bool IsFile { get; set; }
+
+        [BsonElement("url")]
+        [JsonProperty("url")]
+        public string Url { get; set; }
+        public bool ShouldSerializeUrl() => !this.IsFile;
+
+        [BsonElement("base_64")]
+        [JsonProperty("base_64")]
+        public string Base64 { get; set; }
+        public bool ShouldSerializeBase64() => this.IsFile;
+
+    }
+
+    [JsonObject]
+    public class LikesEntry : BaseModel {
+
+        [JsonIgnore]
+        public override string ID { get; set; } = IdentityProvider.CreateGuid(GuidType.N);
+
+        public override ModelType Type { get; } = ModelType.LikeEntry;
+
+        [BsonElement("target_type")]
+        [JsonIgnore]
+        public ModelType TargetType { get; set; } = ModelType.Default;
+
+        [BsonElement("parent_id")]
+        [JsonIgnore]
+        public string ParentID { get; set; }
+
+        [BsonElement("user")]
+        [JsonProperty("user")]
+        public BaseCreator User { get; set; }
+
+        [JsonIgnore]
+        public override DateTime? UpdateTime { get; set; }
 
     }
 

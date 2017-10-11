@@ -6,8 +6,9 @@ using Tassel.Model.Utils;
 
 namespace Tassel.Services.Contract {
 
-    public interface ICommentService : IBusinessService<Comment, Error> {
+    public interface ILikesService : IBusinessService<LikesEntry, Error> {
 
     }
 
 }
+

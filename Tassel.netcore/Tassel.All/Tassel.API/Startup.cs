@@ -41,6 +41,7 @@ namespace Tassel.Service {
             services.AddScoped<IIdentityService<JwtSecurityToken, TokenProviderOptions, User>, IdentityService>();
             services.AddScoped<IStatusService, StatusService>();
             services.AddScoped<ICommentService, CommentService>();
+            services.AddScoped<ILikesService, LikesService>();
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddTasselJwtBearer(options => {
