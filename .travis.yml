@@ -4,7 +4,7 @@ mono: none
 dotnet: 2.0.0
 dist: trusty
 install:
- - cd Tassel.TEST
+ - cd Tassel.netcore/Tassel.TEST
  - dotnet restore
 script:
  - dotnet xunit
