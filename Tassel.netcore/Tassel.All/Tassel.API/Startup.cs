@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Tassel.Service.Utils.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Tassel.API.Utils.Extensions;
@@ -14,12 +13,13 @@ using Tassel.Service.Utils.Middlewares;
 using Tassel.Services.Contract;
 using System.IdentityModel.Tokens.Jwt;
 using Tassel.Services.Service;
-using Tassel.Model.Models;
 using WeiboOAuth2.Provider;
 using Tassel.API.Utils.Helpers;
 using Tassel.Services.Utils.Constants;
 using Tassel.Service.Utils.Helpers;
-using Tassel.Model.Utils;
+using Tassel.Model.Models.BsonModels;
+using Tassel.Services.Contract.Providers;
+using Tassel.Services.Providers;
 
 namespace Tassel.Service {
     public class Startup {
@@ -32,16 +32,14 @@ namespace Tassel.Service {
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services) {
 
-            services.AddApplicationDbContext(Configuration);
-
             services.AddMongoDbContext(Configuration);
 
             services.AddScoped<IWeiboOAuthV2Option, WeiboOAuthV2Option>();
-            services.AddScoped<IWeiboOAuthService<User>, WeiboOAuthService>();
+            services.AddScoped<IWeiboOAuthServiceProvider<User>, WeiboOAuthProvider>();
             services.AddScoped<IIdentityService<JwtSecurityToken, TokenProviderOptions, User>, IdentityService>();
             services.AddScoped<IStatusService, StatusService>();
-            services.AddScoped<ICommentService, CommentService>();
-            services.AddScoped<ILikesService, LikesService>();
+            services.AddScoped<ICommentServiceProvider, CommentProvider>();
+            services.AddScoped<ILikesServiceProvider, LikesService>();
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddTasselJwtBearer(options => {
@@ -78,8 +76,6 @@ namespace Tassel.Service {
             app.UseCors(builder => builder.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin().AllowCredentials());
 
             app.UseMvc();
-
-            app.DbSeedDataInsert();
 
             app.AddTasselTokenCreator(new TokenProviderOptions {
                 Audience = TokenProviderEntry.Audience,

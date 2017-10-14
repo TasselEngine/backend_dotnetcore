@@ -41,6 +41,7 @@ using Tassel.API.VM.Identity;
 using Tassel.Model.Utils;
 using Tassel.Service.Utils.Helpers;
 using Tassel.Services.Utils.Constants;
+using Tassel.Model.Models.BsonModels;
 
 namespace Tassel.Service.Controllers {
 
@@ -110,7 +111,7 @@ namespace Tassel.Service.Controllers {
             user.UserName = nuser.UserName;
             user.Password = IdentityProvider.CreateMD5(nuser.Password);
             user.DisplayName = nuser.DisplayName;
-            (succeed, error) = this.identity.TryUpdate(user);
+            (succeed, error) = this.identity.TryUpdateNative(user);
             if(!succeed)
                 return this.JsonFormat(false, JsonStatus.UserUpdateFailed, error);
             return this.JsonFormat(true);

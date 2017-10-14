@@ -4,10 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Tassel.Model.Models.BsonModels;
-using MongoDB.Driver;
 using Tassel.API.Utils.Extensions;
 using Tassel.Model.Models;
-using Tassel.Services.Service;
 using Tassel.Services.Contract;
 
 namespace Tassel.API.Controllers {
@@ -15,13 +13,9 @@ namespace Tassel.API.Controllers {
     public class StatusController : Controller {
 
         private IStatusService status;
-        private ICommentService comments;
-        private ILikesService likes;
 
-        public StatusController(IStatusService status, ICommentService coms, ILikesService likes) {
+        public StatusController(IStatusService status) {
             this.status = status;
-            this.comments = coms;
-            this.likes = likes;
         }
 
         [HttpGet("all")]
@@ -34,18 +28,10 @@ namespace Tassel.API.Controllers {
 
         [HttpGet("{id}")]
         public async Task<JsonResult> Get(string id) {
-            var (entry, succeed, error) = await this.status.FindOneByIDAsync(id);
-            if(!succeed)
-                return this.JsonFormat(false, JsonStatus.Error, error.Read());
-            if (entry == null)
-                return this.JsonFormat(false, JsonStatus.StatusNotFound);
-            var (coll, succ02, error02) = await this.comments.GetCollectionsAsync(i => i.ParentID == entry.ID && i.ParentType == ModelType.Status);
-            if (succ02)
-                entry.Comments = coll;
-            var (likers, succ03, error03) = await this.likes.GetCollectionsAsync(i => i.ParentID == entry.ID && i.TargetType == ModelType.Status);
-            if (succ03)
-                entry.Likes = likers;
-            return this.JsonFormat(true, content: entry);
+            var (entry, status, error) = await this.status.GetStatusDetailsAsync(id);
+            if(status == JsonStatus.Succeed)
+                return this.JsonFormat(true, content: entry);
+            return this.JsonFormat(false, status, error.Read());
         }
 
         [HttpPost("create")]
@@ -58,21 +44,6 @@ namespace Tassel.API.Controllers {
             });
             if (!succeed)
                 return this.JsonFormat(false, JsonStatus.StatusInsertFailed, error.Read());
-            var (_, succ02, err02) = await this.comments.InsertOneAsync(new Comment {
-                CommentContent = "I want to add a comment.",
-                ParentID = parent.ID,
-                ParentType = ModelType.Status,
-                Creator = new BaseCreator { UUID = "234125", UserName = "Bruce Wayne" }
-            });
-            if (!succ02)
-                return this.JsonFormat(false, JsonStatus.CommentAddFailed, err02.Read());
-            var (_, succ03, err03) = await this.likes.InsertOneAsync(new LikesEntry {
-                User = new BaseCreator { UUID = "4525224", UserName = "baba" },
-                ParentID = parent.ID,
-                TargetType = ModelType.Status
-            });
-            if (!succ03)
-                return this.JsonFormat(false, JsonStatus.LikesAddFailed, err03.Read());
             return this.JsonFormat(true);
         }
 

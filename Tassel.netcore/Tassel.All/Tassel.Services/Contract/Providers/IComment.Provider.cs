@@ -4,9 +4,9 @@ using System.Text;
 using Tassel.Model.Models.BsonModels;
 using Tassel.Model.Utils;
 
-namespace Tassel.Services.Contract {
+namespace Tassel.Services.Contract.Providers {
 
-    public interface ICommentService : IBusinessService<Comment, Error> {
+    public interface ICommentServiceProvider : IBusinessService<Comment, Error> {
 
     }
 

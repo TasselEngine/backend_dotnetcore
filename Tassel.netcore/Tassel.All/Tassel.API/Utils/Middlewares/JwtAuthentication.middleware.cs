@@ -17,6 +17,7 @@ using Tassel.API.VM.Identity;
 using Tassel.Service.Utils.Helpers;
 using Tassel.Services.Utils.Constants;
 using BWS.Utils.NetCore.Seriailzation.ContractResolvers;
+using Tassel.Model.Models.BsonModels;
 
 namespace Tassel.Service.Utils.Middlewares {
 

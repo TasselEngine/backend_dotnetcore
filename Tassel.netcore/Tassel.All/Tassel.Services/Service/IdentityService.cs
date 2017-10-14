@@ -5,7 +5,6 @@ using System.Text;
 using Tassel.Service.Utils.Helpers;
 using Tassel.Services.Contract;
 using System.Linq.Expressions;
-using Tassel.Model.Models;
 using BWS.Utils.NetCore.Format;
 using System.Security.Claims;
 using System.Linq;
@@ -13,21 +12,27 @@ using Microsoft.AspNetCore.Hosting;
 using System.IO;
 using Tassel.Model.Utils;
 using Tassel.Services.Utils.Constants;
+using Tassel.Model.Models.BsonModels;
+using MongoDB.Driver;
+using Tassel.Model.Models;
+using Tassel.Services.Contract.Providers;
 
 namespace Tassel.Services.Service {
     public class IdentityService : IIdentityService<JwtSecurityToken, TokenProviderOptions, User> {
 
-        private APIDB db;
+        protected IMongoDatabase mdb;
+        protected IMongoCollection<User> users;
         private IHostingEnvironment env;
-        private IWeiboOAuthService<User> _WEOBO_SRV;
+        private IWeiboOAuthServiceProvider<User> _WEOBO_SRV;
 
-        public IdentityService(APIDB db, IHostingEnvironment env, IWeiboOAuthService<User> WEOBO_SRV) {
-            this.db = db;
+        public IdentityService(MongoDBContext db, IHostingEnvironment env, IWeiboOAuthServiceProvider<User> WEOBO_SRV) {
             this.env = env;
+            this.mdb = db.DB;
+            this.users = mdb.GetCollection<User>(ModelCollectionName.User);
             this._WEOBO_SRV = WEOBO_SRV;
         }
 
-        public IWeiboOAuthService<User> WeiboService => this._WEOBO_SRV;
+        public IWeiboOAuthServiceProvider<User> WeiboService => this._WEOBO_SRV;
 
         public JwtSecurityToken GenerateToken(User user, TokenProviderOptions options) {
             return new JwtSecurityToken(
@@ -49,21 +54,21 @@ namespace Tassel.Services.Service {
         }
 
         public (User, bool, string) GetUserDetailsByID(string uuid) {
-            var usr = db.Users.Find(uuid);
+            var usr = this.users.Find(i=>i.UUID == uuid).FirstOrDefault();
             if (usr == null)
                 return (null, false, Errors.UserNotFound);
             return (usr, true, null);
         }
 
         public (User, bool, string) GetUserDetailsByUserName(string uname) {
-            var usr = db.Users.Where(i => i.UserName == uname).FirstOrDefault();
+            var usr = this.users.Find(i => i.UserName == uname).FirstOrDefault();
             if (usr == null)
                 return (null, false, Errors.UserNotFound);
             return (usr, true, null);
         }
 
         public IEnumerable<dynamic> GetUsersListByFilter(Expression<Func<User, bool>> whereLambada) {
-            return this.db.Users.Where(whereLambada).Select(i => new {
+            return this.users.AsQueryable().Where(whereLambada)?.Select(i => new {
                 UUID = i.UUID,
                 UserName = i.UserName,
                 DisplayName = i.DisplayName,
@@ -79,7 +84,7 @@ namespace Tassel.Services.Service {
         }
 
         public (User, bool, string) TryLogin(string user, string psd) {
-            var usr = db.Users.Where(i => i.UserName == user).FirstOrDefault();
+            var usr = this.users.Find(i => i.UserName == user).FirstOrDefault();
             if (usr == null)
                 return (null, false, Errors.UserNotFound);
             if (usr.Password != IdentityProvider.CreateMD5(psd))
@@ -88,21 +93,31 @@ namespace Tassel.Services.Service {
         }
 
         public (User, bool, string) TryRegister(string user, string psd, Gender gender = Gender.Male, string avatar = null) {
-            var usrr = db.Users.Where(i => i.UserName == user).FirstOrDefault();
+            var usrr = this.users.Find(i => i.UserName == user).FirstOrDefault();
             if (usrr != null)
                 return (null, false, Errors.UserExist);
             usrr = IdentityProvider.CreateUser(user, psd, gender, avatar);
-            db.Add(usrr);
-            if (db.SaveChanges() <= 0)
-                return (null, false, Errors.SaveUserInfosFailed);
-            return (usrr, true, null);
+            try {
+                this.users.InsertOne(usrr);
+                return (usrr, true, null);
+            } catch (Exception e) {
+                return (null, false, Errors.SaveUserInfosFailed + $" : ${e.Message}");
+            }
         }
 
-        public (bool, string) TryUpdate(User user) {
-            db.Add(user);
-            if (db.SaveChanges() <= 0)
-                return (false, Errors.UpdateUserFailed);
-            return (true, null);
+        public (bool, string) TryUpdateNative(User user) {
+            try {
+                this.users.InsertOne(user);
+                return (true, null);
+            } catch (Exception e) {
+                return (false, Errors.UpdateUserFailed + $" : ${e.Message}");
+            }
         }
+
+        protected virtual UpdateDefinition<User> CreateUpdate(User entry) {
+            var upts = Builders<User>.Update.Set(i => i.UpdateTime, entry.UpdateTime);
+            return upts;
+        }
+
     }
 }

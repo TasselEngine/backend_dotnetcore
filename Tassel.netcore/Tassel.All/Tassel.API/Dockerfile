@@ -8,6 +8,6 @@ COPY run.sh /app
 # RUN dotnet build
 
 EXPOSE 5000/tcp
-# ENV ASPNETCORE_URLS http://*:5000
+ENV ASPNETCORE_URLS http://*:5000
 
 ENTRYPOINT ["sh", "/app/run.sh"]

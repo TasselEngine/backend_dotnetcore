@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Tassel.Model.Models;
+using Tassel.Model.Models.BsonModels;
 
 namespace Tassel.API.VM.Identity {
 

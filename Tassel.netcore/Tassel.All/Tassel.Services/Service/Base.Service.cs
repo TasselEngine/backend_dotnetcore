@@ -11,7 +11,17 @@ using Tassel.Model.Models;
 using Tassel.Model.Models.BsonModels;
 
 namespace Tassel.Services.Service {
-    public abstract class BaseService<T> : IBusinessService<T, Error> where T : BaseModel {
+
+    public class BsonCRUDBase<T> where T : BaseModel {
+
+        protected virtual UpdateDefinition<T> CreateUpdate(T entry) {
+            var upts = Builders<T>.Update.Set(i => i.UpdateTime, entry.UpdateTime);
+            return upts;
+        }
+
+    }
+
+    public abstract class BaseService<T> : BsonCRUDBase<T>, IBusinessService<T, Error> where T : BaseModel {
 
         protected IMongoDatabase mdb;
         protected IMongoCollection<T> collection;
@@ -90,6 +100,28 @@ namespace Tassel.Services.Service {
                 return (entry, true, Error.Empty);
             } catch (Exception e) {
                 return (default(T), false, Error.Create(Errors.InsertOneFailed, e.Message));
+            }
+        }
+
+        public (string entry_id, bool succeed, Error error) UpdateOne(T entry, string id) {
+            try {
+                var result = this.collection.UpdateOne(i=>i.ID == id, this.CreateUpdate(entry));
+                if(result.IsAcknowledged)
+                    return (result.UpsertedId.AsString, true, Error.Empty);
+                return (default(string), false, Error.Create(Errors.UpdateEntryFailed));
+            } catch (Exception e) {
+                return (default(string), false, Error.Create(Errors.UpdateEntryFailed, e.Message));
+            }
+        }
+
+        public async ValueTask<(string entry_id, bool succeed, Error error)> UpdateOneAsync(T entry, string id) {
+            try {
+                var result = await this.collection.UpdateOneAsync(i => i.ID == id, this.CreateUpdate(entry));
+                if (result.IsAcknowledged)
+                    return (result.UpsertedId.AsString, true, Error.Empty);
+                return (default(string), false, Error.Create(Errors.UpdateEntryFailed));
+            } catch (Exception e) {
+                return (default(string), false, Error.Create(Errors.UpdateEntryFailed, e.Message));
             }
         }
 

@@ -4,9 +4,9 @@ using System.Text;
 using Tassel.Model.Models.BsonModels;
 using Tassel.Model.Utils;
 
-namespace Tassel.Services.Contract {
+namespace Tassel.Services.Contract.Providers {
 
-    public interface ILikesService : IBusinessService<LikesEntry, Error> {
+    public interface ILikesServiceProvider : IBusinessService<LikesEntry, Error> {
 
     }
 

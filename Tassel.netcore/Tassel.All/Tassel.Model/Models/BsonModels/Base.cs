@@ -10,12 +10,15 @@ namespace Tassel.Model.Models.BsonModels {
     public enum ModelType {
         Default = 0,
         User = 1,
-        Comment = 2,
-        LikeEntry = 3,
-        Status = 4
+        WeiboUser = 2,
+        Comment = 11,
+        LikeEntry = 12,
+        Status = 13
     }
 
     public static class ModelCollectionName {
+        public const string User = "users";
+        public const string Weibo = "weibos";
         public const string Comment = "comments";
         public const string Likes = "likes";
         public const string Status = "status";
@@ -34,7 +37,7 @@ namespace Tassel.Model.Models.BsonModels {
 
         [BsonElement("c_time")]
         [JsonProperty("create_time")]
-        public DateTime CreateTime { get; set; } = DateTime.UtcNow;
+        public virtual DateTime CreateTime { get; set; } = DateTime.UtcNow;
 
         [BsonElement("u_time")]
         [JsonProperty("update_time")]
