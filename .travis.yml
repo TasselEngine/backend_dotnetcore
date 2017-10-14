@@ -3,9 +3,8 @@ solution: Tassel.netcore/Tassel.Service.sln
 mono: none
 dotnet: 2.0.0
 dist: trusty
-script:
- - cd Tassel.netcore
- - dotnet restore
+install:
  - cd Tassel.TEST
  - dotnet restore
+script:
  - dotnet xunit
