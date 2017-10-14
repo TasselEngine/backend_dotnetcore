@@ -38,7 +38,7 @@ namespace Tassel.Service {
             services.AddScoped<IWeiboOAuthServiceProvider<User>, WeiboOAuthProvider>();
             services.AddScoped<IIdentityService<JwtSecurityToken, TokenProviderOptions, User>, IdentityService>();
             services.AddScoped<IStatusService, StatusService>();
-            services.AddScoped<ICommentServiceProvider, CommentProvider>();
+            services.AddScoped<ICommentServiceProvider<Comment>, CommentProvider>();
             services.AddScoped<ILikesServiceProvider, LikesService>();
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

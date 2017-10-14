@@ -16,7 +16,7 @@ namespace Tassel.Model.Models.BsonModels {
 
         [BsonElement("imgs")]
         [JsonProperty("images")]
-        public IEnumerable<BaseImage> Images { get; set; } = new List<BaseImage>();
+        public IList<BaseImage> Images { get; set; } = new List<BaseImage>();
 
     }
 

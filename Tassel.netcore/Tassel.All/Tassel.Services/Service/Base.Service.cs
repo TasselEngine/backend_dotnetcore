@@ -1,12 +1,12 @@
 ﻿using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using Tassel.Model.Utils;
 using Tassel.Services.Contract;
 using System.Linq.Expressions;
 using System.Linq;
+using System.Reactive.Linq;
 using Tassel.Model.Models;
 using Tassel.Model.Models.BsonModels;
 
@@ -15,7 +15,7 @@ namespace Tassel.Services.Service {
     public class BsonCRUDBase<T> where T : BaseModel {
 
         protected virtual UpdateDefinition<T> CreateUpdate(T entry) {
-            var upts = Builders<T>.Update.Set(i => i.UpdateTime, entry.UpdateTime);
+            var upts = Builders<T>.Update.Set(i => i.UpdateTime, DateTime.UtcNow.ToBinary());
             return upts;
         }
 
@@ -49,39 +49,41 @@ namespace Tassel.Services.Service {
             }
         }
 
-        public (IEnumerable<T> collection, bool succeed, Error error) GetCollections(
+        public (IList<T> collection, bool succeed, Error error) GetCollections(
             Expression<Func<T, bool>> where = null, 
-            int? skip = null, int? 
-            take = null) {
+            int? skip = null, 
+            int? take = null) {
 
             where = where ?? (i => true);
             try {
-                var coll = this.collection.Find(where).ToEnumerable();
+                var coll = this.collection.AsQueryable().OrderByDescending(i=>i.CreateTime).Where(where);
                 if (skip != null)
                     coll = coll.Skip(skip.GetValueOrDefault());
                 if (take != null)
                     coll = coll.Take(take.GetValueOrDefault());
-                return (coll, true, Error.Empty);
+                return (coll.ToList(), true, Error.Empty);
             } catch (Exception e) {
-                return (default(IEnumerable<T>), false, Error.Create(Errors.GetEntryCollFailed, e.Message));
+                return (default(IList<T>), false, Error.Create(Errors.GetEntryCollFailed, e.Message));
             }
         }
 
-        public async ValueTask<(IEnumerable<T> collection, bool succeed, Error error)> GetCollectionsAsync(
+        public async ValueTask<(IList<T> collection, bool succeed, Error error)> GetCollectionsAsync(
             Expression<Func<T, bool>> where = null, 
-            int? skip = null, int? 
-            take = null) {
+            int? skip = null,
+            int? take = null) {
 
             where = where ?? (i => true);
             try {
-                var coll = (await this.collection.FindAsync(where)).ToEnumerable();
-                if (skip != null)
-                    coll = coll.Skip(skip.GetValueOrDefault());
-                if (take != null)
-                    coll = coll.Take(take.GetValueOrDefault());
-                return (coll, true, Error.Empty);
+                using (var coll_async = this.collection.AsQueryable().ToCursorAsync()) {
+                    IEnumerable<T> coll = (await coll_async).ToEnumerable().OrderByDescending(i => i.CreateTime).Where(where.Compile());
+                    if (skip != null)
+                        coll = coll.Skip(skip.GetValueOrDefault());
+                    if (take != null)
+                        coll = coll.Take(take.GetValueOrDefault());
+                    return (coll.ToList(), true, Error.Empty);
+                }
             } catch (Exception e) {
-                return (default(IEnumerable<T>), false, Error.Create(Errors.GetEntryCollFailed, e.Message));
+                return (default(IList<T>), false, Error.Create(Errors.GetEntryCollFailed, e.Message));
             }
         }
 

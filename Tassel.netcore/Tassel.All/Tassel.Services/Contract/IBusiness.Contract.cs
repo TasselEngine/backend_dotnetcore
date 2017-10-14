@@ -16,9 +16,9 @@ namespace Tassel.Services.Contract {
 
         ValueTask<(string entry_id, bool succeed, TError error)> UpdateOneAsync(T entry, string id);
 
-        (IEnumerable<T> collection, bool succeed, TError error) GetCollections(Expression<Func<T, bool>> where = null, int? skip = null, int? take = null);
+        (IList<T> collection, bool succeed, TError error) GetCollections(Expression<Func<T, bool>> where = null, int? skip = null, int? take = null);
 
-        ValueTask<(IEnumerable<T> collection, bool succeed, TError error)> GetCollectionsAsync(Expression<Func<T, bool>> where = null, int? skip = null, int? take = null);
+        ValueTask<(IList<T> collection, bool succeed, TError error)> GetCollectionsAsync(Expression<Func<T, bool>> where = null, int? skip = null, int? take = null);
 
         (T entry, bool succeed, TError error) FindOneByID(string id);
 

@@ -7,6 +7,11 @@ using Tassel.Model.Models.BsonModels;
 using Tassel.API.Utils.Extensions;
 using Tassel.Model.Models;
 using Tassel.Services.Contract;
+using Tassel.API.VM.Status;
+using System.Diagnostics;
+using BWS.Utils.NetCore.Format;
+using Tassel.API.Utils.Authorization;
+using Tassel.Services.Utils.Constants;
 
 namespace Tassel.API.Controllers {
     [Route("api/status")]
@@ -19,8 +24,8 @@ namespace Tassel.API.Controllers {
         }
 
         [HttpGet("all")]
-        public JsonResult Get() {
-            var (coll, succeed, error) = this.status.GetCollections();
+        public async Task<JsonResult> Get() {
+            var (coll, succeed, error) = await this.status.GetCollectionsAsync();
             if (!succeed)
                 return this.JsonFormat(false, JsonStatus.StatusCollectionLoadFailed, error.Read());
             return this.JsonFormat(true, content: coll);
@@ -44,6 +49,25 @@ namespace Tassel.API.Controllers {
             });
             if (!succeed)
                 return this.JsonFormat(false, JsonStatus.StatusInsertFailed, error.Read());
+            return this.JsonFormat(true);
+        }
+
+        [HttpPost("{id}/comment")]
+        [UserAuthorize]
+        public async Task<JsonResult> AddCommentAsync(string id, [FromForm]CommentInsertVM vm) {
+            this.HttpContext.GetStringEntry(TokenClaimsKey.UUID, out var uuid);
+            if (uuid == null)
+                return this.JsonFormat(false, JsonStatus.UserNotLogin);
+            if (uuid != vm.UID)
+                return this.JsonFormat(false, JsonStatus.UserNotMatched);
+            var (status, error) = await this.status.AddCommentAsync(id, new Comment {
+                Creator = new BaseCreator { UserName = vm.UName, UUID = vm.UID },
+                CommentContent = vm.Content,
+                ParentID = id,
+                ParentType = ModelType.Status
+            });
+            if (status != JsonStatus.Succeed)
+                return this.JsonFormat(false, status, error.Read());
             return this.JsonFormat(true);
         }
 

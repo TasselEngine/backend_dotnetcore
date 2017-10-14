@@ -1,4 +1,5 @@
-﻿using MongoDB.Bson.Serialization.Attributes;
+﻿using BWS.Utils.NetCore.Format;
+using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -37,11 +38,11 @@ namespace Tassel.Model.Models.BsonModels {
 
         [BsonElement("c_time")]
         [JsonProperty("create_time")]
-        public virtual DateTime CreateTime { get; set; } = DateTime.UtcNow;
+        public virtual long CreateTime { get; set; } = DateTime.UtcNow.ToUnix();
 
         [BsonElement("u_time")]
         [JsonProperty("update_time")]
-        public virtual DateTime? UpdateTime { get; set; }
+        public virtual long? UpdateTime { get; set; }
 
     }
 
@@ -72,7 +73,11 @@ namespace Tassel.Model.Models.BsonModels {
 
         [BsonIgnore]
         [JsonProperty("like_users")]
-        public IEnumerable<LikesEntry> Likes { get; set; } = new List<LikesEntry>();
+        public IList<LikesEntry> Likes { get; set; } = new List<LikesEntry>();
+
+        [BsonIgnore]
+        [JsonProperty("likers_count")]
+        public int LikesCount { get => this.Likes.Count; }
 
     }
 
@@ -134,7 +139,7 @@ namespace Tassel.Model.Models.BsonModels {
         public BaseCreator User { get; set; }
 
         [JsonIgnore]
-        public override DateTime? UpdateTime { get; set; }
+        public override long? UpdateTime { get; set; }
 
     }
 
@@ -145,9 +150,17 @@ namespace Tassel.Model.Models.BsonModels {
         [JsonProperty("details")]
         public string Content { get; set; }
 
+        [BsonElement("cover")]
+        [JsonProperty("cover")]
+        public string Cover { get; set; }
+
         [BsonIgnore]
         [JsonProperty("comments")]
-        public IEnumerable<Comment> Comments { get; set; } = new List<Comment>();
+        public IList<Comment> Comments { get; set; } = new List<Comment>();
+
+        [BsonIgnore]
+        [JsonProperty("comments_count")]
+        public int CommentsCount { get => this.Likes.Count; }
 
     }
 

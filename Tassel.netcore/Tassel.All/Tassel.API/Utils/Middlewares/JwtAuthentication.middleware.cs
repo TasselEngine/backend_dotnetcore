@@ -126,8 +126,6 @@ namespace Tassel.Service.Utils.Middlewares {
                     vmProvider = vmProvider.Create(this.identity.WeiboService.SearchWeiboUserInfoByUID);
                 }
 
-                System.Diagnostics.Debug.WriteLine(JsonConvert.SerializeObject(user));
-
                 model.Content = new TokenProviderVM {
                     Token = new JwtSecurityTokenHandler().WriteToken(identity.GenerateToken(user, opts)),
                     Expires = (int)opts.Expiration.TotalSeconds,

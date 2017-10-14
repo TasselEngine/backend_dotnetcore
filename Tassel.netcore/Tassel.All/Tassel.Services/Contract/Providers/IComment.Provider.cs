@@ -6,7 +6,7 @@ using Tassel.Model.Utils;
 
 namespace Tassel.Services.Contract.Providers {
 
-    public interface ICommentServiceProvider : IBusinessService<Comment, Error> {
+    public interface ICommentServiceProvider<T> : IBusinessService<T, Error> where T : BaseModel {
 
     }
 

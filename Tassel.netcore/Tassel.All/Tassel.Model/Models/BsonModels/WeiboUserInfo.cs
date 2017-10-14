@@ -1,4 +1,5 @@
-﻿using MongoDB.Bson.Serialization.Attributes;
+﻿using BWS.Utils.NetCore.Format;
+using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -44,10 +45,10 @@ namespace Tassel.Model.Models.BsonModels {
         public string Cover { get; set; }
 
         [JsonProperty("c_time")]
-        public override DateTime CreateTime { get; set; } = DateTime.UtcNow;
+        public override long CreateTime { get; set; } = DateTime.UtcNow.ToUnix();
 
         [JsonProperty("u_time")]
-        public override DateTime? UpdateTime { get; set; }
+        public override long? UpdateTime { get; set; }
     }
 
 }

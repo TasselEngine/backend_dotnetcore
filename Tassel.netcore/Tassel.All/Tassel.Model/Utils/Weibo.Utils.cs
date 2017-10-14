@@ -31,7 +31,7 @@ namespace Tassel.Model.Utils {
             wuser.Description = newUser.description;
             wuser.Domain = newUser.domain;
             wuser.ScreenName = newUser.screen_name;
-            wuser.UpdateTime = DateTime.UtcNow;
+            wuser.UpdateTime = DateTime.UtcNow.Ticks;
             if (!string.IsNullOrEmpty(access_token)) {
                 wuser.AccessToken = access_token;
             }

@@ -11,13 +11,15 @@ namespace Tassel.Services.Contract {
 
     public interface IStatusService : IBusinessService<Status, Error> {
 
-        ICommentServiceProvider Comments { get; }
+        ICommentServiceProvider<Comment> Comments { get; }
 
         ILikesServiceProvider Likes { get; }
 
         ValueTask<(Status entry, JsonStatus status, Error error)> GetStatusDetailsAsync(string id);
 
         ValueTask<(Status entry, JsonStatus status, Error error)> GetStatusAbstractAsync(string id);
+
+        ValueTask<(JsonStatus status, Error error)> AddCommentAsync(string id, Comment comment);
 
     }
 

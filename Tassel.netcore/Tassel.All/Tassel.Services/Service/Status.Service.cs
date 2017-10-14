@@ -12,14 +12,17 @@ namespace Tassel.Services.Service {
 
     public class StatusService : BaseService<Status>, IStatusService {
 
-        private ICommentServiceProvider comments;
+        private ICommentServiceProvider<Comment> comments;
         private ILikesServiceProvider likes;
 
-        public ICommentServiceProvider Comments => this.comments;
+        public ICommentServiceProvider<Comment> Comments => this.comments;
 
         public ILikesServiceProvider Likes => this.likes;
 
-        public StatusService(MongoDBContext db, ICommentServiceProvider coms, ILikesServiceProvider likes) :base(db, ModelCollectionName.Status) {
+        public StatusService(
+            MongoDBContext db, 
+            ICommentServiceProvider<Comment> coms, 
+            ILikesServiceProvider likes) :base(db, ModelCollectionName.Status) {
             this.comments = coms;
             this.likes = likes;
         }
@@ -46,6 +49,17 @@ namespace Tassel.Services.Service {
             return (entry, JsonStatus.Succeed, Error.Empty);
         }
 
+        public async ValueTask<(JsonStatus status, Error error)> AddCommentAsync(string id, Comment comment) {
+            var (entry, succeed, error) = await this.FindOneByIDAsync(id);
+            if (!succeed)
+                return (JsonStatus.StatusNotFound, Error.Create(Errors.QueryEntryFailed));
+            try {
+                await this.comments.InsertOneAsync(comment);
+                return (JsonStatus.Succeed, Error.Empty);
+            } catch(Exception e) {
+                return (JsonStatus.CommentAddFailed, Error.Create(Errors.InsertOneFailed));
+            }
+        }
     }
 
 }
