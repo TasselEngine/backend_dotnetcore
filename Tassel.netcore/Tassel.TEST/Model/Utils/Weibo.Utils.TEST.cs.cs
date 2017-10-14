@@ -1,5 +1,6 @@
 using System;
 using Tassel.Model.Utils;
+using WeiboOAuth2.Provider;
 using Xunit;
 
 namespace Tassel.TEST {
@@ -8,7 +9,7 @@ namespace Tassel.TEST {
         [Fact]
         public void TEST_CreateWeiboUser() {
 
-            var wuser = WeiboUserProvider.CreateUser(new WeiboOAuth2.Provider.WeiboUser {
+            var wuser = WeiboUserProvider.CreateUser(new WeiboUser {
                 id = 123,
                 idstr = "123",
                 screen_name = "test_user",
