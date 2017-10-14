@@ -10,6 +10,7 @@ namespace Tassel.Model.Utils {
     public static class WeiboUserProvider {
 
         public static WeiboDBUser CreateUser(WeiboUser wuser, string access_token) {
+            if (wuser == null) { return null; }
             return new WeiboDBUser {
                 UID = wuser.idstr,
                 ScreenName = wuser.screen_name,
@@ -23,6 +24,7 @@ namespace Tassel.Model.Utils {
         }
 
         public static WeiboDBUser Update(this WeiboDBUser wuser, WeiboUser newUser, string access_token = null) {
+            if (wuser == null || newUser == null) { return wuser; }
             wuser.AvatarUrl = newUser.avatar_large;
             wuser.Cover = newUser.cover_image;
             wuser.CoverMobile = newUser.cover_image_phone;

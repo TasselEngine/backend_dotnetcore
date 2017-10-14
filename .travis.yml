@@ -6,3 +6,5 @@ dist: trusty
 script:
  - cd Tassel.netcore
  - dotnet restore
+ - cd Tassel.TEST
+ - dotnet xunit
