@@ -86,6 +86,34 @@ namespace Tassel.API.Controllers {
             return this.JsonFormat(true);
         }
 
+        [HttpPost("{id}/like")]
+        [Token, User]
+        public async Task<JsonResult> LikeAsync(string id, string user_name) {
+            this.HttpContext.GetStringEntry(TokenClaimsKey.UUID, out var uuid);
+            if (uuid == null)
+                return this.JsonFormat(false, JsonStatus.UserNotLogin);
+            var (status, error) = await this.status.AddLikeAsync(id, new LikesEntry {
+                User = new BaseCreator { UUID = uuid, UserName = user_name },
+                TargetType = ModelType.Status,
+                ParentID = id
+            } );
+            if (status != JsonStatus.Succeed)
+                return this.JsonFormat(false, status, error.Read());
+            return this.JsonFormat(true);
+        }
+
+        [HttpDelete("{id}/like")]
+        [Token, User]
+        public async Task<JsonResult> DislikeAsync(string id) {
+            this.HttpContext.GetStringEntry(TokenClaimsKey.UUID, out var uuid);
+            if (uuid == null)
+                return this.JsonFormat(false, JsonStatus.UserNotLogin);
+            var (status, error) = await this.status.RemoveLikeAsync(id, uuid);
+            if (status != JsonStatus.Succeed)
+                return this.JsonFormat(false, status, error.Read());
+            return this.JsonFormat(true);
+        }
+
         [HttpPut("{id}")]
         public void Put(int id, [FromBody]string value) {
         }

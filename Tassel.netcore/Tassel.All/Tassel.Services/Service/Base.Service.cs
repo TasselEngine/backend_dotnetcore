@@ -15,7 +15,7 @@ namespace Tassel.Services.Service {
 
     public abstract class BsonCRUDBase<T> where T : BaseModel {
 
-        public virtual UpdateDefinition<T> DefineUpdate(T entry) {
+        protected virtual UpdateDefinition<T> DefineUpdate(T entry) {
             return Builders<T>.Update.Set(i => i.UpdateTime, DateTime.UtcNow.ToUnix());
         }
 
@@ -105,40 +105,40 @@ namespace Tassel.Services.Service {
             }
         }
 
-        public (string entry_id, bool succeed, Error error) UpdateOne(T entry, string id, UpdateDefinition<T> updateDef = null) {
+        public (string entry_id, bool succeed, Error error) UpdateOne(string id, T toDo = null, UpdateDefinition<T> updateDef = null) {
             try {
-                var result = this.collection.UpdateOne(i=>i.ID == id, updateDef ?? this.DefineUpdate(entry));
+                var result = this.collection.UpdateOne(i=>i.ID == id, updateDef ?? this.DefineUpdate(toDo));
                 if(result.IsAcknowledged)
-                    return (result.UpsertedId.AsString, true, Error.Empty);
+                    return (result?.UpsertedId?.AsString, true, Error.Empty);
                 return (default(string), false, Error.Create(Errors.UpdateEntryFailed));
             } catch (Exception e) {
                 return (default(string), false, Error.Create(Errors.UpdateEntryFailed, e.Message));
             }
         }
 
-        public async ValueTask<(string entry_id, bool succeed, Error error)> UpdateOneAsync(T entry, string id, UpdateDefinition<T> updateDef = null) {
+        public async ValueTask<(string entry_id, bool succeed, Error error)> UpdateOneAsync(string id, T toDo = null, UpdateDefinition<T> updateDef = null) {
             try {
-                var result = await this.collection.UpdateOneAsync(i => i.ID == id, updateDef ?? this.DefineUpdate(entry));
+                var result = await this.collection.UpdateOneAsync(i => i.ID == id, updateDef ?? this.DefineUpdate(toDo));
                 if (result.IsAcknowledged)
-                    return (result.UpsertedId.AsString, true, Error.Empty);
+                    return (result?.UpsertedId?.AsString, true, Error.Empty);
                 return (default(string), false, Error.Create(Errors.UpdateEntryFailed));
             } catch (Exception e) {
                 return (default(string), false, Error.Create(Errors.UpdateEntryFailed, e.Message));
             }
         }
 
-        public (T outEntry, bool succeed, Error error) FindOneUpdate(T entry, string id, UpdateDefinition<T> updateDef = null) {
+        public (T outEntry, bool succeed, Error error) FindOneUpdate(string id, T toDo = null, UpdateDefinition<T> updateDef = null) {
             try {
-                var result = this.collection.FindOneAndUpdate(i => i.ID == id, updateDef ?? this.DefineUpdate(entry));
+                var result = this.collection.FindOneAndUpdate(i => i.ID == id, updateDef ?? this.DefineUpdate(toDo));
                 return (result, true, Error.Empty);
             } catch (Exception e) {
                 return (default(T), false, Error.Create(Errors.UpdateEntryFailed, e.Message));
             }
         }
 
-        public async ValueTask<(T outEntry, bool succeed, Error error)> FindOneUpdateAsync(T entry, string id, UpdateDefinition<T> updateDef = null) {
+        public async ValueTask<(T outEntry, bool succeed, Error error)> FindOneUpdateAsync(string id, T toDo = null, UpdateDefinition<T> updateDef = null) {
             try {
-                var result = await this.collection.FindOneAndUpdateAsync(i => i.ID == id, updateDef ?? this.DefineUpdate(entry));
+                var result = await this.collection.FindOneAndUpdateAsync(i => i.ID == id, updateDef ?? this.DefineUpdate(toDo));
                 return (result, true, Error.Empty);
             } catch (Exception e) {
                 return (default(T), false, Error.Create(Errors.UpdateEntryFailed, e.Message));

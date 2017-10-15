@@ -13,13 +13,13 @@ namespace Tassel.Services.Contract {
 
         ValueTask<(T entry, bool succeed, TError error)> InsertOneAsync(T entry);
 
-        (string entry_id, bool succeed, TError error) UpdateOne(T entry, string id, UpdateDefinition<T> updateDef = null);
+        (string entry_id, bool succeed, TError error) UpdateOne(string id, T toDo = null, UpdateDefinition<T> updateDef = null);
 
-        ValueTask<(string entry_id, bool succeed, TError error)> UpdateOneAsync(T entry, string id, UpdateDefinition<T> updateDef = null);
+        ValueTask<(string entry_id, bool succeed, TError error)> UpdateOneAsync(string id, T toDo = null, UpdateDefinition<T> updateDef = null);
 
-        (T outEntry, bool succeed, TError error) FindOneUpdate(T entry, string id, UpdateDefinition<T> updateDef = null);
+        (T outEntry, bool succeed, TError error) FindOneUpdate(string id, T toDo = null, UpdateDefinition<T> updateDef = null);
 
-        ValueTask<(T outEntry, bool succeed, TError error)> FindOneUpdateAsync(T entry, string id, UpdateDefinition<T> updateDef = null);
+        ValueTask<(T outEntry, bool succeed, TError error)> FindOneUpdateAsync(string id, T toDo = null, UpdateDefinition<T> updateDef = null);
 
         (IList<T> collection, bool succeed, TError error) GetCollections(Expression<Func<T, bool>> where = null, int? skip = null, int? take = null);
 

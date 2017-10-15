@@ -54,6 +54,7 @@ namespace Tassel.Model.Models {
         CommentAddFailed = 50001,
         CommentRemoveFailed = 50002,
         LikesAddFailed = 51101,
+        LikesRemoveFailed = 51102,
     }
 
     public static class JsonErrorMaps {
@@ -85,7 +86,8 @@ namespace Tassel.Model.Models {
             [JsonStatus.StatusNotFound] = "status with the id is not found.",
             [JsonStatus.CommentAddFailed] = "add comment failed.",
             [JsonStatus.CommentRemoveFailed] = "remove comment failed.",
-            [JsonStatus.LikesAddFailed] = "add a like relation failed",
+            [JsonStatus.LikesAddFailed] = "add a like relation failed.",
+            [JsonStatus.LikesRemoveFailed] = "remove a like relation failed.",
         };
 
         public static string TryGet(JsonStatus type) {

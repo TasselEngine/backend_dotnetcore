@@ -23,14 +23,14 @@ namespace Tassel.Services.Service {
         public ILikesServiceProvider Likes => this.likes;
 
         public StatusService(
-            MongoDBContext db, 
-            ICommentServiceProvider<Comment> coms, 
-            ILikesServiceProvider likes) :base(db, ModelCollectionName.Status) {
+            MongoDBContext db,
+            ICommentServiceProvider<Comment> coms,
+            ILikesServiceProvider likes) : base(db, ModelCollectionName.Status) {
             this.comments = coms;
             this.likes = likes;
         }
 
-        public override UpdateDefinition<Status> DefineUpdate(Status entry) {
+        protected override UpdateDefinition<Status> DefineUpdate(Status entry) {
             var def = base.DefineUpdate(entry);
             if (entry == null)
                 return def;
@@ -41,24 +41,24 @@ namespace Tassel.Services.Service {
             return def;
         }
 
-        public UpdateDefinition<Status> DefineCommentsUpdate(string comment_id, bool add = true) {
+        protected UpdateDefinition<Status> DefineCommentsUpdate(string comment_id, bool add = true) {
             var def = Builders<Status>.Update;
-            return add? 
-                def.Push(i => i.CommentIDs, comment_id): 
-                def.Pull(i=>i.CommentIDs, comment_id);
+            return add ?
+                def.Push(i => i.CommentIDs, comment_id) :
+                def.Pull(i => i.CommentIDs, comment_id);
         }
 
-        public UpdateDefinition<Status> DefineLikersUpdate(string likers_id, bool add = true) {
+        protected UpdateDefinition<Status> DefineLikersUpdate(string user_uuid, bool add = true) {
             var def = Builders<Status>.Update;
-            return add? 
-                def.Push(i => i.CommentIDs, likers_id): 
-                def.Pull(i => i.CommentIDs, likers_id);
+            return add ?
+                def.AddToSet(i => i.LikerIDs, user_uuid) :
+                def.Pull(i => i.LikerIDs, user_uuid);
         }
 
-        public UpdateDefinition<Status> DefineImagesUpdate(BaseImage image, bool add = true) {
-            var def = Builders<Status>.Update.Set(i=>i.UpdateTime, DateTime.UtcNow.ToUnix());
-            return add ? 
-                def.Push(i => i.Images, image) : 
+        protected UpdateDefinition<Status> DefineImagesUpdate(BaseImage image, bool add = true) {
+            var def = Builders<Status>.Update.Set(i => i.UpdateTime, DateTime.UtcNow.ToUnix());
+            return add ?
+                def.Push(i => i.Images, image) :
                 def.Pull(i => i.Images, image);
         }
 
@@ -85,30 +85,37 @@ namespace Tassel.Services.Service {
         }
 
         public async ValueTask<(JsonStatus status, Error error)> AddCommentAsync(string id, Comment comment) {
-            //var (entry, succeed, error) = await this.FindOneByIDAsync(id);
-            //if (!succeed)
-            //    return (JsonStatus.StatusNotFound, Error.Create(Errors.QueryEntryFailed));
-            try {
-                await this.comments.InsertOneAsync(comment);
-                await this.UpdateOneAsync(null, id, this.DefineCommentsUpdate(comment.ID));
-                return (JsonStatus.Succeed, Error.Empty);
-            } catch(Exception e) {
-                return (JsonStatus.CommentAddFailed, Error.Create(Errors.InsertOneFailed, e.Message));
-            }
+            var (comt, succeed, error) = await this.comments.InsertOneAsync(comment);
+            if (!succeed)
+                return (JsonStatus.CommentAddFailed, error);
+            (_, succeed, error) = await this.UpdateOneAsync(id, null, this.DefineCommentsUpdate(comment.ID));
+            return (succeed ? JsonStatus.Succeed : JsonStatus.CommentAddFailed, error);
         }
 
         public async ValueTask<(JsonStatus status, Error error)> RemoveCommentAsync(string id, string comment_id) {
-            //var (entry, succeed, error) = await this.FindOneByIDAsync(id);
-            //if (!succeed)
-            //    return (JsonStatus.StatusNotFound, Error.Create(Errors.QueryEntryFailed));
-            try {
-                await this.comments.DeleteOneAsync(comment_id);
-                await this.UpdateOneAsync(null, id, this.DefineCommentsUpdate(comment_id, false));
-                return (JsonStatus.Succeed, Error.Empty);
-            } catch (Exception e) {
-                return (JsonStatus.CommentRemoveFailed, Error.Create(Errors.DeleteEntryFailed, e.Message));
-            }
+            var (succeed, error) = await this.comments.DeleteOneAsync(comment_id);
+            if (!succeed)
+                return (JsonStatus.CommentRemoveFailed, error);
+            (_, succeed, error) = await this.UpdateOneAsync(id, null, this.DefineCommentsUpdate(comment_id, false));
+            return (succeed ? JsonStatus.Succeed : JsonStatus.CommentRemoveFailed, error);
         }
+
+        public async ValueTask<(JsonStatus status, Error error)> AddLikeAsync(string id, LikesEntry like) {
+            var (comt, succeed, error) = await this.likes.InsertOneAsync(like);
+            if (!succeed)
+                return (JsonStatus.LikesAddFailed, error);
+            (_, succeed, error) = await this.UpdateOneAsync(id, null, this.DefineLikersUpdate(like.User.UUID));
+            return (succeed ? JsonStatus.Succeed : JsonStatus.LikesAddFailed, error);
+        }
+
+        public async ValueTask<(JsonStatus status, Error error)> RemoveLikeAsync(string id, string user_id) {
+            var (succeed, error) = await this.likes.DeleteAllByIDsAsync(id, user_id);
+            if (!succeed)
+                return (JsonStatus.LikesRemoveFailed, error);
+            (_, succeed, error) = await this.UpdateOneAsync(id, null, this.DefineLikersUpdate(user_id, false));
+            return (succeed ? JsonStatus.Succeed : JsonStatus.LikesRemoveFailed, error);
+        }
+
     }
 
 }
