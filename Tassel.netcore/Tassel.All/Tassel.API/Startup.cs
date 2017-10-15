@@ -20,8 +20,6 @@ using Tassel.Service.Utils.Helpers;
 using Tassel.Model.Models.BsonModels;
 using Tassel.Services.Contract.Providers;
 using Tassel.Services.Providers;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Authorization.Infrastructure;
 
 namespace Tassel.Service {
     public class Startup {
