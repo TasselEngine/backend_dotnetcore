@@ -57,7 +57,7 @@ namespace Tassel.Services.Service {
                 await this.comments.InsertOneAsync(comment);
                 return (JsonStatus.Succeed, Error.Empty);
             } catch(Exception e) {
-                return (JsonStatus.CommentAddFailed, Error.Create(Errors.InsertOneFailed));
+                return (JsonStatus.CommentAddFailed, Error.Create(Errors.InsertOneFailed, e.Message));
             }
         }
     }
