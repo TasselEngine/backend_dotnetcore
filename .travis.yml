@@ -5,6 +5,5 @@ dotnet: 2.0.0
 dist: trusty
 install:
  - cd Tassel.netcore/Tassel.TEST
- - dotnet restore
 script:
- - dotnet xunit
+ - dotnet restore

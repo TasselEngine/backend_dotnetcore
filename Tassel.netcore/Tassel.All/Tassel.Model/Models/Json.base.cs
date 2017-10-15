@@ -24,6 +24,7 @@ namespace Tassel.Model.Models {
 
         Error = 10000,
         DeleteNotAllowed = 10001,
+        BodyIsNull = 10002,
 
         BearerCheckFailed = 20001,
         LoginFailed = 20002,
@@ -34,6 +35,7 @@ namespace Tassel.Model.Models {
         UserNotMatched = 20007,
         UserUpdateFailed = 20008,
         ThirdPartUserNotExist = 20009,
+        UserAccessDenied = 20010,
 
         WeiboAccessFailed = 21001,
         WeiboInfosFetchFailed = 21002,
@@ -58,6 +60,7 @@ namespace Tassel.Model.Models {
             [JsonStatus.Succeed] = "success",
             [JsonStatus.LoginFailed] = "login failed.",
             [JsonStatus.DeleteNotAllowed] = Errors.DeleteNotAllowed,
+            [JsonStatus.BodyIsNull] = "the request body shouldn't be empry.",
             [JsonStatus.RegisterFailed] = "register failed.",
             [JsonStatus.UserNotFound] = Errors.UserNotFound,
             [JsonStatus.UserExist] = Errors.UserExist,
@@ -65,6 +68,7 @@ namespace Tassel.Model.Models {
             [JsonStatus.UserNotMatched] = "the uuid and logined user are not matched.",
             [JsonStatus.UserUpdateFailed] = Errors.UpdateUserFailed,
             [JsonStatus.ThirdPartUserNotExist] = "3rd-part user details not found.",
+            [JsonStatus.UserAccessDenied] = "the role of user logined is denied in this request.",
             [JsonStatus.WeiboAccessFailed] = "try to get weibo access_token failed.",
             [JsonStatus.WeiboInfosFetchFailed] = "try to fetch weibo user info failed.",
             [JsonStatus.WeiboUserCheckFailed] = "try to checkin weibo user failed.",

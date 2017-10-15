@@ -17,7 +17,7 @@ namespace Tassel.Model.Utils {
                     Password = CreateMD5(password),
                     Gender = gender,
                     Avatar = avatar,
-                    RoleID = 3,
+                    Role = UserRoleConstants.User,
                 };
             }
         }
@@ -29,7 +29,7 @@ namespace Tassel.Model.Utils {
                 UserName = "WUSER_" + uuid,
                 Gender = wuser.gender == "m" ? Gender.Male : Gender.Female,
                 WeiboID = wuser.idstr,
-                RoleID = 3,
+                Role = UserRoleConstants.User,
                 IsThirdPart = true
             };
         }

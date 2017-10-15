@@ -102,6 +102,10 @@ namespace Tassel.API.Utils.Handlers {
                             if (uuid != null) {
                                 this.Context.SetStringEntry(TokenClaimsKey.UUID, uuid.Value);
                             }
+                            var role = validJwt.Claims.FirstOrDefault(i => i.Type == TokenClaimsKey.RoleID);
+                            if (role != null) {
+                                this.Context.SetStringEntry(TokenClaimsKey.RoleID, role.Value);
+                            }
 
                         } catch (ArgumentException ex) {
                             if (validationFailures == null) {

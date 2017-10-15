@@ -46,7 +46,7 @@ namespace Tassel.Services.Service {
                     new Claim(TokenClaimsKey.Gender,user.Gender.ToString()),
                     new Claim(TokenClaimsKey.UUID,user.UUID),
                     new Claim(TokenClaimsKey.UserName,user.UserName),
-                    new Claim(TokenClaimsKey.RoleID,user.RoleID.ToString()),
+                    new Claim(TokenClaimsKey.RoleID,user.Role.ToString()),
                  },
                  notBefore: DateTime.UtcNow,
                  expires: DateTime.UtcNow.Add(options.Expiration),
@@ -74,7 +74,7 @@ namespace Tassel.Services.Service {
                 DisplayName = i.DisplayName,
                 Gender = i.Gender,
                 Avatar = i.Avatar,
-                RoleID = i.RoleID
+                RoleID = i.Role
             });
         }
 

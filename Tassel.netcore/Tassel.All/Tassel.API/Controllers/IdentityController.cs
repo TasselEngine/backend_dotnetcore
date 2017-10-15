@@ -55,7 +55,6 @@ namespace Tassel.Service.Controllers {
         }
 
         [HttpGet]
-        [UserAuthorize]
         public JsonResult GetUser() {
             this.HttpContext.GetStringEntry(TokenClaimsKey.UUID, out var uuid);
             if(uuid==null)
@@ -64,13 +63,12 @@ namespace Tassel.Service.Controllers {
         }
 
         [HttpGet("all")]
-        [AdminAuthorize]
+        [Token, Admin]
         public JsonResult GetAll() {
             return this.JsonFormat(true, content: this.identity.GetUsersListByFilter(i => true));
         }
 
         [HttpGet("{uuid}")]
-        [UserAuthorize]
         public JsonResult GetUser(string uuid) {
             var (user, succeed, error) = this.identity.GetUserDetailsByID(uuid);
             if (user == null)
@@ -93,12 +91,12 @@ namespace Tassel.Service.Controllers {
         }
 
         [HttpPut("{uuid}")]
-        [UserAuthorize]
+        [Token, User]
         public void Put(string uuid, [FromBody]UpdateUser uuser) {
         }
 
         [HttpPut("native/{uuid}")]
-        [UserAuthorize]
+        [Token, User]
         public JsonResult UserNative(string uuid, [FromBody]NativeUser nuser) {
             this.HttpContext.GetStringEntry(TokenClaimsKey.UUID, out var p_uuid);
             if (p_uuid == null)

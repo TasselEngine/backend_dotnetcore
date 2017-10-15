@@ -12,7 +12,7 @@ namespace Tassel.API.VM.Status {
         [JsonProperty("content")]
         public string Content { get; set; }
 
-        [JsonProperty("uname")]
+        [JsonProperty("user_name")]
         public string UName { get; set; }
 
         [JsonProperty("uid")]

@@ -20,6 +20,8 @@ using Tassel.Service.Utils.Helpers;
 using Tassel.Model.Models.BsonModels;
 using Tassel.Services.Contract.Providers;
 using Tassel.Services.Providers;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization.Infrastructure;
 
 namespace Tassel.Service {
     public class Startup {
@@ -56,12 +58,6 @@ namespace Tassel.Service {
                         ClockSkew = TimeSpan.Zero
                     };
                 });
-
-            services.AddAuthorization(options => {
-                options.AddPolicy(PolicyRole.Core, policy => policy.RequireClaim(TokenClaimsKey.RoleID, "3"));
-                options.AddPolicy(PolicyRole.Admin, policy => policy.RequireClaim(TokenClaimsKey.RoleID, "2", "3"));
-                options.AddPolicy(PolicyRole.User, policy => policy.RequireClaim(TokenClaimsKey.RoleID, "1", "2", "3"));
-            });
 
             services.AddMvc();
 

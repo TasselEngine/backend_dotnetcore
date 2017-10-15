@@ -8,8 +8,6 @@ using Tassel.API.Utils.Extensions;
 using Tassel.Model.Models;
 using Tassel.Services.Contract;
 using Tassel.API.VM.Status;
-using System.Diagnostics;
-using BWS.Utils.NetCore.Format;
 using Tassel.API.Utils.Authorization;
 using Tassel.Services.Utils.Constants;
 
@@ -40,6 +38,7 @@ namespace Tassel.API.Controllers {
         }
 
         [HttpPost("create")]
+        [Token, Admin]
         public async Task<JsonResult> PostAsync() {
             // TEST
             var (parent, succeed, error) = await this.status.InsertOneAsync(new Status {
@@ -53,9 +52,11 @@ namespace Tassel.API.Controllers {
         }
 
         [HttpPost("{id}/comment")]
-        [UserAuthorize]
-        public async Task<JsonResult> AddCommentAsync(string id, [FromForm]CommentInsertVM vm) {
+        [Token, User]
+        public async Task<JsonResult> AddCommentAsync(string id, [FromBody]CommentInsertVM vm) {
             this.HttpContext.GetStringEntry(TokenClaimsKey.UUID, out var uuid);
+            if (vm == null)
+                return this.JsonFormat(false, JsonStatus.BodyIsNull);
             if (uuid == null)
                 return this.JsonFormat(false, JsonStatus.UserNotLogin);
             if (uuid != vm.UID)

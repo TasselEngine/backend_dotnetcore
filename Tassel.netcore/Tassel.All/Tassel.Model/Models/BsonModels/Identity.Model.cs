@@ -10,6 +10,12 @@ namespace Tassel.Model.Models.BsonModels {
 
     public enum Gender { Male, Female }
 
+    public static class UserRoleConstants {
+        public const string CORE = "core";
+        public const string Admin = "admin";
+        public const string User = "user";
+    }
+
     [JsonObject]
     public class User {
 
@@ -17,9 +23,9 @@ namespace Tassel.Model.Models.BsonModels {
         [JsonProperty("uuid")]
         public string UUID { get; set; }
 
-        [BsonElement("role_id")]
-        [JsonProperty("role_id")]
-        public int RoleID { get; set; } = 3;
+        [BsonElement("role")]
+        [JsonProperty("role")]
+        public string Role { get; set; } = UserRoleConstants.User;
 
         [BsonElement("u_name")]
         [JsonProperty("user_name")]

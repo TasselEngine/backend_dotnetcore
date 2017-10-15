@@ -63,7 +63,7 @@ namespace Tassel.API.VM.Identity {
                 throw new InvalidOperationException("user shouldn't be empty");
             this.User = new DynamicUser {
                 UUID = this.user.UUID,
-                RoleID = this.user.RoleID,
+                Role = this.user.Role,
                 UserName = this.user.UserName,
                 BirthDate = this.user.BirthDate,
                 CreateTime = this.user.CreateTime,
@@ -89,8 +89,8 @@ namespace Tassel.API.VM.Identity {
         [JsonProperty("uuid")]
         public string UUID { get; set; }
 
-        [JsonProperty("role_id")]
-        public int RoleID { get; set; } = 3;
+        [JsonProperty("role")]
+        public string Role { get; set; }
 
         [JsonProperty("user_name")]
         public string UserName { get; set; }
