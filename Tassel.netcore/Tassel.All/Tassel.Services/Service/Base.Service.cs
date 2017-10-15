@@ -9,14 +9,14 @@ using System.Linq;
 using System.Reactive.Linq;
 using Tassel.Model.Models;
 using Tassel.Model.Models.BsonModels;
+using BWS.Utils.NetCore.Format;
 
 namespace Tassel.Services.Service {
 
-    public class BsonCRUDBase<T> where T : BaseModel {
+    public abstract class BsonCRUDBase<T> where T : BaseModel {
 
-        protected virtual UpdateDefinition<T> CreateUpdate(T entry) {
-            var upts = Builders<T>.Update.Set(i => i.UpdateTime, DateTime.UtcNow.ToBinary());
-            return upts;
+        public virtual UpdateDefinition<T> DefineUpdate(T entry) {
+            return Builders<T>.Update.Set(i => i.UpdateTime, DateTime.UtcNow.ToUnix());
         }
 
     }
@@ -105,9 +105,9 @@ namespace Tassel.Services.Service {
             }
         }
 
-        public (string entry_id, bool succeed, Error error) UpdateOne(T entry, string id) {
+        public (string entry_id, bool succeed, Error error) UpdateOne(T entry, string id, UpdateDefinition<T> updateDef = null) {
             try {
-                var result = this.collection.UpdateOne(i=>i.ID == id, this.CreateUpdate(entry));
+                var result = this.collection.UpdateOne(i=>i.ID == id, updateDef ?? this.DefineUpdate(entry));
                 if(result.IsAcknowledged)
                     return (result.UpsertedId.AsString, true, Error.Empty);
                 return (default(string), false, Error.Create(Errors.UpdateEntryFailed));
@@ -116,9 +116,9 @@ namespace Tassel.Services.Service {
             }
         }
 
-        public async ValueTask<(string entry_id, bool succeed, Error error)> UpdateOneAsync(T entry, string id) {
+        public async ValueTask<(string entry_id, bool succeed, Error error)> UpdateOneAsync(T entry, string id, UpdateDefinition<T> updateDef = null) {
             try {
-                var result = await this.collection.UpdateOneAsync(i => i.ID == id, this.CreateUpdate(entry));
+                var result = await this.collection.UpdateOneAsync(i => i.ID == id, updateDef ?? this.DefineUpdate(entry));
                 if (result.IsAcknowledged)
                     return (result.UpsertedId.AsString, true, Error.Empty);
                 return (default(string), false, Error.Create(Errors.UpdateEntryFailed));
@@ -127,6 +127,45 @@ namespace Tassel.Services.Service {
             }
         }
 
+        public (T outEntry, bool succeed, Error error) FindOneUpdate(T entry, string id, UpdateDefinition<T> updateDef = null) {
+            try {
+                var result = this.collection.FindOneAndUpdate(i => i.ID == id, updateDef ?? this.DefineUpdate(entry));
+                return (result, true, Error.Empty);
+            } catch (Exception e) {
+                return (default(T), false, Error.Create(Errors.UpdateEntryFailed, e.Message));
+            }
+        }
+
+        public async ValueTask<(T outEntry, bool succeed, Error error)> FindOneUpdateAsync(T entry, string id, UpdateDefinition<T> updateDef = null) {
+            try {
+                var result = await this.collection.FindOneAndUpdateAsync(i => i.ID == id, updateDef ?? this.DefineUpdate(entry));
+                return (result, true, Error.Empty);
+            } catch (Exception e) {
+                return (default(T), false, Error.Create(Errors.UpdateEntryFailed, e.Message));
+            }
+        }
+
+        public (bool succeed, Error error) DeleteOne(string entry_id) {
+            try {
+                var result = this.collection.DeleteOne(i => i.ID == entry_id);
+                if(result.IsAcknowledged)
+                    return (true, Error.Empty);
+                return (false, Error.Create(Errors.DeleteEntryFailed));
+            } catch (Exception e) {
+                return (false, Error.Create(Errors.DeleteEntryFailed, e.Message));
+            }
+        }
+
+        public async ValueTask<(bool succeed, Error error)> DeleteOneAsync(string entry_id) {
+            try {
+                var result = await this.collection.DeleteOneAsync(i => i.ID == entry_id);
+                if (result.IsAcknowledged)
+                    return (true, Error.Empty);
+                return (false, Error.Create(Errors.DeleteEntryFailed));
+            } catch (Exception e) {
+                return (false, Error.Create(Errors.DeleteEntryFailed, e.Message));
+            }
+        }
     }
 
 }

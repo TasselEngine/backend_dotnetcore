@@ -1,5 +1,8 @@
-﻿using System;
+﻿using BWS.Utils.NetCore.Format;
+using MongoDB.Driver;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Tassel.Model.Models;
@@ -27,6 +30,38 @@ namespace Tassel.Services.Service {
             this.likes = likes;
         }
 
+        public override UpdateDefinition<Status> DefineUpdate(Status entry) {
+            var def = base.DefineUpdate(entry);
+            if (entry == null)
+                return def;
+            if (entry.Cover != null)
+                def = def.Set(i => i.Cover, entry.Cover);
+            if (entry.Content != null)
+                def = def.Set(i => i.Content, entry.Content);
+            return def;
+        }
+
+        public UpdateDefinition<Status> DefineCommentsUpdate(string comment_id, bool add = true) {
+            var def = Builders<Status>.Update;
+            return add? 
+                def.Push(i => i.CommentIDs, comment_id): 
+                def.Pull(i=>i.CommentIDs, comment_id);
+        }
+
+        public UpdateDefinition<Status> DefineLikersUpdate(string likers_id, bool add = true) {
+            var def = Builders<Status>.Update;
+            return add? 
+                def.Push(i => i.CommentIDs, likers_id): 
+                def.Pull(i => i.CommentIDs, likers_id);
+        }
+
+        public UpdateDefinition<Status> DefineImagesUpdate(BaseImage image, bool add = true) {
+            var def = Builders<Status>.Update.Set(i=>i.UpdateTime, DateTime.UtcNow.ToUnix());
+            return add ? 
+                def.Push(i => i.Images, image) : 
+                def.Pull(i => i.Images, image);
+        }
+
         public async ValueTask<(Status entry, JsonStatus status, Error error)> GetStatusAbstractAsync(string id) {
             var (entry, succeed, error) = await this.FindOneByIDAsync(id);
             if (!succeed)
@@ -50,14 +85,28 @@ namespace Tassel.Services.Service {
         }
 
         public async ValueTask<(JsonStatus status, Error error)> AddCommentAsync(string id, Comment comment) {
-            var (entry, succeed, error) = await this.FindOneByIDAsync(id);
-            if (!succeed)
-                return (JsonStatus.StatusNotFound, Error.Create(Errors.QueryEntryFailed));
+            //var (entry, succeed, error) = await this.FindOneByIDAsync(id);
+            //if (!succeed)
+            //    return (JsonStatus.StatusNotFound, Error.Create(Errors.QueryEntryFailed));
             try {
                 await this.comments.InsertOneAsync(comment);
+                await this.UpdateOneAsync(null, id, this.DefineCommentsUpdate(comment.ID));
                 return (JsonStatus.Succeed, Error.Empty);
             } catch(Exception e) {
                 return (JsonStatus.CommentAddFailed, Error.Create(Errors.InsertOneFailed, e.Message));
+            }
+        }
+
+        public async ValueTask<(JsonStatus status, Error error)> RemoveCommentAsync(string id, string comment_id) {
+            //var (entry, succeed, error) = await this.FindOneByIDAsync(id);
+            //if (!succeed)
+            //    return (JsonStatus.StatusNotFound, Error.Create(Errors.QueryEntryFailed));
+            try {
+                await this.comments.DeleteOneAsync(comment_id);
+                await this.UpdateOneAsync(null, id, this.DefineCommentsUpdate(comment_id, false));
+                return (JsonStatus.Succeed, Error.Empty);
+            } catch (Exception e) {
+                return (JsonStatus.CommentRemoveFailed, Error.Create(Errors.DeleteEntryFailed, e.Message));
             }
         }
     }

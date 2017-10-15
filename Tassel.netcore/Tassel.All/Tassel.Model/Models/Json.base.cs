@@ -25,6 +25,7 @@ namespace Tassel.Model.Models {
         Error = 10000,
         DeleteNotAllowed = 10001,
         BodyIsNull = 10002,
+        QueryParamsNull = 10003,
 
         BearerCheckFailed = 20001,
         LoginFailed = 20002,
@@ -51,7 +52,8 @@ namespace Tassel.Model.Models {
         StatusNotFound = 40003,
 
         CommentAddFailed = 50001,
-        LikesAddFailed = 51001,
+        CommentRemoveFailed = 50002,
+        LikesAddFailed = 51101,
     }
 
     public static class JsonErrorMaps {
@@ -61,6 +63,7 @@ namespace Tassel.Model.Models {
             [JsonStatus.LoginFailed] = "login failed.",
             [JsonStatus.DeleteNotAllowed] = Errors.DeleteNotAllowed,
             [JsonStatus.BodyIsNull] = "the request body shouldn't be empry.",
+            [JsonStatus.QueryParamsNull] = "the query parameters shouldn't be empry.",
             [JsonStatus.RegisterFailed] = "register failed.",
             [JsonStatus.UserNotFound] = Errors.UserNotFound,
             [JsonStatus.UserExist] = Errors.UserExist,
@@ -81,6 +84,7 @@ namespace Tassel.Model.Models {
             [JsonStatus.StatusInsertFailed] = "add status failed.",
             [JsonStatus.StatusNotFound] = "status with the id is not found.",
             [JsonStatus.CommentAddFailed] = "add comment failed.",
+            [JsonStatus.CommentRemoveFailed] = "remove comment failed.",
             [JsonStatus.LikesAddFailed] = "add a like relation failed",
         };
 

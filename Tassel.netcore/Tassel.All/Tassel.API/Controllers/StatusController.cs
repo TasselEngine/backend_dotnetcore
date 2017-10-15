@@ -38,17 +38,17 @@ namespace Tassel.API.Controllers {
         }
 
         [HttpPost("create")]
-        [Token, Admin]
+        [Token, /*Admin*/] // TEST
         public async Task<JsonResult> PostAsync() {
             // TEST
-            var (parent, succeed, error) = await this.status.InsertOneAsync(new Status {
+            var (status, succeed, error) = await this.status.InsertOneAsync(new Status {
                 Content = "hahahahahahahah",
                 Creator = new BaseCreator { UUID = "4525224", UserName = "baba" },
                 Images = new List<BaseImage> { new BaseImage { IsFile = false, Url = "http://p3.wmpic.me/article/2016/07/25/1469459240_PzFfSySK.jpg" } }
             });
             if (!succeed)
                 return this.JsonFormat(false, JsonStatus.StatusInsertFailed, error.Read());
-            return this.JsonFormat(true);
+            return this.JsonFormat(true, content: status.ID);
         }
 
         [HttpPost("{id}/comment")]
@@ -67,6 +67,20 @@ namespace Tassel.API.Controllers {
                 ParentID = id,
                 ParentType = ModelType.Status
             });
+            if (status != JsonStatus.Succeed)
+                return this.JsonFormat(false, status, error.Read());
+            return this.JsonFormat(true);
+        }
+
+        [HttpDelete("{id}/comment")]
+        [Token, User]
+        public async Task<JsonResult> DeleteCommentAsync(string id, string comt_id) {
+            this.HttpContext.GetStringEntry(TokenClaimsKey.UUID, out var uuid);
+            if (string.IsNullOrEmpty(comt_id))
+                return this.JsonFormat(false, JsonStatus.QueryParamsNull);
+            if (uuid == null)
+                return this.JsonFormat(false, JsonStatus.UserNotLogin);
+            var (status, error) = await this.status.RemoveCommentAsync(id, comt_id);
             if (status != JsonStatus.Succeed)
                 return this.JsonFormat(false, status, error.Read());
             return this.JsonFormat(true);

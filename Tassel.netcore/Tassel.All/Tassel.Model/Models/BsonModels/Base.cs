@@ -71,13 +71,17 @@ namespace Tassel.Model.Models.BsonModels {
     [JsonObject]
     public class BaseLikesModel : BaseCreateModel {
 
+        [BsonElement("liker_ids")]
+        [JsonIgnore]
+        public IList<string> LikerIDs { get; set; } = new List<string>();
+
         [BsonIgnore]
         [JsonProperty("like_users")]
         public IList<LikesEntry> Likes { get; set; } = new List<LikesEntry>();
 
         [BsonIgnore]
         [JsonProperty("likers_count")]
-        public int LikesCount { get => this.Likes.Count; }
+        public int LikesCount { get => this.Likes.Count > 0 ? this.Likes.Count : this.LikerIDs.Count; }
 
     }
 
@@ -154,13 +158,17 @@ namespace Tassel.Model.Models.BsonModels {
         [JsonProperty("cover")]
         public string Cover { get; set; }
 
+        [BsonElement("lcomment_ids")]
+        [JsonIgnore]
+        public IList<string> CommentIDs { get; set; } = new List<string>();
+
         [BsonIgnore]
         [JsonProperty("comments")]
         public IList<Comment> Comments { get; set; } = new List<Comment>();
 
         [BsonIgnore]
         [JsonProperty("comments_count")]
-        public int CommentsCount { get => this.Likes.Count; }
+        public int CommentsCount { get => this.Comments.Count > 0 ? this.Comments.Count : this.CommentIDs.Count; }
 
     }
 
