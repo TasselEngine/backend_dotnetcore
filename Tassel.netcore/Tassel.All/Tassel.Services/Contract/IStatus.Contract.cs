@@ -21,11 +21,9 @@ namespace Tassel.Services.Contract {
 
         ValueTask<(JsonStatus status, Error error)> AddCommentAsync(string id, Comment comment);
 
-        ValueTask<(JsonStatus status, Error error)> RemoveCommentAsync(string id, string comment_id);
+        ValueTask<(JsonStatus status, Error error)> RemoveCommentAsync(string id, string uid, string comment_id);
 
-        ValueTask<(JsonStatus status, Error error)> AddLikeAsync(string id, LikesEntry like);
-
-        ValueTask<(JsonStatus status, Error error)> RemoveLikeAsync(string id, string user_id);
+        ValueTask<(string user_id, JsonStatus status, Error error)> LikeAsync(string id, LikesEntry like);
 
     }
 

@@ -32,7 +32,7 @@ namespace Tassel.API.Controllers {
         [HttpGet("{id}")]
         public async Task<JsonResult> Get(string id) {
             var (entry, status, error) = await this.status.GetStatusDetailsAsync(id);
-            if(status == JsonStatus.Succeed)
+            if (status == JsonStatus.Succeed)
                 return this.JsonFormat(true, content: entry);
             return this.JsonFormat(false, status, error.Read());
         }
@@ -54,9 +54,9 @@ namespace Tassel.API.Controllers {
         [HttpPost("{id}/comment")]
         [Token, User]
         public async Task<JsonResult> AddCommentAsync(string id, [FromBody]CommentInsertVM vm) {
-            this.HttpContext.GetStringEntry(TokenClaimsKey.UUID, out var uuid);
             if (vm == null)
-                return this.JsonFormat(false, JsonStatus.BodyIsNull);
+                return this.JsonFormat(false, JsonStatus.BodyFormIsNull);
+            this.HttpContext.GetStringEntry(TokenClaimsKey.UUID, out var uuid);
             if (uuid == null)
                 return this.JsonFormat(false, JsonStatus.UserNotLogin);
             if (uuid != vm.UID)
@@ -80,38 +80,30 @@ namespace Tassel.API.Controllers {
                 return this.JsonFormat(false, JsonStatus.QueryParamsNull);
             if (uuid == null)
                 return this.JsonFormat(false, JsonStatus.UserNotLogin);
-            var (status, error) = await this.status.RemoveCommentAsync(id, comt_id);
+            var (status, error) = await this.status.RemoveCommentAsync(id, uuid, comt_id);
             if (status != JsonStatus.Succeed)
                 return this.JsonFormat(false, status, error.Read());
             return this.JsonFormat(true);
         }
 
-        [HttpPost("{id}/like")]
+        [HttpPut("{id}/like")]
         [Token, User]
-        public async Task<JsonResult> LikeAsync(string id, string user_name) {
+        public async Task<JsonResult> LikeAsync(string id, [FromBody]LikeVM vm) {
+            if (vm == null)
+                return this.JsonFormat(false, JsonStatus.BodyFormIsNull);
             this.HttpContext.GetStringEntry(TokenClaimsKey.UUID, out var uuid);
             if (uuid == null)
                 return this.JsonFormat(false, JsonStatus.UserNotLogin);
-            var (status, error) = await this.status.AddLikeAsync(id, new LikesEntry {
-                User = new BaseCreator { UUID = uuid, UserName = user_name },
+            if (uuid != vm.UserID)
+                return this.JsonFormat(false, JsonStatus.UserNotMatched);
+            var (user_id, status, error) = await this.status.LikeAsync(id, new LikesEntry {
+                User = new BaseCreator { UUID = uuid, UserName = vm.UserName },
                 TargetType = ModelType.Status,
                 ParentID = id
-            } );
+            });
             if (status != JsonStatus.Succeed)
                 return this.JsonFormat(false, status, error.Read());
-            return this.JsonFormat(true);
-        }
-
-        [HttpDelete("{id}/like")]
-        [Token, User]
-        public async Task<JsonResult> DislikeAsync(string id) {
-            this.HttpContext.GetStringEntry(TokenClaimsKey.UUID, out var uuid);
-            if (uuid == null)
-                return this.JsonFormat(false, JsonStatus.UserNotLogin);
-            var (status, error) = await this.status.RemoveLikeAsync(id, uuid);
-            if (status != JsonStatus.Succeed)
-                return this.JsonFormat(false, status, error.Read());
-            return this.JsonFormat(true);
+            return this.JsonFormat(true, content: user_id);
         }
 
         [HttpPut("{id}")]

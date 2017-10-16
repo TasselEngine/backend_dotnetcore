@@ -38,10 +38,11 @@ namespace Tassel.Model.Utils {
         public const string WeiboUserNotFound = "weibo user info is not found.";
         public const string PasswordNotCorrect = "password is not correct.";
         public const string UpdateUserFailed = "update user infos failed.";
-        public const string InsertOneFailed = "insert entry failed.";
-        public const string GetEntryCollFailed = "get bson collection failed.";
+        public const string InsertOneFailed = "insert entry failed";
+        public const string GetEntryCollFailed = "get bson collection failed";
         public const string QueryEntryFailed = "find entry(s) failed";
         public const string UpdateEntryFailed = "update entry(s) failed";
         public const string DeleteEntryFailed = "delete entry(s) failed";
+        public const string EntryFailedIsDeleted = "the entry is not exist.";
     }
 }

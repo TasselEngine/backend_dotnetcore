@@ -24,7 +24,7 @@ namespace Tassel.Model.Models {
 
         Error = 10000,
         DeleteNotAllowed = 10001,
-        BodyIsNull = 10002,
+        BodyFormIsNull = 10002,
         QueryParamsNull = 10003,
 
         BearerCheckFailed = 20001,
@@ -63,7 +63,7 @@ namespace Tassel.Model.Models {
             [JsonStatus.Succeed] = "success",
             [JsonStatus.LoginFailed] = "login failed.",
             [JsonStatus.DeleteNotAllowed] = Errors.DeleteNotAllowed,
-            [JsonStatus.BodyIsNull] = "the request body shouldn't be empry.",
+            [JsonStatus.BodyFormIsNull] = "the form of request body shouldn't be empry.",
             [JsonStatus.QueryParamsNull] = "the query parameters shouldn't be empry.",
             [JsonStatus.RegisterFailed] = "register failed.",
             [JsonStatus.UserNotFound] = Errors.UserNotFound,

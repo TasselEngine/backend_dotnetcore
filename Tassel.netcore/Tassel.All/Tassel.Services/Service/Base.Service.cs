@@ -13,14 +13,27 @@ using BWS.Utils.NetCore.Format;
 
 namespace Tassel.Services.Service {
 
+    /// <summary>
+    /// The ABC to support the definition creators feature for Mongo DB.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public abstract class BsonCRUDBase<T> where T : BaseModel {
 
+        /// <summary>
+        /// Provide a generic update feature.
+        /// </summary>
+        /// <param name="entry"></param>
+        /// <returns></returns>
         protected virtual UpdateDefinition<T> DefineUpdate(T entry) {
             return Builders<T>.Update.Set(i => i.UpdateTime, DateTime.UtcNow.ToUnix());
         }
 
     }
 
+    /// <summary>
+    /// The ABC to provide generic features for services.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public abstract class BaseService<T> : BsonCRUDBase<T>, IBusinessService<T, Error> where T : BaseModel {
 
         protected IMongoDatabase mdb;
@@ -31,6 +44,11 @@ namespace Tassel.Services.Service {
             this.collection = mdb.GetCollection<T>(collName);
         }
 
+        /// <summary>
+        /// Find entry by _id.
+        /// </summary>
+        /// <param name="id">key of entry</param>
+        /// <returns></returns>
         public (T entry, bool succeed, Error error) FindOneByID(string id) {
             try {
                 var entry = this.collection.Find(i => i.ID == id).FirstOrDefault();
@@ -40,6 +58,11 @@ namespace Tassel.Services.Service {
             }
         }
 
+        /// <summary>
+        /// Find entry by _id [ Async Version ].
+        /// </summary>
+        /// <param name="id">key of entry</param>
+        /// <returns></returns>
         public async ValueTask<(T entry, bool succeed, Error error)> FindOneByIDAsync(string id) {
             try {
                 var entry = (await this.collection.FindAsync(i => i.ID == id)).FirstOrDefault();
@@ -49,14 +72,21 @@ namespace Tassel.Services.Service {
             }
         }
 
+        /// <summary>
+        /// Get the collections where the filter is passed with skip and take params.
+        /// </summary>
+        /// <param name="where">filter</param>
+        /// <param name="skip">number to skip</param>
+        /// <param name="take">nnumber to take</param>
+        /// <returns></returns>
         public (IList<T> collection, bool succeed, Error error) GetCollections(
-            Expression<Func<T, bool>> where = null, 
-            int? skip = null, 
+            Expression<Func<T, bool>> where = null,
+            int? skip = null,
             int? take = null) {
 
             where = where ?? (i => true);
             try {
-                var coll = this.collection.AsQueryable().OrderByDescending(i=>i.CreateTime).Where(where);
+                var coll = this.collection.AsQueryable().OrderByDescending(i => i.CreateTime).Where(where);
                 if (skip != null)
                     coll = coll.Skip(skip.GetValueOrDefault());
                 if (take != null)
@@ -67,8 +97,15 @@ namespace Tassel.Services.Service {
             }
         }
 
+        /// <summary>
+        /// Get the collections where the filter is passed with skip and take params [ Async Version ].
+        /// </summary>
+        /// <param name="where">filter</param>
+        /// <param name="skip">number to skip</param>
+        /// <param name="take">nnumber to take</param>
+        /// <returns></returns>
         public async ValueTask<(IList<T> collection, bool succeed, Error error)> GetCollectionsAsync(
-            Expression<Func<T, bool>> where = null, 
+            Expression<Func<T, bool>> where = null,
             int? skip = null,
             int? take = null) {
 
@@ -87,6 +124,11 @@ namespace Tassel.Services.Service {
             }
         }
 
+        /// <summary>
+        /// Insert item.
+        /// </summary>
+        /// <param name="entry">the entry to be insert.</param>
+        /// <returns></returns>
         public (T entry, bool succeed, Error error) InsertOne(T entry) {
             try {
                 this.collection.InsertOne(entry);
@@ -96,6 +138,11 @@ namespace Tassel.Services.Service {
             }
         }
 
+        /// <summary>
+        /// Insert item [ Async Version ].
+        /// </summary>
+        /// <param name="entry">the entry to be insert.</param>
+        /// <returns></returns>
         public async ValueTask<(T entry, bool succeed, Error error)> InsertOneAsync(T entry) {
             try {
                 await this.collection.InsertOneAsync(entry);
@@ -105,10 +152,17 @@ namespace Tassel.Services.Service {
             }
         }
 
+        /// <summary>
+        /// Update an entry with definition(if def is null, the override definition will be used) , action model(toDo) and entry id.
+        /// </summary>
+        /// <param name="id">entry id of target to be update</param>
+        /// <param name="toDo">model contains the new changes</param>
+        /// <param name="updateDef">provider to update</param>
+        /// <returns></returns>
         public (string entry_id, bool succeed, Error error) UpdateOne(string id, T toDo = null, UpdateDefinition<T> updateDef = null) {
             try {
-                var result = this.collection.UpdateOne(i=>i.ID == id, updateDef ?? this.DefineUpdate(toDo));
-                if(result.IsAcknowledged)
+                var result = this.collection.UpdateOne(i => i.ID == id, updateDef ?? this.DefineUpdate(toDo));
+                if (result.IsAcknowledged)
                     return (result?.UpsertedId?.AsString, true, Error.Empty);
                 return (default(string), false, Error.Create(Errors.UpdateEntryFailed));
             } catch (Exception e) {
@@ -116,6 +170,13 @@ namespace Tassel.Services.Service {
             }
         }
 
+        /// <summary>
+        /// Update an entry with definition(if def is null, the override definition will be used) , action model(toDo) and entry id [ Async Version ].
+        /// </summary>
+        /// <param name="id">entry id of target to be update</param>
+        /// <param name="toDo">model contains the new changes</param>
+        /// <param name="updateDef">provider to update</param>
+        /// <returns></returns>
         public async ValueTask<(string entry_id, bool succeed, Error error)> UpdateOneAsync(string id, T toDo = null, UpdateDefinition<T> updateDef = null) {
             try {
                 var result = await this.collection.UpdateOneAsync(i => i.ID == id, updateDef ?? this.DefineUpdate(toDo));
@@ -127,6 +188,13 @@ namespace Tassel.Services.Service {
             }
         }
 
+        /// <summary>
+        /// Update an entry with definition(if def is null, the override definition will be used) , action model(toDo) and entry id. Then you can get the POCO entry.
+        /// </summary>
+        /// <param name="id">entry id of target to be update</param>
+        /// <param name="toDo">model contains the new changes</param>
+        /// <param name="updateDef">provider to update</param>
+        /// <returns></returns>
         public (T outEntry, bool succeed, Error error) FindOneUpdate(string id, T toDo = null, UpdateDefinition<T> updateDef = null) {
             try {
                 var result = this.collection.FindOneAndUpdate(i => i.ID == id, updateDef ?? this.DefineUpdate(toDo));
@@ -136,6 +204,13 @@ namespace Tassel.Services.Service {
             }
         }
 
+        /// <summary>
+        /// Update an entry with definition(if def is null, the override definition will be used) , action model(toDo) and entry id. Then you can get the POCO entry [ Async Version ].
+        /// </summary>
+        /// <param name="id">entry id of target to be update</param>
+        /// <param name="toDo">model contains the new changes</param>
+        /// <param name="updateDef">provider to update</param>
+        /// <returns></returns>
         public async ValueTask<(T outEntry, bool succeed, Error error)> FindOneUpdateAsync(string id, T toDo = null, UpdateDefinition<T> updateDef = null) {
             try {
                 var result = await this.collection.FindOneAndUpdateAsync(i => i.ID == id, updateDef ?? this.DefineUpdate(toDo));
@@ -145,22 +220,76 @@ namespace Tassel.Services.Service {
             }
         }
 
-        public (bool succeed, Error error) DeleteOne(string entry_id) {
+        /// <summary>
+        /// Delete entry by id.
+        /// </summary>
+        /// <param name="entry_id">key</param>
+        /// <returns></returns>
+        public (bool succeed, Error error) DeleteOneByID(string entry_id) {
             try {
                 var result = this.collection.DeleteOne(i => i.ID == entry_id);
-                if(result.IsAcknowledged)
-                    return (true, Error.Empty);
+                if (result.IsAcknowledged)
+                    if (result.DeletedCount == 0)
+                        return (false, Error.Create(Errors.DeleteEntryFailed, Errors.EntryFailedIsDeleted));
+                    else
+                        return (true, Error.Empty);
                 return (false, Error.Create(Errors.DeleteEntryFailed));
             } catch (Exception e) {
                 return (false, Error.Create(Errors.DeleteEntryFailed, e.Message));
             }
         }
 
-        public async ValueTask<(bool succeed, Error error)> DeleteOneAsync(string entry_id) {
+        /// <summary>
+        /// Delete entry by id [ Async Version ].
+        /// </summary>
+        /// <param name="entry_id">key</param>
+        /// <returns></returns>
+        public async ValueTask<(bool succeed, Error error)> DeleteOneByIDAsync(string entry_id) {
             try {
                 var result = await this.collection.DeleteOneAsync(i => i.ID == entry_id);
                 if (result.IsAcknowledged)
-                    return (true, Error.Empty);
+                    if (result.DeletedCount == 0)
+                        return (false, Error.Create(Errors.DeleteEntryFailed, Errors.EntryFailedIsDeleted));
+                    else
+                        return (true, Error.Empty);
+                return (false, Error.Create(Errors.DeleteEntryFailed));
+            } catch (Exception e) {
+                return (false, Error.Create(Errors.DeleteEntryFailed, e.Message));
+            }
+        }
+
+        /// <summary>
+        /// Delete entry by where filter(if not provide , i=>false will be used).
+        /// </summary>
+        /// <param name="filters">where filter with default like "i => false"</param>
+        /// <returns></returns>
+        public (bool succeed, Error error) DeleteOneByFilter(Expression<Func<T, bool>> filters = null) {
+            try {
+                var result = this.collection.DeleteOne(Builders<T>.Filter.Where(filters ?? (i => false)));
+                if (result.IsAcknowledged)
+                    if (result.DeletedCount == 0)
+                        return (false, Error.Create(Errors.DeleteEntryFailed, Errors.EntryFailedIsDeleted));
+                    else
+                        return (true, Error.Empty);
+                return (false, Error.Create(Errors.DeleteEntryFailed));
+            } catch (Exception e) {
+                return (false, Error.Create(Errors.DeleteEntryFailed, e.Message));
+            }
+        }
+
+        /// <summary>
+        /// Delete entry by where filter(if not provide , i=>false will be used) [ Async Version ].
+        /// </summary>
+        /// <param name="filters">where filter with default like "i => false"</param>
+        /// <returns></returns>
+        public async ValueTask<(bool succeed, Error error)> DeleteOneByFilterAsync(Expression<Func<T, bool>> filters = null) {
+            try {
+                var result = await this.collection.DeleteOneAsync(Builders<T>.Filter.Where(filters ?? (i => false)));
+                if (result.IsAcknowledged)
+                    if (result.DeletedCount == 0)
+                        return (false, Error.Create(Errors.DeleteEntryFailed, Errors.EntryFailedIsDeleted));
+                    else
+                        return (true, Error.Empty);
                 return (false, Error.Create(Errors.DeleteEntryFailed));
             } catch (Exception e) {
                 return (false, Error.Create(Errors.DeleteEntryFailed, e.Message));

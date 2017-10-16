@@ -29,9 +29,13 @@ namespace Tassel.Services.Contract {
 
         ValueTask<(T entry, bool succeed, TError error)> FindOneByIDAsync(string id);
 
-        (bool succeed, TError error) DeleteOne(string entry_id);
+        (bool succeed, TError error) DeleteOneByID(string entry_id);
 
-        ValueTask<(bool succeed, TError error)> DeleteOneAsync(string entry_id);
+        ValueTask<(bool succeed, TError error)> DeleteOneByIDAsync(string entry_id);
+
+        (bool succeed, TError error) DeleteOneByFilter(Expression<Func<T, bool>> filters = null);
+
+        ValueTask<(bool succeed, TError error)> DeleteOneByFilterAsync(Expression<Func<T, bool>> filters = null);
 
     }
 }

@@ -1,9 +1,9 @@
-﻿using BWS.Utils.NetCore.Format;
+﻿using BWS.Utils.NetCore.Expressions;
+using BWS.Utils.NetCore.Format;
 using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Tassel.Model.Models;
 using Tassel.Model.Models.BsonModels;
@@ -75,11 +75,11 @@ namespace Tassel.Services.Service {
             var (entry, status, error) = await this.GetStatusAbstractAsync(id);
             if (entry == null)
                 return (entry, status, error);
-            var (coll, succ02, error02) = await this.comments.GetCollectionsAsync(i => i.ParentID == entry.ID && i.ParentType == ModelType.Status);
-            if (succ02)
+            var (coll, succ02, _) = await this.comments.GetCollectionsAsync(i => i.ParentID == entry.ID && i.ParentType == ModelType.Status);
+            if (succ02) 
                 entry.Comments = coll;
-            var (likers, succ03, error03) = await this.likes.GetCollectionsAsync(i => i.ParentID == entry.ID && i.TargetType == ModelType.Status);
-            if (succ03)
+            var (likers, succ03, _) = await this.likes.GetCollectionsAsync(i => i.ParentID == entry.ID && i.TargetType == ModelType.Status);
+            if (succ03) 
                 entry.Likes = likers;
             return (entry, JsonStatus.Succeed, Error.Empty);
         }
@@ -92,28 +92,35 @@ namespace Tassel.Services.Service {
             return (succeed ? JsonStatus.Succeed : JsonStatus.CommentAddFailed, error);
         }
 
-        public async ValueTask<(JsonStatus status, Error error)> RemoveCommentAsync(string id, string comment_id) {
-            var (succeed, error) = await this.comments.DeleteOneAsync(comment_id);
+        public async ValueTask<(JsonStatus status, Error error)> RemoveCommentAsync(string id, string uid, string comment_id) {
+            var (succeed, error) = await this.comments.DeleteOneByFilterAsync(i => i.ID == comment_id && i.Creator.UUID == uid && i.ParentID == id);
             if (!succeed)
                 return (JsonStatus.CommentRemoveFailed, error);
             (_, succeed, error) = await this.UpdateOneAsync(id, null, this.DefineCommentsUpdate(comment_id, false));
             return (succeed ? JsonStatus.Succeed : JsonStatus.CommentRemoveFailed, error);
         }
 
-        public async ValueTask<(JsonStatus status, Error error)> AddLikeAsync(string id, LikesEntry like) {
-            var (comt, succeed, error) = await this.likes.InsertOneAsync(like);
+        public async ValueTask<(string user_id, JsonStatus status, Error error)> LikeAsync(string id, LikesEntry like) {
+            var (entry, succeed, error) = await this.FindOneByIDAsync(id);
             if (!succeed)
-                return (JsonStatus.LikesAddFailed, error);
-            (_, succeed, error) = await this.UpdateOneAsync(id, null, this.DefineLikersUpdate(like.User.UUID));
-            return (succeed ? JsonStatus.Succeed : JsonStatus.LikesAddFailed, error);
-        }
-
-        public async ValueTask<(JsonStatus status, Error error)> RemoveLikeAsync(string id, string user_id) {
-            var (succeed, error) = await this.likes.DeleteAllByIDsAsync(id, user_id);
-            if (!succeed)
-                return (JsonStatus.LikesRemoveFailed, error);
-            (_, succeed, error) = await this.UpdateOneAsync(id, null, this.DefineLikersUpdate(user_id, false));
-            return (succeed ? JsonStatus.Succeed : JsonStatus.LikesRemoveFailed, error);
+                return (default(string), JsonStatus.StatusNotFound, error);
+            if (entry.LikerIDs.Contains(like.User.UUID) ||entry.Likes.FirstOrDefault(i=>i.User.UUID== like.User.UUID) !=null) {
+                (succeed, error) = await this.likes.DeleteAllByIDsAsync(id, like.User.UUID);
+                if (!succeed)
+                    return (default(string), JsonStatus.LikesRemoveFailed, error);
+                (_, succeed, error) = await this.UpdateOneAsync(id, null, this.DefineLikersUpdate(like.User.UUID, false));
+                if(!succeed)
+                    return (default(string),JsonStatus.LikesRemoveFailed, error);
+                return ("deleted", JsonStatus.Succeed, Error.Empty);
+            } else {
+                (_, succeed, error) = await this.likes.InsertOneAsync(like);
+                if (!succeed)
+                    return (default(string),JsonStatus.LikesAddFailed, error);
+                (_, succeed, error) = await this.UpdateOneAsync(id, null, this.DefineLikersUpdate(like.User.UUID));
+                if (!succeed)
+                    return (default(string), JsonStatus.LikesAddFailed, error);
+                return (like.User.UUID, JsonStatus.Succeed, Error.Empty);
+            }
         }
 
     }
