@@ -41,6 +41,7 @@ namespace Tassel.Model.Utils {
         public const string InsertOneFailed = "insert entry failed";
         public const string GetEntryCollFailed = "get bson collection failed";
         public const string QueryEntryFailed = "find entry(s) failed";
+        public const string EntryNotExist = "the entry(s) not exist";
         public const string UpdateEntryFailed = "update entry(s) failed";
         public const string DeleteEntryFailed = "delete entry(s) failed";
         public const string EntryFailedIsDeleted = "the entry is not exist.";

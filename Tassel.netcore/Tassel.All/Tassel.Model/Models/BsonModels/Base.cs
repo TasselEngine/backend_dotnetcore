@@ -17,6 +17,13 @@ namespace Tassel.Model.Models.BsonModels {
         Status = 13
     }
 
+    public enum EntryState {
+        Published = 0,
+        Unpublished = 1,
+        Blacklist = 2,
+        Deleted = 3
+    }
+
     public static class ModelCollectionName {
         public const string User = "users";
         public const string Weibo = "weibos";
@@ -148,7 +155,11 @@ namespace Tassel.Model.Models.BsonModels {
     }
 
     [JsonObject]
-    public class BasePageEntry : BaseLikesModel {
+    public class DeleteSafelyBase : BaseLikesModel {
+
+        [BsonElement("state")]
+        [JsonProperty("state")]
+        public EntryState State { get; set; } = EntryState.Unpublished;
 
         [BsonElement("content")]
         [JsonProperty("details")]

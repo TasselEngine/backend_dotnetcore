@@ -13,7 +13,7 @@ using Tassel.Services.Contract.Providers;
 
 namespace Tassel.Services.Service {
 
-    public class StatusService : BaseService<Status>, IStatusService {
+    public class StatusService : DeleteSafeBase<Status>, IStatusService {
 
         private ICommentServiceProvider<Comment> comments;
         private ILikesServiceProvider likes;

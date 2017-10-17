@@ -10,7 +10,7 @@ using Tassel.Model.Utils;
 namespace Tassel.Model.Models.BsonModels {
 
     [JsonObject]
-    public class Status : BasePageEntry {
+    public class Status : DeleteSafelyBase {
 
         public override ModelType Type { get; } = ModelType.Status;
 
