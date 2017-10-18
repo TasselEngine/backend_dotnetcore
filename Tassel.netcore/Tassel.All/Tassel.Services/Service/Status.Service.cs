@@ -3,6 +3,7 @@ using BWS.Utils.NetCore.Format;
 using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Tassel.Model.Models;
@@ -85,19 +86,33 @@ namespace Tassel.Services.Service {
         }
 
         public async ValueTask<(JsonStatus status, Error error)> AddCommentAsync(string id, Comment comment) {
-            var (comt, succeed, error) = await this.comments.InsertOneAsync(comment);
-            if (!succeed)
+            var (entry, succeed, error) = await this.FindOneUpdateAsync(id, null, this.DefineCommentsUpdate(comment.ID));
+            if(!succeed)
                 return (JsonStatus.CommentAddFailed, error);
-            (_, succeed, error) = await this.UpdateOneAsync(id, null, this.DefineCommentsUpdate(comment.ID));
-            return (succeed ? JsonStatus.Succeed : JsonStatus.CommentAddFailed, error);
+            if(entry==null)
+                return (JsonStatus.CommentAddFailed, Error.Create(Errors.EntryNotExist));
+            (_, succeed, error) = await this.comments.InsertOneAsync(comment);
+            if (!succeed) {
+                // Rollback, anyway
+                await this.FindOneUpdateAsync(id, null, this.DefineCommentsUpdate(comment.ID, false));
+                return (JsonStatus.CommentAddFailed, error);
+            }
+            return (JsonStatus.Succeed, Error.Empty);
         }
 
         public async ValueTask<(JsonStatus status, Error error)> RemoveCommentAsync(string id, string uid, string comment_id) {
-            var (succeed, error) = await this.comments.DeleteOneByFilterAsync(i => i.ID == comment_id && i.Creator.UUID == uid && i.ParentID == id);
+            var (entry, succeed, error) = await this.FindOneUpdateAsync(id, null, this.DefineCommentsUpdate(comment_id, false));
             if (!succeed)
                 return (JsonStatus.CommentRemoveFailed, error);
-            (_, succeed, error) = await this.UpdateOneAsync(id, null, this.DefineCommentsUpdate(comment_id, false));
-            return (succeed ? JsonStatus.Succeed : JsonStatus.CommentRemoveFailed, error);
+            if (entry == null)
+                return (JsonStatus.CommentRemoveFailed, Error.Create(Errors.EntryNotExist));
+            (succeed, error) = await this.comments.DeleteOneByFilterAsync(i => i.ID == comment_id && i.Creator.UUID == uid && i.ParentID == id);
+            if (!succeed) {
+                // Rollback, anyway
+                await this.FindOneUpdateAsync(id, null, this.DefineCommentsUpdate(comment_id));
+                return (JsonStatus.CommentAddFailed, error);
+            }
+            return (JsonStatus.Succeed, Error.Empty);
         }
 
         public async ValueTask<(string user_id, JsonStatus status, Error error)> LikeAsync(string id, LikesEntry like) {

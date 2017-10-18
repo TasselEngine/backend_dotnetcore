@@ -2,6 +2,7 @@
 using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
@@ -104,7 +105,7 @@ namespace Tassel.Services.Service {
         /// <param name="take">nnumber to take</param>
         /// <returns></returns>
         public (IList<T> collection, bool succeed, Error error) GetPublishedCollections(Expression<Func<T, bool>> where = null, int? skip = null, int? take = null) {
-            return this.GetCollections(where.And(i => i.State == EntryState.Published), skip, take);
+            return this.GetCollections((where ?? (w => true)).And(w => w.State == EntryState.Published), skip, take);
         }
 
         /// <summary>
@@ -115,7 +116,7 @@ namespace Tassel.Services.Service {
         /// <param name="take">nnumber to take</param>
         /// <returns></returns>
         public async ValueTask<(IList<T> collection, bool succeed, Error error)> GetPublishedCollectionsAsync(Expression<Func<T, bool>> where = null, int? skip = null, int? take = null) {
-            return await this.GetCollectionsAsync(where.And(i => i.State == EntryState.Published), skip, take);
+            return await this.GetCollectionsAsync((where ?? (m => true)).And(m => m.State == EntryState.Published), skip, take);
         }
     }
 

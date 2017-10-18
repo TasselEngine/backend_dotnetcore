@@ -198,6 +198,8 @@ namespace Tassel.Services.Service {
         public (T outEntry, bool succeed, Error error) FindOneUpdate(string id, T toDo = null, UpdateDefinition<T> updateDef = null) {
             try {
                 var result = this.collection.FindOneAndUpdate(i => i.ID == id, updateDef ?? this.DefineUpdate(toDo));
+                if (result == null)
+                    return (default(T), false, Error.Create(Errors.UpdateEntryFailed, Errors.FindUpdateFailed));
                 return (result, true, Error.Empty);
             } catch (Exception e) {
                 return (default(T), false, Error.Create(Errors.UpdateEntryFailed, e.Message));
@@ -214,6 +216,8 @@ namespace Tassel.Services.Service {
         public async ValueTask<(T outEntry, bool succeed, Error error)> FindOneUpdateAsync(string id, T toDo = null, UpdateDefinition<T> updateDef = null) {
             try {
                 var result = await this.collection.FindOneAndUpdateAsync(i => i.ID == id, updateDef ?? this.DefineUpdate(toDo));
+                if(result==null)
+                    return (default(T), false, Error.Create(Errors.UpdateEntryFailed, Errors.FindUpdateFailed));
                 return (result, true, Error.Empty);
             } catch (Exception e) {
                 return (default(T), false, Error.Create(Errors.UpdateEntryFailed, e.Message));

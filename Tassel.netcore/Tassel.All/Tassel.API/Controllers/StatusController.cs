@@ -23,7 +23,7 @@ namespace Tassel.API.Controllers {
 
         [HttpGet("all")]
         public async Task<JsonResult> Get() {
-            var (coll, succeed, error) = await this.status.GetCollectionsAsync();
+            var (coll, succeed, error) = await this.status.GetPublishedCollectionsAsync(m=>m.ID!="sb");
             if (!succeed)
                 return this.JsonFormat(false, JsonStatus.StatusCollectionLoadFailed, error.Read());
             return this.JsonFormat(true, content: coll);
@@ -43,6 +43,7 @@ namespace Tassel.API.Controllers {
             // TEST
             var (status, succeed, error) = await this.status.InsertOneAsync(new Status {
                 Content = "hahahahahahahah",
+                State = EntryState.Published,
                 Creator = new BaseCreator { UUID = "4525224", UserName = "baba" },
                 Images = new List<BaseImage> { new BaseImage { IsFile = false, Url = "http://p3.wmpic.me/article/2016/07/25/1469459240_PzFfSySK.jpg" } }
             });

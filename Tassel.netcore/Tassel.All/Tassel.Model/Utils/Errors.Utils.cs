@@ -8,9 +8,9 @@ namespace Tassel.Model.Utils {
 
         public readonly string Message;
         public readonly string Details;
-        public bool IsEmpty;
+        public readonly bool IsInvalid;
 
-        public static Error Empty { get; } = new Error { IsEmpty = true };
+        public static Error Empty { get; } = new Error();
 
         public static Error Create(string error, string details = null) {
             return new Error(error, details);
@@ -19,11 +19,11 @@ namespace Tassel.Model.Utils {
         public Error(string error, string details = null) {
             this.Message = error;
             this.Details = details;
-            this.IsEmpty = false;
+            this.IsInvalid = true;
         }
 
         public string Read() {
-            if (string.IsNullOrEmpty(Message) || IsEmpty)
+            if (string.IsNullOrEmpty(Message) || !IsInvalid)
                 return null;
             return $"{this.Message} : {this.Details ?? "no details"}";
         }
@@ -31,6 +31,7 @@ namespace Tassel.Model.Utils {
     }
 
     public static class Errors {
+        public const string UnknownError = "unknown error";
         public const string DeleteNotAllowed = "deleting user is unavaliable.";
         public const string UserNotFound = "user not found.";
         public const string UserExist = "user account is exist already.";
@@ -45,5 +46,6 @@ namespace Tassel.Model.Utils {
         public const string UpdateEntryFailed = "update entry(s) failed";
         public const string DeleteEntryFailed = "delete entry(s) failed";
         public const string EntryFailedIsDeleted = "the entry is not exist.";
+        public const string FindUpdateFailed = "no entry to be updated is found.";
     }
 }
