@@ -63,7 +63,7 @@ namespace Tassel.Model.Models {
             [JsonStatus.Succeed] = "success",
             [JsonStatus.LoginFailed] = "login failed.",
             [JsonStatus.DeleteNotAllowed] = Errors.DeleteNotAllowed,
-            [JsonStatus.BodyFormIsNull] = "the form of request body shouldn't be empry.",
+            [JsonStatus.BodyFormIsNull] = "the form of request body shouldn't be empry, or your input is invalid.",
             [JsonStatus.QueryParamsNull] = "the query parameters shouldn't be empry.",
             [JsonStatus.RegisterFailed] = "register failed.",
             [JsonStatus.UserNotFound] = Errors.UserNotFound,

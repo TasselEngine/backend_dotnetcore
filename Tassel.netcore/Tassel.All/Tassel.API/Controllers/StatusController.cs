@@ -10,6 +10,7 @@ using Tassel.Services.Contract;
 using Tassel.API.VM.Status;
 using Tassel.API.Utils.Authorization;
 using Tassel.Services.Utils.Constants;
+using Tassel.API.Utils.Helpers;
 
 namespace Tassel.API.Controllers {
     [Route("api/status")]
@@ -49,12 +50,19 @@ namespace Tassel.API.Controllers {
                 return this.JsonFormat(false, JsonStatus.UserNotLogin);
             if (uuid != vm.UserID)
                 return this.JsonFormat(false, JsonStatus.UserNotMatched);
-            var (status, succeed, error) = await this.status.InsertOneAsync(new Status {
+            var entry = new Status {
                 Content = vm.Content,
                 State = EntryState.Published,
                 Creator = new BaseCreator { UUID = vm.UserID, UserName = vm.UserName },
-                Images = vm.Images.Select(i => new BaseImage { Base64 = i, IsFile = true }).ToList()
+                Images = vm.Images.Select(i => new BaseImage { Base64 = i.Base64, IsFile = true }).ToList()
+            };
+            entry.Images.ToList().ForEach(i => {
+                if (i.IsFile) { // Compression
+                    var imsEcd = ImageRender.ImageCompress(i.Base64, 0.2);
+                    i.Base64 = imsEcd ?? i.Base64;
+                }
             });
+            var (status, succeed, error) = await this.status.InsertOneAsync(entry);
             if (!succeed)
                 return this.JsonFormat(false, JsonStatus.StatusInsertFailed, error.Read());
             return this.JsonFormat(true, content: status.ID);

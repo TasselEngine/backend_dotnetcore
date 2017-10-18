@@ -19,7 +19,21 @@ namespace Tassel.API.VM.Status {
         public string UserName { get; set; }
 
         [JsonProperty("images")]
-        public IList<string> Images { get; set; } = new List<string>();
+        public IList<ImageVM> Images { get; set; } = new List<ImageVM>();
+
+    }
+
+    [JsonObject]
+    public class ImageVM {
+
+        [JsonProperty("image")]
+        public string Base64 { get; set; }
+
+        [JsonProperty("width")]
+        public double Width { get; set; }
+
+        [JsonProperty("height")]
+        public double Height { get; set; }
 
     }
 

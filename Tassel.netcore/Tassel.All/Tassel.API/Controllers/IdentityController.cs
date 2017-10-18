@@ -62,12 +62,6 @@ namespace Tassel.Service.Controllers {
             return this.GetUser(uuid);
         }
 
-        [HttpGet("all")]
-        [Token, Admin]
-        public JsonResult GetAll() {
-            return this.JsonFormat(true, content: this.identity.GetUsersListByFilter(i => true));
-        }
-
         [HttpGet("{uuid}")]
         public JsonResult GetUser(string uuid) {
             var (user, succeed, error) = this.identity.GetUserDetailsByID(uuid);
