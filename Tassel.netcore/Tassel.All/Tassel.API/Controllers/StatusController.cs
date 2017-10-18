@@ -38,14 +38,22 @@ namespace Tassel.API.Controllers {
         }
 
         [HttpPost("create")]
-        [Token, /*Admin*/] // TEST
-        public async Task<JsonResult> PostAsync() {
+        //[Token, Admin] 
+        [Token, User]// TEST
+        public async Task<JsonResult> PostAsync([FromBody]CreateStatusVM vm) {
             // TEST
+            if (vm == null)
+                return this.JsonFormat(false, JsonStatus.BodyFormIsNull);
+            this.HttpContext.GetStringEntry(TokenClaimsKey.UUID, out var uuid);
+            if (uuid == null)
+                return this.JsonFormat(false, JsonStatus.UserNotLogin);
+            if (uuid != vm.UserID)
+                return this.JsonFormat(false, JsonStatus.UserNotMatched);
             var (status, succeed, error) = await this.status.InsertOneAsync(new Status {
-                Content = "hahahahahahahah",
+                Content = vm.Content,
                 State = EntryState.Published,
-                Creator = new BaseCreator { UUID = "4525224", UserName = "baba" },
-                Images = new List<BaseImage> { new BaseImage { IsFile = false, Url = "http://p3.wmpic.me/article/2016/07/25/1469459240_PzFfSySK.jpg" } }
+                Creator = new BaseCreator { UUID = vm.UserID, UserName = vm.UserName },
+                Images = vm.Images.Select(i => new BaseImage { Base64 = i, IsFile = true }).ToList()
             });
             if (!succeed)
                 return this.JsonFormat(false, JsonStatus.StatusInsertFailed, error.Read());
