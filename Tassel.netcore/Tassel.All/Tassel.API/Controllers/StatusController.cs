@@ -10,7 +10,7 @@ using Tassel.Services.Contract;
 using Tassel.API.VM.Status;
 using Tassel.API.Utils.Authorization;
 using Tassel.Services.Utils.Constants;
-using Tassel.API.Utils.Helpers;
+using Tassel.API.VM;
 
 namespace Tassel.API.Controllers {
     [Route("api/status")]
@@ -24,9 +24,9 @@ namespace Tassel.API.Controllers {
 
         [HttpGet("all")]
         public async Task<JsonResult> Get() {
-            var (coll, succeed, error) = await this.status.GetPublishedCollectionsAsync(m=>m.ID!="sb");
-            if (!succeed)
-                return this.JsonFormat(false, JsonStatus.StatusCollectionLoadFailed, error.Read());
+            var (coll, status, error) = await this.status.GetCollectionAbstractAsync();
+            if (status!=JsonStatus.Succeed)
+                return this.JsonFormat(false, status, error.Read());
             return this.JsonFormat(true, content: coll);
         }
 
@@ -50,19 +50,7 @@ namespace Tassel.API.Controllers {
                 return this.JsonFormat(false, JsonStatus.UserNotLogin);
             if (uuid != vm.UserID)
                 return this.JsonFormat(false, JsonStatus.UserNotMatched);
-            var entry = new Status {
-                Content = vm.Content,
-                State = EntryState.Published,
-                Creator = new BaseCreator { UUID = vm.UserID, UserName = vm.UserName },
-                Images = vm.Images.Select(i => new BaseImage { Base64 = i.Base64, FileSize = i.Size.GetValueOrDefault(), IsFile = true }).ToList()
-            };
-            entry.Images.ToList().ForEach(i => { // Compression
-                if (!i.IsFile) { return; }
-                var (base64, thumb) = ImageRender.ImageMutiCompress(i.Base64, 0.2, i.FileSize > 40000 ? 0.1 : 0.2);
-                i.Base64 = base64 ?? i.Base64;
-                i.Thumbnail = thumb;
-            });
-            var (status, succeed, error) = await this.status.InsertOneAsync(entry);
+            var (status, succeed, error) = await this.status.InsertOneAsync(ModelCreator.CreateStatus(vm));
             if (!succeed)
                 return this.JsonFormat(false, JsonStatus.StatusInsertFailed, error.Read());
             return this.JsonFormat(true, content: status.ID);
@@ -78,12 +66,7 @@ namespace Tassel.API.Controllers {
                 return this.JsonFormat(false, JsonStatus.UserNotLogin);
             if (uuid != vm.UID)
                 return this.JsonFormat(false, JsonStatus.UserNotMatched);
-            var (status, error) = await this.status.AddCommentAsync(id, new Comment {
-                Creator = new BaseCreator { UserName = vm.UName, UUID = vm.UID },
-                CommentContent = vm.Content,
-                ParentID = id,
-                ParentType = ModelType.Status
-            });
+            var (status, error) = await this.status.AddCommentAsync(id, ModelCreator.CreateComment(vm, id, ModelType.Status));
             if (status != JsonStatus.Succeed)
                 return this.JsonFormat(false, status, error.Read());
             return this.JsonFormat(true);
@@ -113,11 +96,7 @@ namespace Tassel.API.Controllers {
                 return this.JsonFormat(false, JsonStatus.UserNotLogin);
             if (uuid != vm.UserID)
                 return this.JsonFormat(false, JsonStatus.UserNotMatched);
-            var (user_id, status, error) = await this.status.LikeAsync(id, new LikesEntry {
-                User = new BaseCreator { UUID = uuid, UserName = vm.UserName },
-                TargetType = ModelType.Status,
-                ParentID = id
-            });
+            var (user_id, status, error) = await this.status.LikeAsync(id, ModelCreator.CreateLike(vm, id, ModelType.Status));
             if (status != JsonStatus.Succeed)
                 return this.JsonFormat(false, status, error.Read());
             return this.JsonFormat(true, content: user_id);

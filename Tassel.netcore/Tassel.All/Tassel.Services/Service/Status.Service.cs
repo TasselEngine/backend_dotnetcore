@@ -4,6 +4,7 @@ using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Tassel.Model.Models;
 using Tassel.Model.Models.BsonModels;
@@ -60,6 +61,16 @@ namespace Tassel.Services.Service {
             return add ?
                 def.Push(i => i.Images, image) :
                 def.Pull(i => i.Images, image);
+        }
+
+        public async ValueTask<(IEnumerable<Status> entry, JsonStatus status, Error error)> GetCollectionAbstractAsync(Expression<Func<Status, bool>> where = null) {
+            var (coll, succeed, error) = await this.GetPublishedCollectionsAsync(where);
+            if (!succeed)
+                return (default(IList<Status>), JsonStatus.StatusCollectionLoadFailed, error);
+            return (coll.Select(i=> {
+                i.Images = i.Images.Select(m => new BaseImage { Thumbnail = m.Thumbnail, IsFile = m.IsFile }).ToList();
+                return i;
+            }), JsonStatus.Succeed, Error.Empty);
         }
 
         public async ValueTask<(Status entry, JsonStatus status, Error error)> GetStatusAbstractAsync(string id) {

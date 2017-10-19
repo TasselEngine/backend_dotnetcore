@@ -123,7 +123,7 @@ namespace Tassel.Model.Models.BsonModels {
         public bool ShouldSerializeUrl() => !this.IsFile;
 
         [BsonIgnore]
-        [JsonIgnore)]
+        [JsonIgnore]
         public double FileSize { get; set; }
 
         [BsonElement("base_64")]

@@ -29,12 +29,12 @@ namespace Tassel.API.Utils.Helpers {
                     var image_thumb = default(string);
                     using (var mstream = new SKDynamicMemoryWStream())  // Compress Image
                         if (bitmap.Encode(mstream, SKEncodedImageFormat.Jpeg, (int)(100 * (percent > 1 ? 1 : percent))))
-                            StreamToBase64String(mstream);
+                            image_ecd = StreamToBase64String(mstream);
                     if (thumb_pct == null)
                         return (image_ecd, null);
-                    using (var mstream = new SKDynamicMemoryWStream())  // Create Thumb
-                        if (bitmap.Encode(mstream, SKEncodedImageFormat.Jpeg, (int)(100 * (thumb_pct > percent ? percent : thumb_pct))))
-                            image_thumb = StreamToBase64String(mstream);
+                    using (var tstream = new SKDynamicMemoryWStream())  // Create Thumb
+                        if (bitmap.Encode(tstream, SKEncodedImageFormat.Jpeg, (int)(100 * (thumb_pct > percent ? percent : thumb_pct))))
+                            image_thumb = StreamToBase64String(tstream);
                     return (image_ecd, image_thumb);
                 }
             } catch {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using Tassel.Model.Models;
@@ -14,6 +15,8 @@ namespace Tassel.Services.Contract {
         ICommentServiceProvider<Comment> Comments { get; }
 
         ILikesServiceProvider Likes { get; }
+
+        ValueTask<(IEnumerable<Status> entry, JsonStatus status, Error error)> GetCollectionAbstractAsync(Expression<Func<Status, bool>> where = null);
 
         ValueTask<(Status entry, JsonStatus status, Error error)> GetStatusDetailsAsync(string id);
 
