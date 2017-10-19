@@ -55,6 +55,7 @@ namespace Tassel.Service.Controllers {
         }
 
         [HttpGet]
+        [Token, User]
         public JsonResult GetUser() {
             this.HttpContext.GetStringEntry(TokenClaimsKey.UUID, out var uuid);
             if(uuid==null)
