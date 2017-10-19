@@ -29,11 +29,14 @@ namespace Tassel.API.VM.Status {
         [JsonProperty("image")]
         public string Base64 { get; set; }
 
+        [JsonProperty("size")]
+        public double? Size { get; set; }
+
         [JsonProperty("width")]
-        public double Width { get; set; }
+        public double? Width { get; set; }
 
         [JsonProperty("height")]
-        public double Height { get; set; }
+        public double? Height { get; set; }
 
     }
 

@@ -54,13 +54,13 @@ namespace Tassel.API.Controllers {
                 Content = vm.Content,
                 State = EntryState.Published,
                 Creator = new BaseCreator { UUID = vm.UserID, UserName = vm.UserName },
-                Images = vm.Images.Select(i => new BaseImage { Base64 = i.Base64, IsFile = true }).ToList()
+                Images = vm.Images.Select(i => new BaseImage { Base64 = i.Base64, FileSize = i.Size.GetValueOrDefault(), IsFile = true }).ToList()
             };
-            entry.Images.ToList().ForEach(i => {
-                if (i.IsFile) { // Compression
-                    var imsEcd = ImageRender.ImageCompress(i.Base64, 0.2);
-                    i.Base64 = imsEcd ?? i.Base64;
-                }
+            entry.Images.ToList().ForEach(i => { // Compression
+                if (!i.IsFile) { return; }
+                var (base64, thumb) = ImageRender.ImageMutiCompress(i.Base64, 0.2, i.FileSize > 40000 ? 0.1 : 0.2);
+                i.Base64 = base64 ?? i.Base64;
+                i.Thumbnail = thumb;
             });
             var (status, succeed, error) = await this.status.InsertOneAsync(entry);
             if (!succeed)

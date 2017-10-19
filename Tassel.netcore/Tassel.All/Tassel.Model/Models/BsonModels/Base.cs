@@ -122,10 +122,19 @@ namespace Tassel.Model.Models.BsonModels {
         public string Url { get; set; }
         public bool ShouldSerializeUrl() => !this.IsFile;
 
+        [BsonIgnore]
+        [JsonIgnore)]
+        public double FileSize { get; set; }
+
         [BsonElement("base_64")]
         [JsonProperty("base_64")]
         public string Base64 { get; set; }
         public bool ShouldSerializeBase64() => this.IsFile;
+
+        [BsonElement("thumb")]
+        [JsonProperty("thumb")]
+        public string Thumbnail { get; set; }
+        public bool ShouldSerializeThumbnail() => this.IsFile && this.Thumbnail != null;
 
     }
 
