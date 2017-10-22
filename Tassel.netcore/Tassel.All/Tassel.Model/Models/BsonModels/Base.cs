@@ -40,7 +40,7 @@ namespace Tassel.Model.Models.BsonModels {
         public virtual string ID { get; set; } = IdentityProvider.CreateGuid(GuidType.N);
 
         [BsonElement("type")]
-        [JsonIgnore]
+        [JsonProperty("type")]
         public virtual ModelType Type { get; } = ModelType.Default;
 
         [BsonElement("c_time")]
@@ -79,12 +79,16 @@ namespace Tassel.Model.Models.BsonModels {
     public class BaseLikesModel : BaseCreateModel {
 
         [BsonElement("liker_ids")]
-        [JsonIgnore]
+        [JsonProperty("liker_ids")]
         public IList<string> LikerIDs { get; set; } = new List<string>();
+
+        public bool ShouldSerializeLikerIDs() => this.Likes.Count == 0;
 
         [BsonIgnore]
         [JsonProperty("like_users")]
         public IList<LikesEntry> Likes { get; set; } = new List<LikesEntry>();
+
+        public bool ShouldSerializeLikes() => this.Likes.Count > 0;
 
         [BsonIgnore]
         [JsonProperty("likers_count")]
