@@ -26,17 +26,20 @@ namespace Tassel.API.VM.Status {
     [JsonObject]
     public class ImageVM {
 
+        [JsonProperty("origin")]
+        public string OriginURL { get; set; }
+
+        [JsonProperty("thumb")]
+        public string ThumbnailURL { get; set; }
+
+        [JsonProperty("large")]
+        public string LargeURL { get; set; }
+
+        [JsonProperty("normal")]
+        public string MiddleURL { get; set; }
+
         [JsonProperty("image")]
         public string Base64 { get; set; }
-
-        [JsonProperty("size")]
-        public double? Size { get; set; }
-
-        [JsonProperty("width")]
-        public double? Width { get; set; }
-
-        [JsonProperty("height")]
-        public double? Height { get; set; }
 
     }
 

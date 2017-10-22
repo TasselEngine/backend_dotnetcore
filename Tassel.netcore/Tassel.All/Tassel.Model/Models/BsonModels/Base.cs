@@ -67,7 +67,7 @@ namespace Tassel.Model.Models.BsonModels {
     }
 
     [JsonObject]
-    public class BaseCreateModel: BaseModel {
+    public class BaseCreateModel : BaseModel {
 
         [BsonElement("creator")]
         [JsonProperty("creator")]
@@ -121,24 +121,30 @@ namespace Tassel.Model.Models.BsonModels {
         [JsonProperty("is_file")]
         public bool IsFile { get; set; }
 
-        [BsonElement("url")]
-        [JsonProperty("url")]
-        public string Url { get; set; }
-        public bool ShouldSerializeUrl() => !this.IsFile;
-
-        [BsonIgnore]
-        [JsonIgnore]
-        public double FileSize { get; set; }
-
         [BsonElement("base_64")]
         [JsonProperty("base_64")]
         public string Base64 { get; set; }
-        public bool ShouldSerializeBase64() => this.IsFile;
+        public bool ShouldSerializeBase64() => this.Base64 != null;
+
+        [BsonElement("url")]
+        [JsonProperty("url")]
+        public string OriginUrl { get; set; }
+        public bool ShouldSerializeOriginUrl() => this.OriginUrl != null;
+
+        [BsonElement("middle")]
+        [JsonProperty("normal")]
+        public string MiddleUrl { get; set; }
+        public bool ShouldSerializeMiddleUrl() => this.MiddleUrl != null;
+
+        [BsonElement("large")]
+        [JsonProperty("large")]
+        public string LargeUrl { get; set; }
+        public bool ShouldSerializeLargeUrl() => this.LargeUrl != null;
 
         [BsonElement("thumb")]
         [JsonProperty("thumb")]
         public string Thumbnail { get; set; }
-        public bool ShouldSerializeThumbnail() => this.IsFile && this.Thumbnail != null;
+        public bool ShouldSerializeThumbnail() => this.Thumbnail != null;
 
     }
 

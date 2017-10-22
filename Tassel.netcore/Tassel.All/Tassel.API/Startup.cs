@@ -20,6 +20,9 @@ using Tassel.Service.Utils.Helpers;
 using Tassel.Model.Models.BsonModels;
 using Tassel.Services.Contract.Providers;
 using Tassel.Services.Providers;
+using System.IO;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.FileProviders;
 
 namespace Tassel.Service {
     public class Startup {
@@ -34,6 +37,7 @@ namespace Tassel.Service {
 
             services.AddMongoDbContext(Configuration);
 
+            services.AddScoped<IStaticService, StaticService>();
             services.AddScoped<IWeiboOAuthV2Option, WeiboOAuthV2Option>();
             services.AddScoped<IWeiboOAuthServiceProvider<User>, WeiboOAuthProvider>();
             services.AddScoped<IIdentityService<JwtSecurityToken, TokenProviderOptions, User>, IdentityService>();
@@ -68,7 +72,10 @@ namespace Tassel.Service {
             }
 
             app.UseCors(builder => builder.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin().AllowCredentials());
-
+            app.UseStaticFiles(new StaticFileOptions {
+                FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), @"wwwroot", "resources")),
+                RequestPath = new PathString("/api/resources")
+            });
             app.UseMvc();
 
             app.AddTasselTokenCreator(new TokenProviderOptions {

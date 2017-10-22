@@ -9,19 +9,19 @@ using Tassel.Model.Models.BsonModels;
 namespace Tassel.API.VM {
     public static class ModelCreator {
 
-        public static Model.Models.BsonModels.Status CreateStatus(Status.CreateStatusVM vm) {
+        public static Model.Models.BsonModels.Status CreateStatus(CreateStatusVM vm) {
             var entry = new Model.Models.BsonModels.Status {
                 Content = vm.Content,
                 State = EntryState.Published,
                 Creator = new BaseCreator { UUID = vm.UserID, UserName = vm.UserName },
-                Images = vm.Images.Select(i => new BaseImage { Base64 = i.Base64, FileSize = i.Size.GetValueOrDefault(), IsFile = true }).ToList()
+                Images = vm.Images.Select(i => new BaseImage {
+                    OriginUrl = i.OriginURL ,
+                    MiddleUrl = i.MiddleURL,
+                    LargeUrl = i.LargeURL,
+                    Thumbnail = i.ThumbnailURL,
+                    IsFile = false,
+                }).ToList()
             };
-            entry.Images.ToList().ForEach(i => { // Compression
-                if (!i.IsFile) { return; }
-                var (base64, thumb) = ImageRender.ImageMutiCompress(i.Base64, 0.2, i.FileSize > 40000 ? 0.1 : 0.2);
-                i.Base64 = base64 ?? i.Base64;
-                i.Thumbnail = thumb;
-            });
             return entry;
         }
 

@@ -10,16 +10,20 @@ namespace Tassel.API.Utils.Extensions {
     public static class ControllersExtensions {
 
         public static JsonResult JsonFormat(
-            this Controller c, 
-            bool succeed, 
-            JsonStatus status = JsonStatus.Succeed, 
-            string error = default(string), 
+            this Controller c,
+            bool succeed,
+            JsonStatus status = JsonStatus.Succeed,
+            string error = default(string),
             dynamic content = default(dynamic))
-            => c.JsonFormat(new JsonBase {
-               Status = status,
-               Message = c.GetErrorMessage(succeed, error??JsonErrorMaps.TryGet(status)),
-               Content = content
-           });
+            => c.JsonFormat(succeed ? new JsonBase {
+                Status = status,
+                Message = c.GetErrorMessage(succeed, error ?? JsonErrorMaps.TryGet(status)),
+                Content = content
+            } : new JsonBase {
+                Status = status == JsonStatus.Succeed ? JsonStatus.Error : status,
+                Message = c.GetErrorMessage(succeed, error ?? JsonErrorMaps.TryGet(status == JsonStatus.Succeed ? JsonStatus.Error : status)),
+                Content = content
+            });
 
     }
 }
