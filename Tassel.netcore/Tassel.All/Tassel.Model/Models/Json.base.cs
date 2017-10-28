@@ -37,6 +37,7 @@ namespace Tassel.Model.Models {
         UserUpdateFailed = 20008,
         ThirdPartUserNotExist = 20009,
         UserAccessDenied = 20010,
+        CheckAdminFailed = 20011,
 
         WeiboAccessFailed = 21001,
         WeiboInfosFetchFailed = 21002,
@@ -73,6 +74,7 @@ namespace Tassel.Model.Models {
             [JsonStatus.UserUpdateFailed] = Errors.UpdateUserFailed,
             [JsonStatus.ThirdPartUserNotExist] = "3rd-part user details not found.",
             [JsonStatus.UserAccessDenied] = "the role of user logined is denied in this request.",
+            [JsonStatus.CheckAdminFailed] = "check user admin role failed.",
             [JsonStatus.WeiboAccessFailed] = "try to get weibo access_token failed.",
             [JsonStatus.WeiboInfosFetchFailed] = "try to fetch weibo user info failed.",
             [JsonStatus.WeiboUserCheckFailed] = "try to checkin weibo user failed.",

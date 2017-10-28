@@ -26,7 +26,9 @@ namespace Tassel.Services.Contract {
 
         (TUser, bool, string) GetUserDetailsByUserName(string uname);
         
-        (bool, string) TryUpdateNative(TUser user);
+        (bool succeed, string error) TryUpdateNative(TUser user);
+
+        (string role, bool succeed, string error) GetUserRole(string uuid);
 
     }
 }

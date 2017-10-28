@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Tassel.API.Utils.Authorization;
 using Tassel.API.Utils.Extensions;
 using Tassel.API.VM.File;
 using Tassel.Services.Contract;
@@ -10,6 +11,7 @@ using Tassel.Services.Contract;
 namespace Tassel.API.Controllers {
 
     [Route("api/static")]
+    [Token, Admin]
     public class StaticController : Controller {
 
         private IStaticService srv;

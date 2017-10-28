@@ -67,6 +67,13 @@ namespace Tassel.Services.Service {
             return (usr, true, null);
         }
 
+        public (string role, bool succeed, string error) GetUserRole(string uuid) {
+            var (user, succeed, error) = this.GetUserDetailsByID(uuid);
+            if (!succeed)
+                return (null, false, error);
+            return (user.Role, true, error);
+        }
+
         public IEnumerable<dynamic> GetUsersListByFilter(Expression<Func<User, bool>> whereLambada) {
             return this.users.AsQueryable().Where(whereLambada)?.Select(i => new {
                 UUID = i.UUID,
@@ -105,7 +112,7 @@ namespace Tassel.Services.Service {
             }
         }
 
-        public (bool, string) TryUpdateNative(User user) {
+        public (bool succeed, string error) TryUpdateNative(User user) {
             try {
                 this.users.InsertOne(user);
                 return (true, null);

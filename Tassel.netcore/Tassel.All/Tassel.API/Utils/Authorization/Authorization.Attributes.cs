@@ -27,12 +27,15 @@ namespace Tassel.API.Utils.Authorization {
     public class RoleFilterAttribute : ActionFilterAttribute {
 
         private string[] roles;
+        private readonly bool work;
 
-        public RoleFilterAttribute(params string[] role) {
+        public RoleFilterAttribute(bool work = true, params string[] role) {
+            this.work = work;
             this.roles = role;
         }
 
         public override void OnActionExecuting(ActionExecutingContext context) {
+            if (!this.work) { return; }
             context.HttpContext.GetStringEntry(TokenClaimsKey.RoleID, out var role);
             var enabled = this.roles.Contains(role);
             if(!enabled)
@@ -42,15 +45,15 @@ namespace Tassel.API.Utils.Authorization {
     }
 
     public class UserAttribute : RoleFilterAttribute {
-        public UserAttribute() : base(UserRoleConstants.User, UserRoleConstants.Admin, UserRoleConstants.CORE) { }
+        public UserAttribute(bool work = true) : base(work, UserRoleConstants.User, UserRoleConstants.Admin, UserRoleConstants.CORE) { }
     }
 
     public class AdminAttribute : RoleFilterAttribute {
-        public AdminAttribute() : base(UserRoleConstants.CORE, UserRoleConstants.Admin) { }
+        public AdminAttribute(bool work = true) : base(work, UserRoleConstants.CORE, UserRoleConstants.Admin) { }
     }
 
     public class CoreAttribute : RoleFilterAttribute {
-        public CoreAttribute() : base(UserRoleConstants.User) { }
+        public CoreAttribute(bool work = true) : base(work, UserRoleConstants.User) { }
     }
 
 }

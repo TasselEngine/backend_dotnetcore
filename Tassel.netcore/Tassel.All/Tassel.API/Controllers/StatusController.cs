@@ -39,10 +39,8 @@ namespace Tassel.API.Controllers {
         }
 
         [HttpPost("create")]
-        //[Token, Admin] 
-        [Token, User]// TEST
+        [Token, Admin]
         public async Task<JsonResult> PostAsync([FromBody]CreateStatusVM vm) {
-            // TEST
             if (vm == null)
                 return this.JsonFormat(false, JsonStatus.BodyFormIsNull);
             this.HttpContext.GetStringEntry(TokenClaimsKey.UUID, out var uuid);

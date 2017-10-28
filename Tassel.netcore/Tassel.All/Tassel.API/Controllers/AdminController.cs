@@ -28,5 +28,10 @@ namespace Tassel.API.Controllers {
             return this.JsonFormat(true, content: this.identity.GetUsersListByFilter(i => true));
         }
 
+        [HttpGet("is_admin")]
+        public JsonResult CheckAdminl() {
+            return this.JsonFormat(true);
+        }
+
     }
 }

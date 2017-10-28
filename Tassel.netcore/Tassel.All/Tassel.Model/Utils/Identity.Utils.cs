@@ -22,6 +22,12 @@ namespace Tassel.Model.Utils {
             }
         }
 
+        public static User CreateAdmin(string username, string password, Gender gender = Gender.Male) {
+            var admin = CreateUser(username, password, gender, null);
+            admin.Role = UserRoleConstants.Admin;
+            return admin;
+        }
+
         public static User CreateUserByWeibo(WeiboUser wuser) {
             var uuid = CreateGuid(GuidType.N);
             return new User {

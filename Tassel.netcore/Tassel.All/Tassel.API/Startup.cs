@@ -23,6 +23,7 @@ using Tassel.Services.Providers;
 using System.IO;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.FileProviders;
+using Tassel.Model.Utils;
 
 namespace Tassel.Service {
     public class Startup {
@@ -83,6 +84,8 @@ namespace Tassel.Service {
                 Issuer = TokenProviderEntry.Issuer,
                 SigningCredentials = new SigningCredentials(TokenProvider.CreateKey(Configuration), SecurityAlgorithms.HmacSha256),
             });
+
+            app.CreateMongoSeed(Configuration);
 
         }
     }
