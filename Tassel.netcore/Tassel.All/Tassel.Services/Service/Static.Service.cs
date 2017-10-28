@@ -34,25 +34,26 @@ namespace Tassel.Services.Service {
 
         public async ValueTask<(bool succeed, Error error, ImageResult result)> CreateIamgeResourceAsync(byte[] base64Image) {
             var unq_name = $"{Guid.NewGuid().ToString()}-{DateTime.UtcNow.ToUnix()}";
-            var end = new ImageResult ();
+            var end = new ImageResult();
             try {
-                end.OriginImagePath = await CreateImageByCompressPercentAsync(base64Image, unq_name, origin);
-                end.LargeImagePath = await CreateImageByCompressPercentAsync(base64Image, unq_name, large, 0.7);
-                end.MiddleImagePath = await CreateImageByCompressPercentAsync(base64Image, unq_name, normal, 0.4);
-                end.ThumbnailPath = await CreateImageByCompressPercentAsync(base64Image, unq_name, thumbnail, 0.1);
+                end.OriginImagePath = await CreateImageByCompressPercentAsync(base64Image, unq_name, origin, 0.5);
+                end.ThumbnailPath = await CreateImageByCompressPercentAsync(base64Image, unq_name, thumbnail, 0.1, true);
+                (end.Width, end.Height) = ImageCompressor.BinarySize(base64Image);
             } catch (Exception e) {
                 return (false, Error.Create(Errors.CreateFileFailed, e.Message), null);
             }
             return (true, Error.Empty, end);
         }
 
-        private async ValueTask<string> CreateImageByCompressPercentAsync(byte[] base64Image, string unq_name, string prefix ,double percent = 1) {
+        private async ValueTask<string> CreateImageByCompressPercentAsync(byte[] base64Image, string unq_name, string prefix, double percent = 1, bool cut = false) {
             var name = $"/resources/images/{prefix}/{unq_name}.png";
             using (var logFile = File.Create(this.env.WebRootPath + name))
             using (var logWriter = new BufferedStream(logFile)) {
                 var bts = base64Image;
                 if (percent < 1)
-                    bts = ImageCompressor.BinaryCompress(bts, percent);
+                    bts = cut ?
+                        ImageCompressor.BinaryCutCompress(bts, percent, 320, 1600) :
+                        ImageCompressor.BinaryCompress(bts, percent, 800);
                 await logWriter.WriteAsync(bts, 0, bts.Length);
                 return name;
             };

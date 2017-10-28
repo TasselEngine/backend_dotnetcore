@@ -14,11 +14,11 @@ namespace Tassel.API.VM {
                 Content = vm.Content,
                 State = EntryState.Published,
                 Creator = new BaseCreator { UUID = vm.UserID, UserName = vm.UserName },
-                Images = vm.Images.Select(i => new BaseImage {
-                    OriginUrl = i.OriginURL ,
-                    MiddleUrl = i.MiddleURL,
-                    LargeUrl = i.LargeURL,
+                Images = vm.Images.Where(i => i != null).Select(i => new BaseImage {
+                    OriginUrl = i.OriginURL,
                     Thumbnail = i.ThumbnailURL,
+                    Width = i.Width,
+                    Height = i.Height,
                     IsFile = false,
                 }).ToList()
             };

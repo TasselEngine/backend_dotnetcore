@@ -32,11 +32,11 @@ namespace Tassel.API.VM.Status {
         [JsonProperty("thumb")]
         public string ThumbnailURL { get; set; }
 
-        [JsonProperty("large")]
-        public string LargeURL { get; set; }
+        [JsonProperty("width")]
+        public int Width { get; set; }
 
-        [JsonProperty("normal")]
-        public string MiddleURL { get; set; }
+        [JsonProperty("height")]
+        public int Height { get; set; }
 
         [JsonProperty("image")]
         public string Base64 { get; set; }

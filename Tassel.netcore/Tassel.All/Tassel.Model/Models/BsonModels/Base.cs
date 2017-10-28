@@ -126,20 +126,20 @@ namespace Tassel.Model.Models.BsonModels {
         public string Base64 { get; set; }
         public bool ShouldSerializeBase64() => this.Base64 != null;
 
+        [BsonElement("width")]
+        [JsonProperty("width")]
+        public int? Width { get; set; }
+        public bool ShouldSerializeWidth() => this.Width!=null;
+
+        [BsonElement("height")]
+        [JsonProperty("height")]
+        public int? Height { get; set; }
+        public bool ShouldSerializeHeight() => this.Height != null;
+
         [BsonElement("url")]
         [JsonProperty("url")]
         public string OriginUrl { get; set; }
         public bool ShouldSerializeOriginUrl() => this.OriginUrl != null;
-
-        [BsonElement("middle")]
-        [JsonProperty("normal")]
-        public string MiddleUrl { get; set; }
-        public bool ShouldSerializeMiddleUrl() => this.MiddleUrl != null;
-
-        [BsonElement("large")]
-        [JsonProperty("large")]
-        public string LargeUrl { get; set; }
-        public bool ShouldSerializeLargeUrl() => this.LargeUrl != null;
 
         [BsonElement("thumb")]
         [JsonProperty("thumb")]

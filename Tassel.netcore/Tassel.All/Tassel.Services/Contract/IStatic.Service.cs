@@ -10,14 +10,14 @@ namespace Tassel.Services.Contract {
     [JsonObject]
     public class ImageResult {
 
+        [JsonProperty("width")]
+        public int Width { get; set; }
+
+        [JsonProperty("height")]
+        public int Height { get; set; }
+
         [JsonProperty("origin")]
         public string OriginImagePath { get; set; }
-
-        [JsonProperty("large")]
-        public string LargeImagePath { get; set; }
-
-        [JsonProperty("normal")]
-        public string MiddleImagePath { get; set; }
 
         [JsonProperty("thumb")]
         public string ThumbnailPath { get; set; }
