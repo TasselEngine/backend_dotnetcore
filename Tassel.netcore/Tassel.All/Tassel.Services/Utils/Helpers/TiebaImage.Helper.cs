@@ -17,8 +17,9 @@ namespace Tassel.Services.Utils.Helpers {
             get => middle_tieba_images_list ?? (middle_tieba_images_list = middle_tieba_images.ToList());
         }
 
-        private static Dictionary<string, string> CreateTiebaGroup(string flag = "middle", string root = "/resources") {
-            var prefix = $"{root}/{TiebaImgRoot}/{flag}";
+        private static Dictionary<string, string> CreateTiebaGroup(string root = "/resources") {
+            var prefix = $"{root}/{TiebaImgRoot}/middle";
+            var huaji2 = $"{root}/{TiebaImgRoot}/others/huaji-extra";
             return new Dictionary<string, string> {
                 ["#(呵呵)"]=$"{prefix}/1.png",
                 ["#(高兴)"] = $"{prefix}/2.png",
@@ -58,6 +59,20 @@ namespace Tassel.Services.Utils.Helpers {
                 ["#(赞)"] = $"{prefix}/48.png",
                 ["#(垃圾)"] = $"{prefix}/49.png",
                 ["#(ok)"] = $"{prefix}/50.png",
+                ["#(葫芦滑稽1)"] = $"{huaji2}/1.png",
+                ["#(葫芦滑稽2)"] = $"{huaji2}/2.png",
+                ["#(葫芦滑稽3)"] = $"{huaji2}/3.png",
+                ["#(葫芦滑稽4)"] = $"{huaji2}/4.png",
+                ["#(葫芦滑稽5)"] = $"{huaji2}/5.png",
+                ["#(葫芦滑稽6)"] = $"{huaji2}/6.png",
+                ["#(葫芦滑稽7)"] = $"{huaji2}/7.png",
+                ["#(白帽滑稽)"] = $"{huaji2}/11.png",
+                ["#(滑稽双马尾)"] = $"{huaji2}/12.png",
+                ["#(滑稽上火)"] = $"{huaji2}/14.png",
+                ["#(滑稽牛魔王)"] = $"{huaji2}/16.png",
+                ["#(滑稽猪八戒)"] = $"{huaji2}/17.png",
+                ["#(滑稽博士)"] = $"{huaji2}/18.png",
+                ["#(滑稽黄瓜)"] = $"{huaji2}/19.png",
             };
         }
 

@@ -87,7 +87,7 @@ namespace Tassel.Services.Service {
                 return (entry, status, error);
             var (coll, succ02, _) = await this.comments.GetCollectionsAsync(i => i.ParentID == entry.ID && i.ParentType == ModelType.Status);
             if (succ02) 
-                entry.Comments = coll;
+                entry.Comments = coll.OrderBy(i => i.CreateTime).ToList();
             var (likers, succ03, _) = await this.likes.GetCollectionsAsync(i => i.ParentID == entry.ID && i.TargetType == ModelType.Status);
             if (succ03) 
                 entry.Likes = likers;
