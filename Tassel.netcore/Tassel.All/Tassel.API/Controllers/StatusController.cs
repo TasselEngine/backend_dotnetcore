@@ -64,10 +64,11 @@ namespace Tassel.API.Controllers {
                 return this.JsonFormat(false, JsonStatus.UserNotLogin);
             if (uuid != vm.UID)
                 return this.JsonFormat(false, JsonStatus.UserNotMatched);
-            var (status, error) = await this.status.AddCommentAsync(id, ModelCreator.CreateComment(vm, id, ModelType.Status));
+            var model = default(Comment);
+            var (status, error) = await this.status.AddCommentAsync(id, model = ModelCreator.CreateComment(vm, id, ModelType.Status));
             if (status != JsonStatus.Succeed)
                 return this.JsonFormat(false, status, error.Read());
-            return this.JsonFormat(true);
+            return this.JsonFormat(true, content: model);
         }
 
         [HttpDelete("{id}/comment")]

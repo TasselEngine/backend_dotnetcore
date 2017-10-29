@@ -11,7 +11,6 @@ using Tassel.Services.Contract;
 namespace Tassel.API.Controllers {
 
     [Route("api/static")]
-    [Token, Admin]
     public class StaticController : Controller {
 
         private IStaticService srv;
@@ -21,11 +20,18 @@ namespace Tassel.API.Controllers {
         }
 
         [HttpPost("image")]
+        [Token, Admin]
         public async ValueTask<JsonResult> PushAsync([FromBody]UploadImageVM vm) {
             var (succeed, error, result) = await this.srv.CreateIamgeResourceAsync(vm.File);
             if (!succeed)
                 return this.JsonFormat(false);
             return this.JsonFormat(true, content: result);
+        }
+
+        [HttpGet("tieba")]
+        public JsonResult TiebaImagesGet() {
+            var (_,_,images)=this.srv.GetTiebaImagesGroup();
+            return this.JsonFormat(true, content: images);
         }
 
     }

@@ -3,21 +3,20 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.FileProviders;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Tassel.Model.Utils;
 using Tassel.Services.Contract;
+using Tassel.Services.Utils.Helpers;
 
 namespace Tassel.Services.Service {
 
     public class StaticService : IStaticService {
 
-        private const string origin = "imgs";
-        private const string normal = "middle";
-        private const string large = "large";
-        private const string thumbnail = "tbs";
+        private const string origin = "images/imgs";
+        private const string thumbnail = "images/tbs";
 
         private IHostingEnvironment env;
         private IFileProvider provider;
@@ -46,7 +45,7 @@ namespace Tassel.Services.Service {
         }
 
         private async ValueTask<string> CreateImageByCompressPercentAsync(byte[] base64Image, string unq_name, string prefix, double percent = 1, bool cut = false) {
-            var name = $"/resources/images/{prefix}/{unq_name}.png";
+            var name = $"/resources/{prefix}/{unq_name}.png";
             using (var logFile = File.Create(this.env.WebRootPath + name))
             using (var logWriter = new BufferedStream(logFile)) {
                 var bts = base64Image;
@@ -63,5 +62,8 @@ namespace Tassel.Services.Service {
             throw new NotImplementedException();
         }
 
+        public (bool succeed, Error error, IList<KeyValuePair<string, string>> images) GetTiebaImagesGroup() {
+            return (true, Error.Empty, TiebaImageHelper.TiebaModdleGroup);
+        }
     }
 }

@@ -30,5 +30,7 @@ namespace Tassel.Services.Contract {
 
         ValueTask<(bool succeed, Error error)> DeleteIamgeResourceAsync(string base64FileString);
 
+        (bool succeed, Error error, IList<KeyValuePair<string, string>> images) GetTiebaImagesGroup();
+
     }
 }
