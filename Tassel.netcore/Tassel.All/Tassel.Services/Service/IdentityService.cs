@@ -43,10 +43,10 @@ namespace Tassel.Services.Service {
                     new Claim(JwtRegisteredClaimNames.Jti, user.UUID),
                     new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToUnix().ToString(), ClaimValueTypes.Integer64),
                     new Claim(JwtRegisteredClaimNames.Gender, user.Gender.ToString()),
-                    new Claim(TokenClaimsKey.Gender,user.Gender.ToString()),
+                    new Claim(TokenClaimsKey.Avatar,user.Avatar??""),
                     new Claim(TokenClaimsKey.UUID,user.UUID),
-                    new Claim(TokenClaimsKey.UserName,user.UserName),
-                    new Claim(TokenClaimsKey.RoleID,user.Role.ToString()),
+                    new Claim(TokenClaimsKey.UserName,user.UserName??""),
+                    new Claim(TokenClaimsKey.RoleID,user.Role??"".ToString()),
                  },
                  notBefore: DateTime.UtcNow,
                  expires: DateTime.UtcNow.Add(options.Expiration),
@@ -54,7 +54,7 @@ namespace Tassel.Services.Service {
         }
 
         public (User, bool, string) GetUserDetailsByID(string uuid) {
-            var usr = this.users.Find(i=>i.UUID == uuid).FirstOrDefault();
+            var usr = this.users.Find(i => i.UUID == uuid).FirstOrDefault();
             if (usr == null)
                 return (null, false, Errors.UserNotFound);
             return (usr, true, null);

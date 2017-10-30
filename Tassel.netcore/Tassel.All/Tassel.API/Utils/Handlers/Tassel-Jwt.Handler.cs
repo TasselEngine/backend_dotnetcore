@@ -99,13 +99,17 @@ namespace Tassel.API.Utils.Handlers {
                             if (validJwt == null)
                                 throw new ArgumentException("Invalid JWT");
                             var uuid = validJwt.Claims.FirstOrDefault(i => i.Type == TokenClaimsKey.UUID);
-                            if (uuid != null) {
+                            if (uuid != null) 
                                 this.Context.SetStringEntry(TokenClaimsKey.UUID, uuid.Value);
-                            }
+                            var uname = validJwt.Claims.FirstOrDefault(i => i.Type == TokenClaimsKey.UserName);
+                            if (uname != null) 
+                                this.Context.SetStringEntry(TokenClaimsKey.UserName, uname.Value);
                             var role = validJwt.Claims.FirstOrDefault(i => i.Type == TokenClaimsKey.RoleID);
-                            if (role != null) {
+                            if (role != null) 
                                 this.Context.SetStringEntry(TokenClaimsKey.RoleID, role.Value);
-                            }
+                            var avatar = validJwt.Claims.FirstOrDefault(i => i.Type == TokenClaimsKey.Avatar);
+                            if (avatar != null) 
+                                this.Context.SetStringEntry(TokenClaimsKey.Avatar, avatar.Value);
 
                         } catch (ArgumentException ex) {
                             if (validationFailures == null) {

@@ -48,7 +48,11 @@ namespace Tassel.API.Controllers {
                 return this.JsonFormat(false, JsonStatus.UserNotLogin);
             if (uuid != vm.UserID)
                 return this.JsonFormat(false, JsonStatus.UserNotMatched);
-            var (status, succeed, error) = await this.status.InsertOneAsync(ModelCreator.CreateStatus(vm));
+            this.HttpContext.GetStringEntry(TokenClaimsKey.Avatar, out var avatar);
+            this.HttpContext.GetStringEntry(TokenClaimsKey.UserName, out var uname);
+            if (vm.UserName == null)
+                vm.UserName = uname;
+            var (status, succeed, error) = await this.status.InsertOneAsync(ModelCreator.CreateStatus(vm, avatar));
             if (!succeed)
                 return this.JsonFormat(false, JsonStatus.StatusInsertFailed, error.Read());
             return this.JsonFormat(true, content: status.ID);
@@ -64,8 +68,12 @@ namespace Tassel.API.Controllers {
                 return this.JsonFormat(false, JsonStatus.UserNotLogin);
             if (uuid != vm.UID)
                 return this.JsonFormat(false, JsonStatus.UserNotMatched);
+            this.HttpContext.GetStringEntry(TokenClaimsKey.Avatar, out var avatar);
+            this.HttpContext.GetStringEntry(TokenClaimsKey.UserName, out var uname);
+            if (vm.UName == null)
+                vm.UName = uname;
             var model = default(Comment);
-            var (status, error) = await this.status.AddCommentAsync(id, model = ModelCreator.CreateComment(vm, id, ModelType.Status));
+            var (status, error) = await this.status.AddCommentAsync(id, model = ModelCreator.CreateComment(vm, id, ModelType.Status, avatar));
             if (status != JsonStatus.Succeed)
                 return this.JsonFormat(false, status, error.Read());
             return this.JsonFormat(true, content: model);
@@ -95,7 +103,11 @@ namespace Tassel.API.Controllers {
                 return this.JsonFormat(false, JsonStatus.UserNotLogin);
             if (uuid != vm.UserID)
                 return this.JsonFormat(false, JsonStatus.UserNotMatched);
-            var (user_id, status, error) = await this.status.LikeAsync(id, ModelCreator.CreateLike(vm, id, ModelType.Status));
+            this.HttpContext.GetStringEntry(TokenClaimsKey.Avatar, out var avatar);
+            this.HttpContext.GetStringEntry(TokenClaimsKey.UserName, out var uname);
+            if (vm.UserName == null)
+                vm.UserName = uname;
+            var (user_id, status, error) = await this.status.LikeAsync(id, ModelCreator.CreateLike(vm, id, ModelType.Status, avatar));
             if (status != JsonStatus.Succeed)
                 return this.JsonFormat(false, status, error.Read());
             return this.JsonFormat(true, content: user_id);

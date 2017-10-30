@@ -53,6 +53,8 @@ namespace Tassel.API.VM.Identity {
             this.User.AvatarUrl = wuser.AvatarUrl;
             this.User.Domain = wuser.Domain;
             this.User.Description = wuser.Description;
+            if (this.user.Avatar == null) // For Token checkin.
+                this.user.Avatar = wuser.AvatarUrl;
             return this;
         }
 

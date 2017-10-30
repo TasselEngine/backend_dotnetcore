@@ -15,6 +15,7 @@ namespace Tassel.Services.Utils.Constants {
         public const string UserName = "u_name";
         public const string Password = "psd";
         public const string UUID = "uuid";
+        public const string Avatar = "avatar";
     }
 
     public struct TokenProviderEntry {

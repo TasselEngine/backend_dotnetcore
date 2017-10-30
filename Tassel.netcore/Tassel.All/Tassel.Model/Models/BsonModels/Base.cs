@@ -64,6 +64,12 @@ namespace Tassel.Model.Models.BsonModels {
         [JsonProperty("user_name")]
         public string UserName { get; set; }
 
+        [BsonElement("avatar")]
+        [JsonProperty("avatar")]
+        public string AvatarUrl { get; set; }
+
+        public bool ShouldSerializeAvatarUrl() => this.AvatarUrl != null;
+
     }
 
     [JsonObject]
