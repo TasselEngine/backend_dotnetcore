@@ -119,6 +119,12 @@ namespace Tassel.Model.Models.BsonModels {
         [JsonIgnore]
         public string ParentID { get; set; }
 
+        [BsonElement("mentioned")]
+        [JsonProperty("mentioned")]
+        public BaseCreator Mentioned { get; set; }
+
+        public bool ShouldSerializeMentioned() => this.Mentioned !=null;
+
     }
 
     public class BaseImage {

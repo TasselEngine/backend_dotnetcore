@@ -13,7 +13,11 @@ namespace Tassel.API.VM {
             var entry = new Model.Models.BsonModels.Status {
                 Content = vm.Content,
                 State = EntryState.Published,
-                Creator = new BaseCreator { UUID = vm.UserID, UserName = vm.UserName, AvatarUrl = avatar },
+                Creator = new BaseCreator {
+                    UUID = vm.UserID,
+                    UserName = vm.UserName,
+                    AvatarUrl = avatar
+                },
                 Images = vm.Images.Where(i => i != null).Select(i => new BaseImage {
                     OriginUrl = i.OriginURL,
                     Thumbnail = i.ThumbnailURL,
@@ -27,7 +31,15 @@ namespace Tassel.API.VM {
 
         public static Comment CreateComment(CommentInsertVM vm, string parent_id, ModelType parent_type, string avatar = null) {
             return new Comment {
-                Creator = new BaseCreator { UserName = vm.UName, UUID = vm.UID, AvatarUrl = avatar },
+                Creator = new BaseCreator {
+                    UserName = vm.UName,
+                    UUID = vm.UID,
+                    AvatarUrl = avatar
+                },
+                Mentioned = vm.MUID == null || vm.MName == null ? null :new BaseCreator {
+                    UUID = vm.MUID,
+                    UserName = vm.MName
+                },
                 CommentContent = vm.Content,
                 ParentID = parent_id,
                 ParentType = parent_type
@@ -36,7 +48,11 @@ namespace Tassel.API.VM {
 
         public static LikesEntry CreateLike(LikeVM vm, string parent_id, ModelType parent_type, string avatar = null) {
             return new LikesEntry {
-                User = new BaseCreator { UUID = vm.UserID, UserName = vm.UserName, AvatarUrl = avatar },
+                User = new BaseCreator {
+                    UUID = vm.UserID,
+                    UserName = vm.UserName,
+                    AvatarUrl = avatar
+                },
                 TargetType = parent_type,
                 ParentID = parent_id
             };

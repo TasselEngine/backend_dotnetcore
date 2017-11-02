@@ -18,6 +18,12 @@ namespace Tassel.API.VM.Status {
         [JsonProperty("uid")]
         public string UID { get; set; }
 
+        [JsonProperty("mend_user")]
+        public string MName { get; set; }
+
+        [JsonProperty("m_uid")]
+        public string MUID { get; set; }
+
     }
 
 }
