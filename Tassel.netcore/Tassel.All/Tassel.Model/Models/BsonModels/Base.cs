@@ -81,52 +81,6 @@ namespace Tassel.Model.Models.BsonModels {
 
     }
 
-    [JsonObject]
-    public class BaseLikesModel : BaseCreateModel {
-
-        [BsonElement("liker_ids")]
-        [JsonProperty("liker_ids")]
-        public IList<string> LikerIDs { get; set; } = new List<string>();
-
-        public bool ShouldSerializeLikerIDs() => this.Likes.Count == 0;
-
-        [BsonIgnore]
-        [JsonProperty("like_users")]
-        public IList<LikesEntry> Likes { get; set; } = new List<LikesEntry>();
-
-        public bool ShouldSerializeLikes() => this.Likes.Count > 0;
-
-        [BsonIgnore]
-        [JsonProperty("likers_count")]
-        public int LikesCount { get => this.Likes.Count > 0 ? this.Likes.Count : this.LikerIDs.Count; }
-
-    }
-
-    [JsonObject]
-    public class Comment : BaseCreateModel {
-
-        [BsonElement("content")]
-        [JsonProperty("details")]
-        public string CommentContent { get; set; }
-
-        public override ModelType Type { get; } = ModelType.Comment;
-
-        [BsonElement("parent_type")]
-        [JsonIgnore]
-        public ModelType ParentType { get; set; } = ModelType.Default;
-
-        [BsonElement("parent_id")]
-        [JsonIgnore]
-        public string ParentID { get; set; }
-
-        [BsonElement("mentioned")]
-        [JsonProperty("mentioned")]
-        public BaseCreator Mentioned { get; set; }
-
-        public bool ShouldSerializeMentioned() => this.Mentioned !=null;
-
-    }
-
     public class BaseImage {
 
         [BsonElement("is_file")]
@@ -157,31 +111,6 @@ namespace Tassel.Model.Models.BsonModels {
         [JsonProperty("thumb")]
         public string Thumbnail { get; set; }
         public bool ShouldSerializeThumbnail() => this.Thumbnail != null;
-
-    }
-
-    [JsonObject]
-    public class LikesEntry : BaseModel {
-
-        [JsonIgnore]
-        public override string ID { get; set; } = IdentityProvider.CreateGuid(GuidType.N);
-
-        public override ModelType Type { get; } = ModelType.LikeEntry;
-
-        [BsonElement("target_type")]
-        [JsonIgnore]
-        public ModelType TargetType { get; set; } = ModelType.Default;
-
-        [BsonElement("parent_id")]
-        [JsonIgnore]
-        public string ParentID { get; set; }
-
-        [BsonElement("user")]
-        [JsonProperty("user")]
-        public BaseCreator User { get; set; }
-
-        [JsonIgnore]
-        public override long? UpdateTime { get; set; }
 
     }
 

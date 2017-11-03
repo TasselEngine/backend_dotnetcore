@@ -25,7 +25,7 @@ namespace Tassel.API.Controllers {
         [HttpGet("all")]
         public async Task<JsonResult> Get() {
             var (coll, status, error) = await this.status.GetCollectionAbstractAsync();
-            if (status!=JsonStatus.Succeed)
+            if (status != JsonStatus.Succeed)
                 return this.JsonFormat(false, status, error.Read());
             return this.JsonFormat(true, content: coll);
         }
@@ -73,7 +73,14 @@ namespace Tassel.API.Controllers {
             if (vm.UName == null)
                 vm.UName = uname;
             var model = default(Comment);
-            var (status, error) = await this.status.AddCommentAsync(id, model = ModelCreator.CreateComment(vm, id, ModelType.Status, avatar));
+            var (status, error) = default((JsonStatus, Model.Utils.Error));
+            if (vm.IsReply) {
+                (status, error) = await this.status.Comments.AddReplyForCommentAsync(
+                    vm.CommentID, model = ModelCreator.CreateComment(vm, vm.CommentID, ModelType.Comment, avatar));
+            } else {
+                (status, error) = await this.status.AddCommentAsync(
+                    id, model = ModelCreator.CreateComment(vm, id, ModelType.Status, avatar));
+            }
             if (status != JsonStatus.Succeed)
                 return this.JsonFormat(false, status, error.Read());
             return this.JsonFormat(true, content: model);

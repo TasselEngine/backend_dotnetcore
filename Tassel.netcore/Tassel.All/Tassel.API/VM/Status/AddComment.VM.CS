@@ -9,6 +9,12 @@ namespace Tassel.API.VM.Status {
     [JsonObject]
     public class CommentInsertVM {
 
+        [JsonProperty("is_reply")]
+        public bool IsReply { get; set; } = false;
+
+        [JsonProperty("com_id")]
+        public string CommentID { get; set; }
+
         [JsonProperty("content")]
         public string Content { get; set; }
 
