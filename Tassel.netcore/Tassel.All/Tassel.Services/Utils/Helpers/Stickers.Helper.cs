@@ -251,6 +251,7 @@ namespace Tassel.Services.Utils.Helpers {
                 ["#(sinar晚上)"] = $"{others}/night.png",
                 ["#(sinar爱心)"] = $"{others}/heart.png",
                 ["#(sinar心碎)"] = $"{others}/heartbroken.png",
+                ["#(sinarBSN)"] = $"{others}/bishi.png",
             };
         }
 
