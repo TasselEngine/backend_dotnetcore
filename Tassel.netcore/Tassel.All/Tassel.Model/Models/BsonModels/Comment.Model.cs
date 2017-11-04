@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Tassel.Model.Models.BsonModels {
     [JsonObject]
-    public class Comment : BaseCreateModel {
+    public class Comment : AccessControllyBase {
 
         [BsonElement("content")]
         [JsonProperty("details")]

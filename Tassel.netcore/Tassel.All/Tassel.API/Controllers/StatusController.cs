@@ -88,13 +88,20 @@ namespace Tassel.API.Controllers {
 
         [HttpDelete("{id}/comment")]
         [Token, User]
-        public async Task<JsonResult> DeleteCommentAsync(string id, string comt_id) {
+        public async Task<JsonResult> DeleteCommentAsync(string id, string comt_id, bool is_reply = false, string reply_id = null) {
             this.HttpContext.GetStringEntry(TokenClaimsKey.UUID, out var uuid);
-            if (string.IsNullOrEmpty(comt_id))
+            if (string.IsNullOrEmpty(comt_id)|| string.IsNullOrEmpty(id))
                 return this.JsonFormat(false, JsonStatus.QueryParamsNull);
             if (uuid == null)
                 return this.JsonFormat(false, JsonStatus.UserNotLogin);
-            var (status, error) = await this.status.RemoveCommentAsync(id, uuid, comt_id);
+            var (status, error) = default((JsonStatus, Model.Utils.Error));
+            if (is_reply) {
+                if(reply_id==null)
+                    return this.JsonFormat(false, JsonStatus.CommentRemoveFailed);
+                (status, error) = await this.status.Comments.RemoveReplyForCommentAsync(comt_id, reply_id,uuid);
+            } else {
+                (status, error) = await this.status.RemoveCommentAsync(id, uuid, comt_id);
+            }
             if (status != JsonStatus.Succeed)
                 return this.JsonFormat(false, status, error.Read());
             return this.JsonFormat(true);

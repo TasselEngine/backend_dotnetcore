@@ -66,7 +66,7 @@ namespace Tassel.Services.Service {
             var (coll, succeed, error) = await this.GetPublishedCollectionsAsync(where);
             if (!succeed)
                 return (default(IList<Status>), JsonStatus.StatusCollectionLoadFailed, error);
-            return (coll.Select(i=> {
+            return (coll.Select(i => {
                 i.Images = i.Images.Select(m => new BaseImage { Thumbnail = m.Thumbnail, IsFile = m.IsFile }).ToList();
                 return i;
             }), JsonStatus.Succeed, Error.Empty);
@@ -85,20 +85,22 @@ namespace Tassel.Services.Service {
             var (entry, status, error) = await this.GetStatusAbstractAsync(id);
             if (entry == null)
                 return (entry, status, error);
-            var (coll, succ02, _) = await this.comments.GetCollectionsAsync(i => i.ParentID == entry.ID && i.ParentType == ModelType.Status);
-            if (succ02) 
+            var (coll, succ02, _) = await this.comments.GetCollectionsAsync(
+                i => i.ParentID == entry.ID && i.ParentType == ModelType.Status && i.State == EntryState.Published);
+            if (succ02)
                 entry.Comments = coll.OrderBy(i => i.CreateTime).ToList();
-            var (likers, succ03, _) = await this.likes.GetCollectionsAsync(i => i.ParentID == entry.ID && i.TargetType == ModelType.Status);
-            if (succ03) 
+            var (likers, succ03, _) = await this.likes.GetCollectionsAsync(
+                i => i.ParentID == entry.ID && i.TargetType == ModelType.Status);
+            if (succ03)
                 entry.Likes = likers;
             return (entry, JsonStatus.Succeed, Error.Empty);
         }
 
         public async ValueTask<(JsonStatus status, Error error)> AddCommentAsync(string id, Comment comment) {
             var (entry, succeed, error) = await this.FindOneUpdateAsync(id, null, this.DefineCommentsUpdate(comment.ID));
-            if(!succeed)
+            if (!succeed)
                 return (JsonStatus.CommentAddFailed, error);
-            if(entry==null)
+            if (entry == null)
                 return (JsonStatus.CommentAddFailed, Error.Create(Errors.EntryNotExist));
             (_, succeed, error) = await this.comments.InsertOneAsync(comment);
             if (!succeed) {
@@ -119,7 +121,7 @@ namespace Tassel.Services.Service {
             if (!succeed) {
                 // Rollback, anyway
                 await this.FindOneUpdateAsync(id, null, this.DefineCommentsUpdate(comment_id));
-                return (JsonStatus.CommentAddFailed, error);
+                return (JsonStatus.CommentRemoveFailed, error);
             }
             return (JsonStatus.Succeed, Error.Empty);
         }
@@ -128,18 +130,18 @@ namespace Tassel.Services.Service {
             var (entry, succeed, error) = await this.FindOneByIDAsync(id);
             if (!succeed)
                 return (default(string), JsonStatus.StatusNotFound, error);
-            if (entry.LikerIDs.Contains(like.User.UUID) ||entry.Likes.FirstOrDefault(i=>i.User.UUID== like.User.UUID) !=null) {
+            if (entry.LikerIDs.Contains(like.User.UUID) || entry.Likes.FirstOrDefault(i => i.User.UUID == like.User.UUID) != null) {
                 (succeed, error) = await this.likes.DeleteAllByIDsAsync(id, like.User.UUID);
                 if (!succeed)
                     return (default(string), JsonStatus.LikesRemoveFailed, error);
                 (_, succeed, error) = await this.UpdateOneAsync(id, null, this.DefineLikersUpdate(like.User.UUID, false));
-                if(!succeed)
-                    return (default(string),JsonStatus.LikesRemoveFailed, error);
+                if (!succeed)
+                    return (default(string), JsonStatus.LikesRemoveFailed, error);
                 return ("deleted", JsonStatus.Succeed, Error.Empty);
             } else {
                 (_, succeed, error) = await this.likes.InsertOneAsync(like);
                 if (!succeed)
-                    return (default(string),JsonStatus.LikesAddFailed, error);
+                    return (default(string), JsonStatus.LikesAddFailed, error);
                 (_, succeed, error) = await this.UpdateOneAsync(id, null, this.DefineLikersUpdate(like.User.UUID));
                 if (!succeed)
                     return (default(string), JsonStatus.LikesAddFailed, error);

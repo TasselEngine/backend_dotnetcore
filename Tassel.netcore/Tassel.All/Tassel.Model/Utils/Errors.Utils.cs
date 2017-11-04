@@ -32,6 +32,7 @@ namespace Tassel.Model.Utils {
 
     public static class Errors {
         public const string UnknownError = "unknown error";
+        public const string AccessDenied = "access denied";
         public const string CreateFileFailed = "create file failed";
         public const string DeleteNotAllowed = "deleting user is unavaliable.";
         public const string UserNotFound = "user not found.";

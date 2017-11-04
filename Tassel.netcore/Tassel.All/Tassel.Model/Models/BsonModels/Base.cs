@@ -115,6 +115,13 @@ namespace Tassel.Model.Models.BsonModels {
     }
 
     [JsonObject]
+    public class AccessControllyBase : BaseCreateModel {
+        [BsonElement("state")]
+        [JsonProperty("state")]
+        public EntryState State { get; set; } = EntryState.Published;
+    }
+
+        [JsonObject]
     public class DeleteSafelyBase : BaseLikesModel {
 
         [BsonElement("state")]

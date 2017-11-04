@@ -12,7 +12,7 @@ namespace Tassel.Services.Contract.Providers {
 
         ValueTask<(JsonStatus status, Error error)> AddReplyForCommentAsync(string com_id, Comment model);
 
-        ValueTask<(JsonStatus status, Error error)> RemoveReplyForCommentAsync(string com_id,  string reply_id);
+        ValueTask<(JsonStatus status, Error error)> RemoveReplyForCommentAsync(string com_id,  string reply_id, string uid);
 
     }
 
