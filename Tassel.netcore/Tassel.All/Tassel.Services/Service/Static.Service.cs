@@ -63,7 +63,19 @@ namespace Tassel.Services.Service {
         }
 
         public (bool succeed, Error error, IList<KeyValuePair<string, string>> images) GetTiebaImagesGroup() {
-            return (true, Error.Empty, TiebaImageHelper.TiebaModdleGroup);
+            return (true, Error.Empty, GlobalStickersHelper.TiebaModdleGroup);
+        }
+
+        public (bool succeed, Error error, IList<KeyValuePair<string, string>> images) GetSinaOthersStickersGroup() {
+            return (true, Error.Empty, GlobalStickersHelper.SinaOthersGroup);
+        }
+
+        public (bool succeed, Error error, IList<KeyValuePair<string, string>> images) GetSinaPopStickersGroup() {
+            return (true, Error.Empty, GlobalStickersHelper.SinaPopGroup);
+        }
+
+        public (bool succeed, Error error, IList<KeyValuePair<string, string>> images) GetSinaRoleStickersGroup() {
+            return (true, Error.Empty, GlobalStickersHelper.SinaRolesGroup);
         }
     }
 }

@@ -34,6 +34,24 @@ namespace Tassel.API.Controllers {
             return this.JsonFormat(true, content: images);
         }
 
+        [HttpGet("others")]
+        public JsonResult OthersGet() {
+            var (_, _, images) = this.srv.GetSinaOthersStickersGroup();
+            return this.JsonFormat(true, content: images);
+        }
+
+        [HttpGet("sina_pop")]
+        public JsonResult SinaPopGet() {
+            var (_, _, images) = this.srv.GetSinaPopStickersGroup();
+            return this.JsonFormat(true, content: images);
+        }
+
+        [HttpGet("sina_role")]
+        public JsonResult SinaRolesGet() {
+            var (_, _, images) = this.srv.GetSinaRoleStickersGroup();
+            return this.JsonFormat(true, content: images);
+        }
+
     }
 
 }

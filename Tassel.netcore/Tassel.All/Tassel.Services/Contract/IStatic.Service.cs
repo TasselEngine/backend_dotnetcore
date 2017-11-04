@@ -32,5 +32,11 @@ namespace Tassel.Services.Contract {
 
         (bool succeed, Error error, IList<KeyValuePair<string, string>> images) GetTiebaImagesGroup();
 
+        (bool succeed, Error error, IList<KeyValuePair<string, string>> images) GetSinaOthersStickersGroup();
+
+        (bool succeed, Error error, IList<KeyValuePair<string, string>> images) GetSinaPopStickersGroup();
+
+        (bool succeed, Error error, IList<KeyValuePair<string, string>> images) GetSinaRoleStickersGroup();
+
     }
 }
