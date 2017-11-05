@@ -1,3 +1,3 @@
 #!/bin/sh
 
-docker build -t tassel-service:v1.0 .
+docker build -t tassel-service:v1.1 .
