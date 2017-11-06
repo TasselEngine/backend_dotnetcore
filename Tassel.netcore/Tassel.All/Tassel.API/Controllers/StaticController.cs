@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Tassel.API.Utils.Authorization;
 using Tassel.API.Utils.Extensions;
 using Tassel.API.VM.File;
+using Tassel.Model.Models;
 using Tassel.Services.Contract;
 
 namespace Tassel.API.Controllers {
@@ -24,7 +25,7 @@ namespace Tassel.API.Controllers {
         public async ValueTask<JsonResult> PushAsync([FromBody]UploadImageVM vm) {
             var (succeed, error, result) = await this.srv.CreateIamgeResourceAsync(vm.File);
             if (!succeed)
-                return this.JsonFormat(false);
+                return this.JsonFormat(false, JsonStatus.CreateImageFailed, error.Read());
             return this.JsonFormat(true, content: result);
         }
 

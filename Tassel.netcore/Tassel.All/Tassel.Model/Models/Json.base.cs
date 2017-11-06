@@ -48,6 +48,8 @@ namespace Tassel.Model.Models {
 
         InsertEntryFailed = 30001,
 
+        CreateImageFailed = 31001,
+
         StatusCollectionLoadFailed = 40001,
         StatusInsertFailed = 40002,
         StatusNotFound = 40003,
@@ -83,6 +85,7 @@ namespace Tassel.Model.Models {
             [JsonStatus.WeiboRevokeException] = "revoke from oauth 2.0 doesn't work well.",
             [JsonStatus.Error] = "unknown error.",
             [JsonStatus.InsertEntryFailed] = Errors.InsertOneFailed,
+            [JsonStatus.CreateImageFailed] = "create static resources of images failed",
             [JsonStatus.StatusCollectionLoadFailed] = "read status collection failed",
             [JsonStatus.StatusInsertFailed] = "add status failed.",
             [JsonStatus.StatusNotFound] = "status with the id is not found.",
