@@ -216,7 +216,7 @@ namespace Tassel.Services.Service {
         public async ValueTask<(T outEntry, bool succeed, Error error)> FindOneUpdateAsync(string id, T toDo = null, UpdateDefinition<T> updateDef = null) {
             try {
                 var result = await this.collection.FindOneAndUpdateAsync(i => i.ID == id, updateDef ?? this.DefineUpdate(toDo));
-                if(result==null)
+                if (result == null)
                     return (default(T), false, Error.Create(Errors.UpdateEntryFailed, Errors.FindUpdateFailed));
                 return (result, true, Error.Empty);
             } catch (Exception e) {
@@ -227,11 +227,11 @@ namespace Tassel.Services.Service {
         /// <summary>
         /// Delete entry by id.
         /// </summary>
-        /// <param name="entry_id">key</param>
+        /// <param name="id">key</param>
         /// <returns></returns>
-        public (bool succeed, Error error) DeleteOneByID(string entry_id) {
+        public (bool succeed, Error error) DeleteOne(string id) {
             try {
-                var result = this.collection.DeleteOne(i => i.ID == entry_id);
+                var result = this.collection.DeleteOne(i => i.ID == id);
                 if (result.IsAcknowledged)
                     if (result.DeletedCount == 0)
                         return (false, Error.Create(Errors.DeleteEntryFailed, Errors.EntryFailedIsDeleted));
@@ -246,11 +246,11 @@ namespace Tassel.Services.Service {
         /// <summary>
         /// Delete entry by id [ Async Version ].
         /// </summary>
-        /// <param name="entry_id">key</param>
+        /// <param name="id">key</param>
         /// <returns></returns>
-        public async ValueTask<(bool succeed, Error error)> DeleteOneByIDAsync(string entry_id) {
+        public async ValueTask<(bool succeed, Error error)> DeleteOneAsync(string id) {
             try {
-                var result = await this.collection.DeleteOneAsync(i => i.ID == entry_id);
+                var result = await this.collection.DeleteOneAsync(i => i.ID == id);
                 if (result.IsAcknowledged)
                     if (result.DeletedCount == 0)
                         return (false, Error.Create(Errors.DeleteEntryFailed, Errors.EntryFailedIsDeleted));
@@ -265,11 +265,11 @@ namespace Tassel.Services.Service {
         /// <summary>
         /// Delete entry by where filter(if not provide , i=>false will be used).
         /// </summary>
-        /// <param name="filters">where filter with default like "i => false"</param>
+        /// <param name="filters">the filter to find the entry</param>
         /// <returns></returns>
-        public (bool succeed, Error error) DeleteOneByFilter(Expression<Func<T, bool>> filters = null) {
+        public (bool succeed, Error error) DeleteOne(Expression<Func<T, bool>> filters) {
             try {
-                var result = this.collection.DeleteOne(Builders<T>.Filter.Where(filters ?? (i => false)));
+                var result = this.collection.DeleteOne(Builders<T>.Filter.Where(filters));
                 if (result.IsAcknowledged)
                     if (result.DeletedCount == 0)
                         return (false, Error.Create(Errors.DeleteEntryFailed, Errors.EntryFailedIsDeleted));
@@ -284,11 +284,113 @@ namespace Tassel.Services.Service {
         /// <summary>
         /// Delete entry by where filter(if not provide , i=>false will be used) [ Async Version ].
         /// </summary>
-        /// <param name="filters">where filter with default like "i => false"</param>
+        /// <param name="filters">the filter to find the entry</param>
         /// <returns></returns>
-        public async ValueTask<(bool succeed, Error error)> DeleteOneByFilterAsync(Expression<Func<T, bool>> filters = null) {
+        public async ValueTask<(bool succeed, Error error)> DeleteOneAsync(Expression<Func<T, bool>> filters) {
             try {
-                var result = await this.collection.DeleteOneAsync(Builders<T>.Filter.Where(filters ?? (i => false)));
+                var result = await this.collection.DeleteOneAsync(Builders<T>.Filter.Where(filters));
+                if (result.IsAcknowledged)
+                    if (result.DeletedCount == 0)
+                        return (false, Error.Create(Errors.DeleteEntryFailed, Errors.EntryFailedIsDeleted));
+                    else
+                        return (true, Error.Empty);
+                return (false, Error.Create(Errors.DeleteEntryFailed));
+            } catch (Exception e) {
+                return (false, Error.Create(Errors.DeleteEntryFailed, e.Message));
+            }
+        }
+
+        /// <summary>
+        /// Delete an entry after find it.
+        /// </summary>
+        /// <param name="id">entry id of target to be deleted</param>
+        /// <returns></returns>
+        public (T outEntry, bool succeed, Error error) FindOneDelete(string id) {
+            try {
+                var result = this.collection.FindOneAndDelete(i => i.ID == id);
+                if (result == null)
+                    return (default(T), false, Error.Create(Errors.DeleteEntryFailed, Errors.FindDeleteFailed));
+                return (result, true, Error.Empty);
+            } catch (Exception e) {
+                return (default(T), false, Error.Create(Errors.DeleteEntryFailed, e.Message));
+            }
+        }
+
+        /// <summary>
+        ///  Delete an entry after find it [ Async Version ].
+        /// </summary>
+        /// <param name="id">entry id of target to be deleted</param>
+        /// <returns></returns>
+        public async ValueTask<(T outEntry, bool succeed, Error error)> FindOneDeleteAsync(string id) {
+            try {
+                var result = await this.collection.FindOneAndDeleteAsync(i => i.ID == id);
+                if (result == null)
+                    return (default(T), false, Error.Create(Errors.DeleteEntryFailed, Errors.FindDeleteFailed));
+                return (result, true, Error.Empty);
+            } catch (Exception e) {
+                return (default(T), false, Error.Create(Errors.DeleteEntryFailed, e.Message));
+            }
+        }
+
+        /// <summary>
+        /// Delete an entry after find it.
+        /// </summary>
+        /// <param name="filter">the filter to find the entry</param>
+        /// <returns></returns>
+        public (T outEntry, bool succeed, Error error) FindOneDelete(Expression<Func<T, bool>> filter) {
+            try {
+                var result = this.collection.FindOneAndDelete(filter);
+                if (result == null)
+                    return (default(T), false, Error.Create(Errors.DeleteEntryFailed, Errors.FindDeleteFailed));
+                return (result, true, Error.Empty);
+            } catch (Exception e) {
+                return (default(T), false, Error.Create(Errors.DeleteEntryFailed, e.Message));
+            }
+        }
+
+        /// <summary>
+        ///  Delete an entry after find it [ Async Version ].
+        /// </summary>
+        /// <param name="filter">the filter to find the entry</param>
+        /// <returns></returns>
+        public async ValueTask<(T outEntry, bool succeed, Error error)> FindOneDeleteAsync(Expression<Func<T, bool>> filter) {
+            try {
+                var result = await this.collection.FindOneAndDeleteAsync(filter);
+                if (result == null)
+                    return (default(T), false, Error.Create(Errors.DeleteEntryFailed, Errors.FindDeleteFailed));
+                return (result, true, Error.Empty);
+            } catch (Exception e) {
+                return (default(T), false, Error.Create(Errors.DeleteEntryFailed, e.Message));
+            }
+        }
+
+        /// <summary>
+        /// Delete entry by where filter .
+        /// </summary>
+        /// <param name="filters">the filter to find the entry</param>
+        /// <returns></returns>
+        public (bool succeed, Error error) DeleteAll(Expression<Func<T, bool>> filters) {
+            try {
+                var result = this.collection.DeleteMany(Builders<T>.Filter.Where(filters));
+                if (result.IsAcknowledged)
+                    if (result.DeletedCount == 0)
+                        return (false, Error.Create(Errors.DeleteEntryFailed, Errors.EntryFailedIsDeleted));
+                    else
+                        return (true, Error.Empty);
+                return (false, Error.Create(Errors.DeleteEntryFailed));
+            } catch (Exception e) {
+                return (false, Error.Create(Errors.DeleteEntryFailed, e.Message));
+            }
+        }
+
+        /// <summary>
+        /// Delete entry by where filter [ Async Version ].
+        /// </summary>
+        /// <param name="filters">the filter to find the entry</param>
+        /// <returns></returns>
+        public async ValueTask<(bool succeed, Error error)> DeleteAllAsync(Expression<Func<T, bool>> filters) {
+            try {
+                var result = await this.collection.DeleteManyAsync(Builders<T>.Filter.Where(filters));
                 if (result.IsAcknowledged)
                     if (result.DeletedCount == 0)
                         return (false, Error.Create(Errors.DeleteEntryFailed, Errors.EntryFailedIsDeleted));

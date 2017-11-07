@@ -65,6 +65,34 @@ namespace Tassel.Services.Contract {
         ValueTask<(T outEntry, bool succeed, TError error)> FindOneUpdateAsync(string id, T toDo = null, UpdateDefinition<T> updateDef = null);
 
         /// <summary>
+        /// Delete an entry after find it.
+        /// </summary>
+        /// <param name="id">entry id of target to be deleted</param>
+        /// <returns></returns>
+        (T outEntry, bool succeed, TError error) FindOneDelete(string id);
+
+        /// <summary>
+        ///  Delete an entry after find it [ Async Version ].
+        /// </summary>
+        /// <param name="id">entry id of target to be deleted</param>
+        /// <returns></returns>
+        ValueTask<(T outEntry, bool succeed, TError error)> FindOneDeleteAsync(string id);
+
+        /// <summary>
+        /// Delete an entry after find it.
+        /// </summary>
+        /// <param name="filter">the filter to find the entry</param>
+        /// <returns></returns>
+        (T outEntry, bool succeed, TError error) FindOneDelete(Expression<Func<T, bool>> filter);
+
+        /// <summary>
+        ///  Delete an entry after find it [ Async Version ].
+        /// </summary>
+        /// <param name="filter">the filter to find the entry</param>
+        /// <returns></returns>
+        ValueTask<(T outEntry, bool succeed, TError error)> FindOneDeleteAsync(Expression<Func<T, bool>> filter);
+
+        /// <summary>
         /// Get the collections where the filter is passed with skip and take params.
         /// </summary>
         /// <param name="where">filter</param>
@@ -101,28 +129,42 @@ namespace Tassel.Services.Contract {
         /// </summary>
         /// <param name="entry_id">key</param>
         /// <returns></returns>
-        (bool succeed, TError error) DeleteOneByID(string entry_id);
+        (bool succeed, TError error) DeleteOne(string id);
 
         /// <summary>
         /// Delete entry by id [ Async Version ].
         /// </summary>
         /// <param name="entry_id">key</param>
         /// <returns></returns>
-        ValueTask<(bool succeed, TError error)> DeleteOneByIDAsync(string entry_id);
+        ValueTask<(bool succeed, TError error)> DeleteOneAsync(string id);
 
         /// <summary>
-        /// Delete entry by where filter(if not provide , i=>false will be used).
+        /// Delete entry by where filter.
         /// </summary>
-        /// <param name="filters">where filter with default like "i => false"</param>
+        /// <param name="filters">the filter to find the entry</param>
         /// <returns></returns>
-        (bool succeed, TError error) DeleteOneByFilter(Expression<Func<T, bool>> filters = null);
+        (bool succeed, TError error) DeleteOne(Expression<Func<T, bool>> filters);
 
         /// <summary>
-        /// Delete entry by where filter(if not provide , i=>false will be used) [ Async Version ].
+        /// Delete entry by where filter [ Async Version ].
         /// </summary>
-        /// <param name="filters">where filter with default like "i => false"</param>
+        /// <param name="filters">the filter to find the entry</param>
         /// <returns></returns>
-        ValueTask<(bool succeed, TError error)> DeleteOneByFilterAsync(Expression<Func<T, bool>> filters = null);
+        ValueTask<(bool succeed, TError error)> DeleteOneAsync(Expression<Func<T, bool>> filters);
+
+        /// <summary>
+        /// Delete entries by where filter.
+        /// </summary>
+        /// <param name="filters">the filter to find the entries</param>
+        /// <returns></returns>
+        (bool succeed, TError error) DeleteAll(Expression<Func<T, bool>> filters);
+
+        /// <summary>
+        /// Delete entries by where filter [ Async Version ].
+        /// </summary>
+        /// <param name="filters">the filter to find the entries</param>
+        /// <returns></returns>
+        ValueTask<(bool succeed, TError error)> DeleteAllAsync(Expression<Func<T, bool>> filters);
 
     }
 

@@ -1,9 +1,7 @@
 ﻿using BWS.Utils.AspNetCore.JsonResult;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Serialization;
 using System.Threading.Tasks;
 using Tassel.Model.Utils;
 
@@ -47,6 +45,7 @@ namespace Tassel.Model.Models {
         WeiboRevokeException = 21006,
 
         InsertEntryFailed = 30001,
+        DeleteEntryFailed = 30002,
 
         CreateImageFailed = 31001,
 
@@ -64,6 +63,7 @@ namespace Tassel.Model.Models {
 
         private static Dictionary<JsonStatus, string> maps = new Dictionary<JsonStatus, string> {
             [JsonStatus.Succeed] = "success",
+            [JsonStatus.Error] = "unknown error.",
             [JsonStatus.LoginFailed] = "login failed.",
             [JsonStatus.DeleteNotAllowed] = Errors.DeleteNotAllowed,
             [JsonStatus.BodyFormIsNull] = "the form of request body shouldn't be empry, or your input is invalid.",
@@ -83,8 +83,8 @@ namespace Tassel.Model.Models {
             [JsonStatus.BearerCheckFailed] = "bearer token check failed.",
             [JsonStatus.WeiboRevokeFailed] = "revoke oauth 2.0 failed.",
             [JsonStatus.WeiboRevokeException] = "revoke from oauth 2.0 doesn't work well.",
-            [JsonStatus.Error] = "unknown error.",
             [JsonStatus.InsertEntryFailed] = Errors.InsertOneFailed,
+            [JsonStatus.DeleteEntryFailed] = Errors.DeleteEntryFailed,
             [JsonStatus.CreateImageFailed] = "create static resources of images failed",
             [JsonStatus.StatusCollectionLoadFailed] = "read status collection failed",
             [JsonStatus.StatusInsertFailed] = "add status failed.",

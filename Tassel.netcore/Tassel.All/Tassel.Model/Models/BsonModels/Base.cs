@@ -14,7 +14,8 @@ namespace Tassel.Model.Models.BsonModels {
         WeiboUser = 2,
         Comment = 11,
         LikeEntry = 12,
-        Status = 13
+        Status = 13,
+        Log = 31,
     }
 
     public enum EntryState {
@@ -30,6 +31,7 @@ namespace Tassel.Model.Models.BsonModels {
         public const string Comment = "comments";
         public const string Likes = "likes";
         public const string Status = "status";
+        public const string Log = "logs";
     }
 
     [JsonObject]
@@ -95,7 +97,7 @@ namespace Tassel.Model.Models.BsonModels {
         [BsonElement("width")]
         [JsonProperty("width")]
         public int? Width { get; set; }
-        public bool ShouldSerializeWidth() => this.Width!=null;
+        public bool ShouldSerializeWidth() => this.Width != null;
 
         [BsonElement("height")]
         [JsonProperty("height")]
@@ -121,7 +123,7 @@ namespace Tassel.Model.Models.BsonModels {
         public EntryState State { get; set; } = EntryState.Published;
     }
 
-        [JsonObject]
+    [JsonObject]
     public class DeleteSafelyBase : BaseLikesModel {
 
         [BsonElement("state")]

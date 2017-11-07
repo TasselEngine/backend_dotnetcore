@@ -117,7 +117,7 @@ namespace Tassel.Services.Service {
                 return (JsonStatus.CommentRemoveFailed, error);
             if (entry == null)
                 return (JsonStatus.CommentRemoveFailed, Error.Create(Errors.EntryNotExist));
-            (succeed, error) = await this.comments.DeleteOneByFilterAsync(i => i.ID == comment_id && i.Creator.UUID == uid && i.ParentID == id);
+            (succeed, error) = await this.comments.DeleteOneAsync(i => i.ID == comment_id && i.Creator.UUID == uid && i.ParentID == id);
             if (!succeed) {
                 // Rollback, anyway
                 await this.FindOneUpdateAsync(id, null, this.DefineCommentsUpdate(comment_id));
@@ -149,6 +149,14 @@ namespace Tassel.Services.Service {
             }
         }
 
+        public async ValueTask<(JsonStatus status, Error error)> DeleteStatusAsync(string id) {
+            var (entry, succeed, error) = await this.FindOneDeleteAsync(id);
+            if(!succeed)
+                return (JsonStatus.DeleteEntryFailed, error);
+            await this.Comments.DeleteAllAsync(i => i.ParentID == id);
+            await this.Likes.DeleteAllAsync(i => i.ParentID == id);
+            return (JsonStatus.Succeed, Error.Empty);
+        }
     }
 
 }
