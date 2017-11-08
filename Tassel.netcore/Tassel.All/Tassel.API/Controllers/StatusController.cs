@@ -76,7 +76,7 @@ namespace Tassel.API.Controllers {
 
         [HttpPost("{id}/comment")]
         [Token, User]
-        public async Task<JsonResult> AddCommentAsync(string id, [FromBody]CommentInsertVM vm) {
+        public async Task<JsonResult> AddCommentAsync(string id, [FromBody]CommentAddVM vm) {
 
             if (vm == null)
                 return this.JsonFormat(false, JsonStatus.BodyFormIsNull);

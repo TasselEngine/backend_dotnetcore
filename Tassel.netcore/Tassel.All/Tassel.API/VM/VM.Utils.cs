@@ -29,7 +29,7 @@ namespace Tassel.API.VM {
             return entry;
         }
 
-        public static Comment CreateComment(CommentInsertVM vm, string parent_id, ModelType parent_type, string avatar = null) {
+        public static Comment CreateComment(CommentAddVM vm, string parent_id, ModelType parent_type, string avatar = null) {
             return new Comment {
                 Creator = new BaseCreator {
                     UserName = vm.UName,

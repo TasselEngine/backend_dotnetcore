@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Tassel.API.VM.Status {
 
     [JsonObject]
-    public class CommentInsertVM {
+    public class CommentAddVM {
 
         [JsonProperty("is_reply")]
         public bool IsReply { get; set; } = false;
