@@ -1,7 +1,7 @@
 ﻿FROM microsoft/dotnet:2.0.0-runtime-deps
 
 WORKDIR /app
-COPY ubuntu.16.04-x64/publish /app
+COPY ubuntu.16.04-x64 /app
 COPY run.sh /app
 
 # RUN dotnet restore
