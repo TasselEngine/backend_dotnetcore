@@ -9,7 +9,7 @@
     <PackageReference Include="BWS.Utils.NetCore" Version="1.0.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
-    <PackageReference Include="SkiaSharp" Version="1.59.1" />
+    <PackageReference Include="SkiaSharp" Version="1.59.2" />
     <PackageReference Include="System.Interactive.Async" Version="3.1.1" />
     <PackageReference Include="System.Reactive" Version="3.1.1" />
     <PackageReference Include="WeiboOAuth2.Provider" Version="1.0.2" />
