@@ -32,6 +32,14 @@ namespace Tassel.API.Controllers {
             return this.JsonFormat(true, content: coll);
         }
 
+        [HttpGet("gets")]
+        public async Task<JsonResult> Gets(long before, int? take) {
+            var (coll, status, error) = await this.status.GetCollectionAbstractAsync(before, take);
+            if (status != JsonStatus.Succeed)
+                return this.JsonFormat(false, status, error.Read());
+            return this.JsonFormat(true, content: coll);
+        }
+
         [HttpGet("{id}")]
         public async Task<JsonResult> Get(string id) {
             var (entry, status, error) = await this.status.GetStatusDetailsAsync(id);

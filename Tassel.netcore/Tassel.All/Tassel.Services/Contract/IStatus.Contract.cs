@@ -18,6 +18,8 @@ namespace Tassel.Services.Contract {
 
         ValueTask<(IEnumerable<Status> entry, JsonStatus status, Error error)> GetCollectionAbstractAsync(Expression<Func<Status, bool>> where = null);
 
+        ValueTask<(IEnumerable<Status> entry, JsonStatus status, Error error)> GetCollectionAbstractAsync(long stamp, int? take);
+
         ValueTask<(Status entry, JsonStatus status, Error error)> GetStatusDetailsAsync(string id);
 
         ValueTask<(Status entry, JsonStatus status, Error error)> GetStatusAbstractAsync(string id);

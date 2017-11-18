@@ -125,6 +125,42 @@ namespace Tassel.Services.Service {
         }
 
         /// <summary>
+        /// Get the collections where the filter and stamp is passed take params.
+        /// </summary>
+        /// <param name="stamp"></param>
+        /// <param name="take"></param>
+        /// <returns></returns>
+        public (IList<T> collection, bool succeed, Error error) GetCollections(long stamp, int? take = null) {
+            try {
+                var coll = this.collection.AsQueryable().OrderByDescending(i => i.CreateTime).Where(i=>i.CreateTime<stamp);
+                if (take != null)
+                    coll = coll.Take(take.GetValueOrDefault());
+                return (coll.ToList(), true, Error.Empty);
+            } catch (Exception e) {
+                return (default(IList<T>), false, Error.Create(Errors.GetEntryCollFailed, e.Message));
+            }
+        }
+
+        /// <summary>
+        /// Get the collections where the filter and stamp is passed take params. [ Async Version ].
+        /// </summary>
+        /// <param name="stamp"></param>
+        /// <param name="take"></param>
+        /// <returns></returns>
+        public async ValueTask<(IList<T> collection, bool succeed, Error error)> GetCollectionsAsync(long stamp, int? take = null) {
+            try {
+                using (var coll_async = this.collection.AsQueryable().ToCursorAsync()) {
+                    IEnumerable<T> coll = (await coll_async).ToEnumerable().Where(i=>i.CreateTime<stamp).OrderByDescending(i => i.CreateTime);
+                    if (take != null)
+                        coll = coll.Take(take.GetValueOrDefault());
+                    return (coll.ToList(), true, Error.Empty);
+                }
+            } catch (Exception e) {
+                return (default(IList<T>), false, Error.Create(Errors.GetEntryCollFailed, e.Message));
+            }
+        }
+
+        /// <summary>
         /// Insert item.
         /// </summary>
         /// <param name="entry">the entry to be insert.</param>
@@ -401,6 +437,7 @@ namespace Tassel.Services.Service {
                 return (false, Error.Create(Errors.DeleteEntryFailed, e.Message));
             }
         }
+
     }
 
 }

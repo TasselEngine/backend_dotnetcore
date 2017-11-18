@@ -30,6 +30,8 @@ namespace Tassel.Services.Service {
             this.likes = likes;
         }
 
+        #region protected methods
+
         protected override UpdateDefinition<Status> DefineUpdate(Status entry) {
             var def = base.DefineUpdate(entry);
             if (entry == null)
@@ -60,6 +62,18 @@ namespace Tassel.Services.Service {
             return add ?
                 def.Push(i => i.Images, image) :
                 def.Pull(i => i.Images, image);
+        }
+
+        #endregion
+
+        public async ValueTask<(IEnumerable<Status> entry, JsonStatus status, Error error)> GetCollectionAbstractAsync(long stamp, int? take) {
+            var (coll, succeed, error) = await this.GetPublishedCollectionsAsync(stamp, take.GetValueOrDefault());
+            if (!succeed)
+                return (default(IList<Status>), JsonStatus.StatusCollectionLoadFailed, error);
+            return (coll.Select(i => {
+                i.Images = i.Images.Select(m => new BaseImage { Thumbnail = m.Thumbnail, IsFile = m.IsFile }).ToList();
+                return i;
+            }), JsonStatus.Succeed, Error.Empty);
         }
 
         public async ValueTask<(IEnumerable<Status> entry, JsonStatus status, Error error)> GetCollectionAbstractAsync(Expression<Func<Status, bool>> where = null) {
