@@ -17,9 +17,9 @@ namespace Tassel.Services.Service {
     /// Support Tag-Delete feature for page entry base.
     /// </summary>
     /// <typeparam name="T">type extends by DeleteSafelyBase</typeparam>
-    public class DeleteSafeBase<T> : BaseService<T>, IDeleteSaveService<T, Error> where T : DeleteSafelyBase {
+    public class LogicallyDeleteBase<T> : BaseService<T>, ILogicalDeleteService<T, Error> where T : AccessControllableBase {
 
-        public DeleteSafeBase(MongoDBContext db, string collName) : base(db, collName) { }
+        public LogicallyDeleteBase(MongoDBContext db, string collName) : base(db, collName) { }
 
         /// <summary>
         /// Delete entry safely (tag-delete) by id.

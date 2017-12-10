@@ -33,7 +33,7 @@ namespace Tassel.Model.Models.BsonModels {
     }
 
     [JsonObject]
-    public class BaseLikesModel : BaseCreateModel {
+    public class BaseLikesModel : AccessControllableBase {
 
         [BsonElement("liker_ids")]
         [JsonProperty("liker_ids")]

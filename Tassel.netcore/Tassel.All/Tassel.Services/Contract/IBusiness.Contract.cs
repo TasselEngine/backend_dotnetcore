@@ -189,7 +189,7 @@ namespace Tassel.Services.Contract {
     /// </summary>
     /// <typeparam name="T">type extends by DeleteSafelyBase</typeparam>
     /// <typeparam name="TError">type of the error to be returned</typeparam>
-    public interface IDeleteSaveService<T, TError> : IBusinessService<T, TError> where T : DeleteSafelyBase {
+    public interface ILogicalDeleteService<T, TError> : IBusinessService<T, TError> where T : AccessControllableBase {
 
         /// <summary>
         /// Delete entry safely (tag-delete) by id.

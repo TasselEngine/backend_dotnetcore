@@ -15,6 +15,7 @@ namespace Tassel.Model.Models.BsonModels {
         Comment = 11,
         LikeEntry = 12,
         Status = 13,
+        Post = 14,
         Log = 31,
     }
 
@@ -117,18 +118,16 @@ namespace Tassel.Model.Models.BsonModels {
     }
 
     [JsonObject]
-    public class AccessControllyBase : BaseCreateModel {
+    public class AccessControllableBase : BaseCreateModel {
         [BsonElement("state")]
         [JsonProperty("state")]
-        public EntryState State { get; set; } = EntryState.Published;
+        public virtual EntryState State { get; set; } = EntryState.Published;
     }
 
     [JsonObject]
-    public class DeleteSafelyBase : BaseLikesModel {
+    public class ContentEntryBase : CanCommentModel {
 
-        [BsonElement("state")]
-        [JsonProperty("state")]
-        public EntryState State { get; set; } = EntryState.Unpublished;
+        public override EntryState State { get; set; } = EntryState.Unpublished;
 
         [BsonElement("content")]
         [JsonProperty("details")]
@@ -137,18 +136,6 @@ namespace Tassel.Model.Models.BsonModels {
         [BsonElement("cover")]
         [JsonProperty("cover")]
         public string Cover { get; set; }
-
-        [BsonElement("lcomment_ids")]
-        [JsonIgnore]
-        public IList<string> CommentIDs { get; set; } = new List<string>();
-
-        [BsonIgnore]
-        [JsonProperty("comments")]
-        public IList<Comment> Comments { get; set; } = new List<Comment>();
-
-        [BsonIgnore]
-        [JsonProperty("comments_count")]
-        public int CommentsCount { get => this.Comments.Count > 0 ? this.Comments.Count : this.CommentIDs.Count; }
 
     }
 

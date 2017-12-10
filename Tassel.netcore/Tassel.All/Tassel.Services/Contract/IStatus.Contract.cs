@@ -10,7 +10,7 @@ using Tassel.Services.Contract.Providers;
 
 namespace Tassel.Services.Contract {
 
-    public interface IStatusService : IDeleteSaveService<Status, Error> {
+    public interface IStatusService : ILogicalDeleteService<Status, Error> {
 
         ICommentServiceProvider<Comment> Comments { get; }
 
