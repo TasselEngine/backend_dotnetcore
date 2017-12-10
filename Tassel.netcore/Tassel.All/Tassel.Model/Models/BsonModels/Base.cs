@@ -57,63 +57,11 @@ namespace Tassel.Model.Models.BsonModels {
     }
 
     [JsonObject]
-    public class BaseCreator {
-
-        [BsonElement("uuid")]
-        [JsonProperty("uuid")]
-        public string UUID { get; set; }
-
-        [BsonElement("name")]
-        [JsonProperty("user_name")]
-        public string UserName { get; set; }
-
-        [BsonElement("avatar")]
-        [JsonProperty("avatar")]
-        public string AvatarUrl { get; set; }
-
-        public bool ShouldSerializeAvatarUrl() => this.AvatarUrl != null;
-
-    }
-
-    [JsonObject]
     public class BaseCreateModel : BaseModel {
 
         [BsonElement("creator")]
         [JsonProperty("creator")]
         public BaseCreator Creator { get; set; }
-
-    }
-
-    public class BaseImage {
-
-        [BsonElement("is_file")]
-        [JsonProperty("is_file")]
-        public bool IsFile { get; set; }
-
-        [BsonElement("base_64")]
-        [JsonProperty("base_64")]
-        public string Base64 { get; set; }
-        public bool ShouldSerializeBase64() => this.Base64 != null;
-
-        [BsonElement("width")]
-        [JsonProperty("width")]
-        public int? Width { get; set; }
-        public bool ShouldSerializeWidth() => this.Width != null;
-
-        [BsonElement("height")]
-        [JsonProperty("height")]
-        public int? Height { get; set; }
-        public bool ShouldSerializeHeight() => this.Height != null;
-
-        [BsonElement("url")]
-        [JsonProperty("url")]
-        public string OriginUrl { get; set; }
-        public bool ShouldSerializeOriginUrl() => this.OriginUrl != null;
-
-        [BsonElement("thumb")]
-        [JsonProperty("thumb")]
-        public string Thumbnail { get; set; }
-        public bool ShouldSerializeThumbnail() => this.Thumbnail != null;
 
     }
 
@@ -123,6 +71,44 @@ namespace Tassel.Model.Models.BsonModels {
         [JsonProperty("state")]
         public virtual EntryState State { get; set; } = EntryState.Published;
     }
+
+    [JsonObject]
+    public class BaseLikesModel : AccessControllableBase {
+
+        [BsonElement("liker_ids")]
+        [JsonProperty("liker_ids")]
+        public IList<string> LikerIDs { get; set; } = new List<string>();
+
+        public bool ShouldSerializeLikerIDs() => this.Likes.Count == 0;
+
+        [BsonIgnore]
+        [JsonProperty("like_users")]
+        public IList<LikesEntry> Likes { get; set; } = new List<LikesEntry>();
+
+        public bool ShouldSerializeLikes() => this.Likes.Count > 0;
+
+        [BsonIgnore]
+        [JsonProperty("likers_count")]
+        public int LikesCount { get => this.Likes.Count > 0 ? this.Likes.Count : this.LikerIDs.Count; }
+
+    }
+
+    public class CanCommentModel : BaseLikesModel {
+
+        [BsonElement("lcomment_ids")]
+        [JsonIgnore]
+        public IList<string> CommentIDs { get; set; } = new List<string>();
+
+        [BsonIgnore]
+        [JsonProperty("comments")]
+        public IList<Comment> Comments { get; set; } = new List<Comment>();
+
+        [BsonIgnore]
+        [JsonProperty("comments_count")]
+        public int CommentsCount { get => this.Comments.Count > 0 ? this.Comments.Count : this.CommentIDs.Count; }
+
+    }
+
 
     [JsonObject]
     public class ContentEntryBase : CanCommentModel {

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace Tassel.Model.Models.BsonModels {
+
     [JsonObject]
     public class Comment : AccessControllableBase {
 

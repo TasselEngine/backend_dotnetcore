@@ -32,24 +32,4 @@ namespace Tassel.Model.Models.BsonModels {
 
     }
 
-    [JsonObject]
-    public class BaseLikesModel : AccessControllableBase {
-
-        [BsonElement("liker_ids")]
-        [JsonProperty("liker_ids")]
-        public IList<string> LikerIDs { get; set; } = new List<string>();
-
-        public bool ShouldSerializeLikerIDs() => this.Likes.Count == 0;
-
-        [BsonIgnore]
-        [JsonProperty("like_users")]
-        public IList<LikesEntry> Likes { get; set; } = new List<LikesEntry>();
-
-        public bool ShouldSerializeLikes() => this.Likes.Count > 0;
-
-        [BsonIgnore]
-        [JsonProperty("likers_count")]
-        public int LikesCount { get => this.Likes.Count > 0 ? this.Likes.Count : this.LikerIDs.Count; }
-
-    }
 }
