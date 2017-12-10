@@ -63,20 +63,20 @@ namespace Tassel.Model.Models.BsonModels {
 
     }
 
-    public interface IBaseCteateModel: IBaseModel {
-        IBaseCreator Creator { get; set; }
+    public interface IBaseCreateModel<T>: IBaseModel {
+        T Creator { get; set; }
     }
 
     [JsonObject]
-    public class BaseCreateModel : BaseModel, IBaseCteateModel {
+    public class BaseCreateModel : BaseModel, IBaseCreateModel<BaseCreator> {
 
         [BsonElement("creator")]
         [JsonProperty("creator")]
-        public IBaseCreator Creator { get; set; }
+        public BaseCreator Creator { get; set; }
 
     }
 
-    public interface IAccessControllableBase: IBaseCteateModel {
+    public interface IAccessControllableBase: IBaseCreateModel<BaseCreator> {
         EntryState State { get; set; }
     }
 
@@ -87,14 +87,14 @@ namespace Tassel.Model.Models.BsonModels {
         public virtual EntryState State { get; set; } = EntryState.Published;
     }
 
-    public interface IBaseLikeModel: IAccessControllableBase {
+    public interface IBaseLikeModel<T> : IAccessControllableBase where T : ILikeable<BaseCreator> {
         IList<string> LikerIDs { get; set; }
-        IList<ILikeable> Likes { get; set; }
+        IList<T> Likes { get; set; }
         int LikesCount { get; }
     }
 
     [JsonObject]
-    public class BaseLikesModel : AccessControllableBase, IBaseLikeModel {
+    public class BaseLikesModel : AccessControllableBase, IBaseLikeModel<LikesEntry> {
 
         [BsonElement("liker_ids")]
         [JsonProperty("liker_ids")]
@@ -104,7 +104,7 @@ namespace Tassel.Model.Models.BsonModels {
 
         [BsonIgnore]
         [JsonProperty("like_users")]
-        public IList<ILikeable> Likes { get; set; } = new List<ILikeable>();
+        public IList<LikesEntry> Likes { get; set; } = new List<LikesEntry>();
 
         public bool ShouldSerializeLikes() => this.Likes.Count > 0;
 
@@ -114,13 +114,13 @@ namespace Tassel.Model.Models.BsonModels {
 
     }
 
-    public interface ICanCommentModel: IBaseLikeModel {
+    public interface ICanCommentModel<T>: IBaseLikeModel<LikesEntry> where T : IComment<BaseCreator> {
         IList<string> CommentIDs { get; set; }
-        IList<IComment> Comments { get; set; }
+        IList<T> Comments { get; set; }
         int CommentsCount { get; }
     }
 
-    public class CanCommentModel : BaseLikesModel , ICanCommentModel {
+    public class CanCommentModel : BaseLikesModel , ICanCommentModel<Comment> {
 
         [BsonElement("lcomment_ids")]
         [JsonIgnore]
@@ -128,7 +128,7 @@ namespace Tassel.Model.Models.BsonModels {
 
         [BsonIgnore]
         [JsonProperty("comments")]
-        public IList<IComment> Comments { get; set; } = new List<IComment>();
+        public IList<Comment> Comments { get; set; } = new List<Comment>();
 
         [BsonIgnore]
         [JsonProperty("comments_count")]
@@ -136,7 +136,7 @@ namespace Tassel.Model.Models.BsonModels {
 
     }
 
-    public interface IContentEntryBase : ICanCommentModel {
+    public interface IContentEntryBase : ICanCommentModel<Comment> {
         string Content { get; set; }
         string Cover { get; set; }
     }

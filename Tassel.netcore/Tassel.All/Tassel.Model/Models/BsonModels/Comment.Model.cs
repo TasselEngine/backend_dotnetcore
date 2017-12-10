@@ -6,16 +6,15 @@ using System.Text;
 
 namespace Tassel.Model.Models.BsonModels {
 
-    public interface IComment : IAccessControllableBase {
+    public interface IComment<TUser> : IAccessControllableBase {
         string CommentContent { get; set; }
         ModelType ParentType { get; set; }
         string ParentID { get; set; }
-        IBaseCreator Mentioned { get; set; }
-        IList<IComment> Comments { get; set; }
+        TUser Mentioned { get; set; }
     }
 
     [JsonObject]
-    public class Comment : AccessControllableBase, IComment {
+    public class Comment : AccessControllableBase, IComment<BaseCreator> {
 
         [BsonElement("content")]
         [JsonProperty("details")]
@@ -33,13 +32,13 @@ namespace Tassel.Model.Models.BsonModels {
 
         [BsonElement("mentioned")]
         [JsonProperty("mentioned")]
-        public IBaseCreator Mentioned { get; set; }
+        public BaseCreator Mentioned { get; set; }
 
         public bool ShouldSerializeMentioned() => this.Mentioned != null;
 
         [BsonElement("replies")]
         [JsonProperty("replies")]
-        public IList<IComment> Comments { get; set; } = new List<IComment>();
+        public IList<Comment> Comments { get; set; } = new List<Comment>();
 
     }
 }

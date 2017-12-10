@@ -7,7 +7,7 @@ using Tassel.Model.Utils;
 
 namespace Tassel.Services.Contract.Providers {
 
-    public interface ILikesServiceProvider : IBusinessService<ILikeable, Error> {
+    public interface ILikesServiceProvider : IBusinessService<LikesEntry, Error> {
 
         (bool succeed, Error error) DeleteAllByIDs(string target_id, string user_id);
 

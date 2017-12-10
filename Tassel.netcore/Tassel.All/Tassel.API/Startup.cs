@@ -43,7 +43,7 @@ namespace Tassel.Service {
             services.AddScoped<IWeiboOAuthServiceProvider<User>, WeiboOAuthProvider>();
             services.AddScoped<IIdentityService<JwtSecurityToken, TokenProviderOptions, User>, IdentityService>();
             services.AddScoped<IStatusService, StatusService>();
-            services.AddScoped<ICommentServiceProvider<Comment>, CommentProvider>();
+            services.AddScoped<ICommentServiceProvider, CommentProvider>();
             services.AddScoped<ILikesServiceProvider, LikesService>();
             services.AddScoped<ILogService, LogService>();
 

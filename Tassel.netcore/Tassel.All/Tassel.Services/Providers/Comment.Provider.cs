@@ -11,7 +11,7 @@ using Tassel.Services.Contract.Providers;
 using Tassel.Services.Service;
 
 namespace Tassel.Services.Providers {
-    public class CommentProvider : BaseService<Comment>, ICommentServiceProvider<Comment> {
+    public class CommentProvider : BaseService<Comment>, ICommentServiceProvider {
 
         public CommentProvider(MongoDBContext db) : base(db, ModelCollectionName.Comment) { }
 

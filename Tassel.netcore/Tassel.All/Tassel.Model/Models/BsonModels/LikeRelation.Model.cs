@@ -7,15 +7,14 @@ using Tassel.Model.Utils;
 
 namespace Tassel.Model.Models.BsonModels {
 
-    public interface ILikeable : IBaseModel{
-        string ID { get; set; }
+    public interface ILikeable<TUser> : IBaseModel{
         ModelType TargetType { get; set; }
         string ParentID { get; set; }
-        IBaseCreator User { get; set; }
+        TUser User { get; set; }
     }
 
     [JsonObject]
-    public class LikesEntry : BaseModel , ILikeable {
+    public class LikesEntry : BaseModel , ILikeable<BaseCreator> {
 
         [JsonIgnore]
         public override string ID { get; set; } = IdentityProvider.CreateGuid(GuidType.N);
@@ -32,7 +31,7 @@ namespace Tassel.Model.Models.BsonModels {
 
         [BsonElement("user")]
         [JsonProperty("user")]
-        public IBaseCreator User { get; set; }
+        public BaseCreator User { get; set; }
 
         [JsonIgnore]
         public override long? UpdateTime { get; set; }
