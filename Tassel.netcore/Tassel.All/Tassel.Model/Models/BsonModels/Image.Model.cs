@@ -6,6 +6,15 @@ using System.Text;
 
 namespace Tassel.Model.Models.BsonModels {
 
+    public interface IBaseImage {
+        bool IsFile { get; set; }
+        string Base64 { get; set; }
+        int? Width { get; set; }
+        int? Height { get; set; }
+        string OriginUrl { get; set; }
+        string Thumbnail { get; set; }
+    }
+
     [JsonObject]
     public class BaseImage {
 

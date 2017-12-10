@@ -6,9 +6,14 @@ using System.Text;
 
 namespace Tassel.Model.Models.BsonModels {
 
+    public interface IBaseCreator {
+        string UUID { get; set; }
+        string UserName { get; set; }
+        string AvatarUrl { get; set; }
+    }
 
     [JsonObject]
-    public class BaseCreator {
+    public class BaseCreator: IBaseCreator {
 
         [BsonElement("uuid")]
         [JsonProperty("uuid")]

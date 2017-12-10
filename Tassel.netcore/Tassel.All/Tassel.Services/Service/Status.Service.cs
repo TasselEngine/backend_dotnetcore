@@ -15,16 +15,16 @@ namespace Tassel.Services.Service {
 
     public class StatusService : LogicallyDeleteBase<Status>, IStatusService {
 
-        private ICommentServiceProvider<Comment> comments;
+        private ICommentServiceProvider<IComment> comments;
         private ILikesServiceProvider likes;
 
-        public ICommentServiceProvider<Comment> Comments => this.comments;
+        public ICommentServiceProvider<IComment> Comments => this.comments;
 
         public ILikesServiceProvider Likes => this.likes;
 
         public StatusService(
             MongoDBContext db,
-            ICommentServiceProvider<Comment> coms,
+            ICommentServiceProvider<IComment> coms,
             ILikesServiceProvider likes) : base(db, ModelCollectionName.Status) {
             this.comments = coms;
             this.likes = likes;

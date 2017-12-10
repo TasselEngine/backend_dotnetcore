@@ -10,9 +10,9 @@ using Tassel.Services.Contract.Providers;
 
 namespace Tassel.Services.Contract {
 
-    public interface IStatusService : ILogicalDeleteService<Status, Error> {
+    public interface IStatusService : ILikeableService<Status, Error, LikesEntry> {
 
-        ICommentServiceProvider<Comment> Comments { get; }
+        ICommentServiceProvider<IComment> Comments { get; }
 
         ILikesServiceProvider Likes { get; }
 
@@ -27,8 +27,6 @@ namespace Tassel.Services.Contract {
         ValueTask<(JsonStatus status, Error error)> AddCommentAsync(string id, Comment comment);
 
         ValueTask<(JsonStatus status, Error error)> RemoveCommentAsync(string id, string uid, string comment_id);
-
-        ValueTask<(string user_id, JsonStatus status, Error error)> LikeAsync(string id, LikesEntry like);
 
         ValueTask<(JsonStatus status, Error error)> DeleteStatusAsync(string id);
 

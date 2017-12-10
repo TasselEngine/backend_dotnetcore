@@ -17,7 +17,7 @@ namespace Tassel.Services.Service {
     /// The ABC to support the definition creators feature for Mongo DB.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public abstract class BsonCRUDBase<T> where T : BaseModel {
+    public abstract class BsonCRUDBase<T> where T : IBaseModel {
 
         /// <summary>
         /// Provide a generic update feature.
@@ -34,7 +34,7 @@ namespace Tassel.Services.Service {
     /// The ABC to provide generic features for services.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public abstract class BaseService<T> : BsonCRUDBase<T>, IBusinessService<T, Error> where T : BaseModel {
+    public abstract class BaseService<T> : BsonCRUDBase<T>, IBusinessService<T, Error> where T : IBaseModel {
 
         protected IMongoDatabase mdb;
         protected IMongoCollection<T> collection;
@@ -195,7 +195,7 @@ namespace Tassel.Services.Service {
         /// <param name="toDo">model contains the new changes</param>
         /// <param name="updateDef">provider to update</param>
         /// <returns></returns>
-        public (string entry_id, bool succeed, Error error) UpdateOne(string id, T toDo = null, UpdateDefinition<T> updateDef = null) {
+        public (string entry_id, bool succeed, Error error) UpdateOne(string id, T toDo = default(T), UpdateDefinition<T> updateDef = null) {
             try {
                 var result = this.collection.UpdateOne(i => i.ID == id, updateDef ?? this.DefineUpdate(toDo));
                 if (result.IsAcknowledged)
@@ -213,7 +213,7 @@ namespace Tassel.Services.Service {
         /// <param name="toDo">model contains the new changes</param>
         /// <param name="updateDef">provider to update</param>
         /// <returns></returns>
-        public async ValueTask<(string entry_id, bool succeed, Error error)> UpdateOneAsync(string id, T toDo = null, UpdateDefinition<T> updateDef = null) {
+        public async ValueTask<(string entry_id, bool succeed, Error error)> UpdateOneAsync(string id, T toDo = default(T), UpdateDefinition<T> updateDef = null) {
             try {
                 var result = await this.collection.UpdateOneAsync(i => i.ID == id, updateDef ?? this.DefineUpdate(toDo));
                 if (result.IsAcknowledged)
@@ -231,7 +231,7 @@ namespace Tassel.Services.Service {
         /// <param name="toDo">model contains the new changes</param>
         /// <param name="updateDef">provider to update</param>
         /// <returns></returns>
-        public (T outEntry, bool succeed, Error error) FindOneUpdate(string id, T toDo = null, UpdateDefinition<T> updateDef = null) {
+        public (T outEntry, bool succeed, Error error) FindOneUpdate(string id, T toDo = default(T), UpdateDefinition<T> updateDef = null) {
             try {
                 var result = this.collection.FindOneAndUpdate(i => i.ID == id, updateDef ?? this.DefineUpdate(toDo));
                 if (result == null)
@@ -249,7 +249,7 @@ namespace Tassel.Services.Service {
         /// <param name="toDo">model contains the new changes</param>
         /// <param name="updateDef">provider to update</param>
         /// <returns></returns>
-        public async ValueTask<(T outEntry, bool succeed, Error error)> FindOneUpdateAsync(string id, T toDo = null, UpdateDefinition<T> updateDef = null) {
+        public async ValueTask<(T outEntry, bool succeed, Error error)> FindOneUpdateAsync(string id, T toDo = default(T), UpdateDefinition<T> updateDef = null) {
             try {
                 var result = await this.collection.FindOneAndUpdateAsync(i => i.ID == id, updateDef ?? this.DefineUpdate(toDo));
                 if (result == null)
