@@ -6,10 +6,14 @@ using System.Threading.Tasks;
 using Tassel.Model.Models;
 using Tassel.Model.Models.BsonModels;
 using Tassel.Model.Utils;
+using Tassel.Services.Contract.Components;
 
 namespace Tassel.Services.Contract {
 
-    public interface IStatusService : ILikeableService<Status, Error, LikesEntry>, ICommentableService<Status, Error, Comment> {
+    public interface IStatusService : 
+        ILogicalDeleteService<Status, Error>, 
+        ILikeableServiceComponent<Status, Error, LikesEntry>, 
+        ICommentableServiceComponent<Status, Error, Comment> {
 
         ValueTask<(IEnumerable<Status> entry, JsonStatus status, Error error)> GetCollectionAbstractAsync(Expression<Func<Status, bool>> where = null);
 

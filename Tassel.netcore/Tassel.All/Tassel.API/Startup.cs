@@ -24,6 +24,7 @@ using System.IO;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.FileProviders;
 using Tassel.Model.Utils;
+using Tassel.Services.Components;
 
 namespace Tassel.Service {
     public class Startup {

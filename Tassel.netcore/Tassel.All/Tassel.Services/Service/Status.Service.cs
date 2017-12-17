@@ -8,22 +8,31 @@ using System.Threading.Tasks;
 using Tassel.Model.Models;
 using Tassel.Model.Models.BsonModels;
 using Tassel.Model.Utils;
+using Tassel.Services.Components;
 using Tassel.Services.Contract;
+using Tassel.Services.Contract.Components;
 using Tassel.Services.Contract.Providers;
 
 namespace Tassel.Services.Service {
 
-    public class StatusService : CommentableAndLikeService<Status>, IStatusService {
+    public class StatusService : LogicallyDeleteBase<Status>, IStatusService {
 
+        private ICommentComponent<Status> comments_comp;
+        private ILikeableComponent<Status> likes_comp;
         private ICommentServiceProvider comments;
         private ILikesServiceProvider likes;
 
+        public ICommentServiceProvider Comments => this.comments;
+        public ILikesServiceProvider Likes => this.likes;
+
         public StatusService(
             MongoDBContext db,
-            ICommentServiceProvider coms,
-            ILikesServiceProvider likes) : base(db, coms, likes, ModelCollectionName.Status) {
-            this.comments = coms;
-            this.likes = likes;
+            ICommentServiceProvider comment_provider,
+            ILikesServiceProvider likes_provider) : base(db, ModelCollectionName.Status) {
+            this.comments_comp = new CommentableServiceComponent<Status>(this, comment_provider);
+            this.likes_comp = new LikeableServiceComponent<Status>(this, likes_provider);
+            this.comments = comment_provider;
+            this.likes = likes_provider;
         }
 
         #region protected methods
@@ -96,9 +105,21 @@ namespace Tassel.Services.Service {
             var (entry, succeed, error) = await this.FindOneDeleteAsync(id);
             if(!succeed)
                 return (JsonStatus.DeleteEntryFailed, error);
-            await this.Comments.DeleteAllAsync(i => i.ParentID == id);
-            await this.Likes.DeleteAllAsync(i => i.ParentID == id);
+            await this.comments.DeleteAllAsync(i => i.ParentID == id);
+            await this.likes.DeleteAllAsync(i => i.ParentID == id);
             return (JsonStatus.Succeed, Error.Empty);
+        }
+
+        public async ValueTask<(JsonStatus status, Error error)> AddCommentAsync(string id, Comment comment) {
+            return await this.comments_comp.AddCommentAsync(id, comment);
+        }
+
+        public async ValueTask<(JsonStatus status, Error error)> RemoveCommentAsync(string id, string uid, string comment_id) {
+            return await this.comments_comp.RemoveCommentAsync(id, uid, comment_id);
+        }
+
+        public async ValueTask<(string user_id, JsonStatus status, Error error)> LikeAsync(string id, LikesEntry like) {
+            return await this.likes_comp.LikeAsync(id, like);
         }
     }
 
