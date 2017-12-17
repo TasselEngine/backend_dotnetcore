@@ -13,7 +13,7 @@ using Tassel.Services.Contract;
 
 namespace Tassel.API.Controllers {
 
-    [Route("api/admin")]
+    [Route("admin")]
     [Token, Admin]
     public class AdminController : Controller {
 

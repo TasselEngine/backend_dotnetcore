@@ -13,7 +13,7 @@ using Tassel.Services.Utils.Constants;
 using Tassel.API.VM;
 
 namespace Tassel.API.Controllers {
-    [Route("api/status")]
+    [Route("status")]
     public class StatusController : Controller {
 
         private IStatusService status;

@@ -2,8 +2,8 @@
 /**    The feature of login and register are based on middleware.
              See code in "JwtAuthentication.middleware.cs".
 
-            Login : [POST] -> /api/user/login
-            Register : [POST] -> /api/user/register
+            Login : [POST] -> /api/v1/user/login
+            Register : [POST] -> /api/v1/user/register
 
             body : {
                         "user" : "exampleUserName",
@@ -45,7 +45,7 @@ using Tassel.Model.Models.BsonModels;
 
 namespace Tassel.Service.Controllers {
 
-    [Route("api/user")]
+    [Route("user")]
     public class IdentityController : Controller {
 
         private IIdentityService<JwtSecurityToken, TokenProviderOptions, User> identity;

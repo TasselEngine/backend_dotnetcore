@@ -25,6 +25,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.FileProviders;
 using Tassel.Model.Utils;
 using Tassel.Services.Components;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Tassel.Service {
     public class Startup {
@@ -64,7 +65,9 @@ namespace Tassel.Service {
                     };
                 });
 
-            services.AddMvc();
+            services.AddMvc(option=> {
+                option.UseCentralRoutePrefix(new RouteAttribute("api/v{version}"));
+            });
 
         }
 
@@ -77,7 +80,7 @@ namespace Tassel.Service {
             app.UseCors(builder => builder.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin().AllowCredentials());
             app.UseStaticFiles(new StaticFileOptions {
                 FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), @"wwwroot", "resources")),
-                RequestPath = new PathString("/api/resources")
+                RequestPath = new PathString("/static/resources")
             });
             app.UseMvc();
 

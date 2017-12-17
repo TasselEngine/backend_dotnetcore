@@ -11,7 +11,7 @@ using Tassel.Services.Contract;
 
 namespace Tassel.API.Controllers {
 
-    [Route("api/static")]
+    [Route("static")]
     public class StaticController : Controller {
 
         private IStaticService srv;
