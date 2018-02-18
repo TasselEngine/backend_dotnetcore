@@ -23,9 +23,9 @@ namespace Tassel.Services.Utils.Constants {
         public const string Audience = "Tassel_AUDN";
         public const string TokenName = "smhs_token";
         public const string CookieScheme = "Tassel_Cookie";
-        public const string RegisterPath = "/api/user/register";
-        public const string LoginPath = "/api/user/login";
-        public const string WeiboCheckPath = "/api/user/weibo_checkin";
+        public const string RegisterPath = "user/register";
+        public const string LoginPath = "user/login";
+        public const string WeiboCheckPath = "user/weibo_checkin";
         public const string AccessDenied = "/403";
     }
 

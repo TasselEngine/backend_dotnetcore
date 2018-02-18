@@ -53,7 +53,7 @@ namespace Tassel.Service {
                 .AddTasselJwtBearer(options => {
                     options.RequireHttpsMetadata = false;
                     options.IncludeErrorDetails = true;
-                    options.TokenValidationParameters = new TokenValidationParameters() {
+                    options.TokenValidationParameters = new TokenValidationParameters {
                         ValidateIssuerSigningKey = true,
                         ValidateIssuer = true,
                         ValidateAudience = true,
@@ -87,6 +87,9 @@ namespace Tassel.Service {
             app.AddTasselTokenCreator(new TokenProviderOptions {
                 Audience = TokenProviderEntry.Audience,
                 Issuer = TokenProviderEntry.Issuer,
+                LoginPath = "/api/v1/" + TokenProviderEntry.LoginPath,
+                RegisterPath = "/api/v1/" + TokenProviderEntry.RegisterPath,
+                WeiboCheckPath = "/api/v1/" + TokenProviderEntry.WeiboCheckPath,
                 SigningCredentials = new SigningCredentials(TokenProvider.CreateKey(Configuration), SecurityAlgorithms.HmacSha256),
             });
 
