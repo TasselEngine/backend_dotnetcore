@@ -10,6 +10,7 @@ using Tassel.API.Utils.Authorization;
 using Tassel.Model.Models.BsonModels;
 using Tassel.Service.Utils.Helpers;
 using Tassel.Services.Contract;
+using System.Linq.Expressions;
 
 namespace Tassel.API.Controllers {
 
@@ -24,8 +25,12 @@ namespace Tassel.API.Controllers {
         }
 
         [HttpGet("users")]
-        public JsonResult GetAll() {
-            return this.JsonFormat(true, content: this.identity.GetUsersListByFilter(i => true));
+        public JsonResult GetAll(string type) {
+            Expression<Func<User, bool>> filter = (i => true);
+            if (type != null){
+                filter = i=>(i.Role == type.ToLower());
+            }
+            return this.JsonFormat(true, content: this.identity.GetUsersListByFilter(filter));
         }
 
         [HttpGet("is_admin")]

@@ -76,12 +76,16 @@ namespace Tassel.Services.Service {
 
         public IEnumerable<dynamic> GetUsersListByFilter(Expression<Func<User, bool>> whereLambada) {
             return this.users.AsQueryable().Where(whereLambada)?.Select(i => new {
-                UUID = i.UUID,
-                UserName = i.UserName,
-                DisplayName = i.DisplayName,
-                Gender = i.Gender,
-                Avatar = i.Avatar,
-                RoleID = i.Role
+                i.UUID,
+                i.UserName,
+                i.DisplayName,
+                i.Gender,
+                i.Avatar,
+                i.Role,
+                i.IsThirdPart,
+                i.WeiboID,
+                i.QQToken,
+                i.CreateTime
             });
         }
 
