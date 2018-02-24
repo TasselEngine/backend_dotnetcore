@@ -84,6 +84,7 @@ namespace Tassel.Services.Service {
                 i.Role,
                 i.IsThirdPart,
                 i.WeiboID,
+                i.WechatToken,
                 i.QQToken,
                 i.CreateTime
             });
