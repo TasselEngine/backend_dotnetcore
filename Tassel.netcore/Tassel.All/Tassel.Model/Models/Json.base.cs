@@ -36,6 +36,7 @@ namespace Tassel.Model.Models {
         ThirdPartUserNotExist = 20009,
         UserAccessDenied = 20010,
         CheckAdminFailed = 20011,
+        UserRoleNotMatch = 20012,
 
         WeiboAccessFailed = 21001,
         WeiboInfosFetchFailed = 21002,
@@ -43,6 +44,8 @@ namespace Tassel.Model.Models {
         WeiboDetailsNotFound = 21004,
         WeiboRevokeFailed = 21005,
         WeiboRevokeException = 21006,
+
+        WebLogsLoadError = 25001,
 
         InsertEntryFailed = 30001,
         DeleteEntryFailed = 30002,
@@ -67,6 +70,7 @@ namespace Tassel.Model.Models {
             [JsonStatus.LoginFailed] = "login failed.",
             [JsonStatus.DeleteNotAllowed] = Errors.DeleteNotAllowed,
             [JsonStatus.BodyFormIsNull] = "the form of request body shouldn't be empry, or your input is invalid.",
+
             [JsonStatus.QueryParamsNull] = "the query parameters shouldn't be empry.",
             [JsonStatus.RegisterFailed] = "register failed.",
             [JsonStatus.UserNotFound] = Errors.UserNotFound,
@@ -77,18 +81,26 @@ namespace Tassel.Model.Models {
             [JsonStatus.ThirdPartUserNotExist] = "3rd-part user details not found.",
             [JsonStatus.UserAccessDenied] = "the role of user logined is denied in this request.",
             [JsonStatus.CheckAdminFailed] = "check user admin role failed.",
+            [JsonStatus.UserRoleNotMatch]="the role of user is not matched, action failed.",
+
             [JsonStatus.WeiboAccessFailed] = "try to get weibo access_token failed.",
             [JsonStatus.WeiboInfosFetchFailed] = "try to fetch weibo user info failed.",
             [JsonStatus.WeiboUserCheckFailed] = "try to checkin weibo user failed.",
             [JsonStatus.BearerCheckFailed] = "bearer token check failed.",
             [JsonStatus.WeiboRevokeFailed] = "revoke oauth 2.0 failed.",
             [JsonStatus.WeiboRevokeException] = "revoke from oauth 2.0 doesn't work well.",
+
+            [JsonStatus.WebLogsLoadError]="load web running logs failed.",
+
             [JsonStatus.InsertEntryFailed] = Errors.InsertOneFailed,
             [JsonStatus.DeleteEntryFailed] = Errors.DeleteEntryFailed,
+
             [JsonStatus.CreateImageFailed] = "create static resources of images failed",
+
             [JsonStatus.StatusCollectionLoadFailed] = "read status collection failed",
             [JsonStatus.StatusInsertFailed] = "add status failed.",
             [JsonStatus.StatusNotFound] = "status with the id is not found.",
+
             [JsonStatus.CommentAddFailed] = "add comment failed.",
             [JsonStatus.CommentRemoveFailed] = "remove comment failed.",
             [JsonStatus.LikesAddFailed] = "add a like relation failed.",

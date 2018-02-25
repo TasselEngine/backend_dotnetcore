@@ -126,8 +126,19 @@ namespace Tassel.Services.Service {
             }
         }
 
-        protected virtual UpdateDefinition<User> CreateUpdate(User entry) {
-            var upts = Builders<User>.Update.Set(i => i.UpdateTime, entry.UpdateTime);
+        public (bool succeed, string error) UpdateUserRole(string user_id, string newRole) {
+            try {
+                var result = this.users.FindOneAndUpdate(i => i.UUID == user_id, this.CreateUpdate().Set(i => i.Role, newRole));
+                if (result == null)
+                    return (false, $"${Errors.UserUpdateFailed} : user to be updated is not exist.");
+                return (true, null);
+            } catch (Exception e) {
+                return (false, $"${Errors.UserUpdateFailed} : ${e.Message}");
+            }
+        }
+
+        protected virtual UpdateDefinition<User> CreateUpdate(User entry = null) {
+            var upts = Builders<User>.Update.Set(i => i.UpdateTime, (entry?.UpdateTime)?? DateTime.UtcNow);
             return upts;
         }
 

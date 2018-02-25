@@ -12,9 +12,9 @@ namespace Tassel.Services.Contract {
 
         IWeiboOAuthServiceProvider<TUser> WeiboService { get; }
 
-        (TUser, bool, string) TryRegister(string user, string psd, Gender gender = Gender.Male, string avatar = null);
+        (TUser user, bool succeed, string error) TryRegister(string user, string psd, Gender gender = Gender.Male, string avatar = null);
 
-        (TUser, bool, string) TryLogin(string user, string psd);
+        (TUser user, bool succeed, string error) TryLogin(string user, string psd);
 
         TToken GenerateToken(TUser user, TOptions options);
 
@@ -22,13 +22,15 @@ namespace Tassel.Services.Contract {
 
         IEnumerable<dynamic> GetUsersListByFilter(Expression<Func<TUser, bool>> whereLambada);
 
-        (TUser,bool, string) GetUserDetailsByID(string uuid);
+        (TUser user, bool succeed, string error) GetUserDetailsByID(string uuid);
 
-        (TUser, bool, string) GetUserDetailsByUserName(string uname);
+        (TUser user, bool succeed, string error) GetUserDetailsByUserName(string uname);
         
         (bool succeed, string error) TryUpdateNative(TUser user);
 
         (string role, bool succeed, string error) GetUserRole(string uuid);
+
+        (bool succeed, string error) UpdateUserRole(string uid, string newRole);
 
     }
 }

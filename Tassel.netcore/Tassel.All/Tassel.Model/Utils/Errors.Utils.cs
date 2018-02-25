@@ -35,6 +35,7 @@ namespace Tassel.Model.Utils {
         public const string AccessDenied = "access denied";
         public const string CompressFileFailed = "compress file failed";
         public const string CreateFileFailed = "create file failed";
+        public const string UserUpdateFailed = "user update failed";
         public const string DeleteNotAllowed = "deleting user is unavaliable.";
         public const string UserNotFound = "user not found.";
         public const string UserExist = "user account is exist already.";

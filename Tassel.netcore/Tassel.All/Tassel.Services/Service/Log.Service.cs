@@ -26,7 +26,7 @@ namespace Tassel.Services.Service {
                     TargetID = target.ID,
                     TargetKey = target.Key,
                     TargetType = targetType,
-                    Role = role == UserRoleConstants.User ? LogRole.User : role == UserRoleConstants.Admin ? LogRole.Admin : LogRole.Core,
+                    Role = urole,
                     Action = action,
                     Description = target.Description,
                     Level = level
