@@ -53,14 +53,14 @@ namespace Tassel.Services.Service {
                  signingCredentials: options.SigningCredentials);
         }
 
-        public (User, bool, string) GetUserDetailsByID(string uuid) {
+        public (User user, bool succeed, string error) GetUserDetailsByID(string uuid) {
             var usr = this.users.Find(i => i.UUID == uuid).FirstOrDefault();
             if (usr == null)
                 return (null, false, Errors.UserNotFound);
             return (usr, true, null);
         }
 
-        public (User, bool, string) GetUserDetailsByUserName(string uname) {
+        public (User user, bool succeed, string error) GetUserDetailsByUserName(string uname) {
             var usr = this.users.Find(i => i.UserName == uname).FirstOrDefault();
             if (usr == null)
                 return (null, false, Errors.UserNotFound);
@@ -95,7 +95,7 @@ namespace Tassel.Services.Service {
             return tk;
         }
 
-        public (User, bool, string) TryLogin(string user, string psd) {
+        public (User user, bool succeed, string error) TryLogin(string user, string psd) {
             var usr = this.users.Find(i => i.UserName == user).FirstOrDefault();
             if (usr == null)
                 return (null, false, Errors.UserNotFound);
@@ -104,7 +104,7 @@ namespace Tassel.Services.Service {
             return (usr, true, null);
         }
 
-        public (User, bool, string) TryRegister(string user, string psd, Gender gender = Gender.Male, string avatar = null) {
+        public (User user, bool succeed, string error) TryRegister(string user, string psd, Gender gender = Gender.Male, string avatar = null) {
             var usrr = this.users.Find(i => i.UserName == user).FirstOrDefault();
             if (usrr != null)
                 return (null, false, Errors.UserExist);
