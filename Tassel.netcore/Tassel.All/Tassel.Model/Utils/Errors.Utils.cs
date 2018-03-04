@@ -54,5 +54,6 @@ namespace Tassel.Model.Utils {
         public const string FindDeleteFailed = "no entry to be deleted is not found.";
         public const string CreateLogFailed = "try to insert a new log entry failed.";
         public const string LogRoleError = "the user role is invaild.";
+        public const string MessageCreateFailed = "try create new message for user failed.";
     }
 }

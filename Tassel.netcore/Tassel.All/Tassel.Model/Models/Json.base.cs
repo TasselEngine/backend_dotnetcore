@@ -47,8 +47,12 @@ namespace Tassel.Model.Models {
 
         WebLogsLoadError = 25001,
 
+        MessageCreateFailed = 26001,
+        GetMessagesFailed = 26002,
+
         InsertEntryFailed = 30001,
         DeleteEntryFailed = 30002,
+        EntryNotFound = 30003,
 
         CreateImageFailed = 31001,
 
@@ -92,8 +96,12 @@ namespace Tassel.Model.Models {
 
             [JsonStatus.WebLogsLoadError]="load web running logs failed.",
 
+            [JsonStatus.MessageCreateFailed] = "try to add new message failed.",
+            [JsonStatus.GetMessagesFailed] = "try to load message list failed.",
+
             [JsonStatus.InsertEntryFailed] = Errors.InsertOneFailed,
             [JsonStatus.DeleteEntryFailed] = Errors.DeleteEntryFailed,
+            [JsonStatus.EntryNotFound] = "entry not found.",
 
             [JsonStatus.CreateImageFailed] = "create static resources of images failed",
 

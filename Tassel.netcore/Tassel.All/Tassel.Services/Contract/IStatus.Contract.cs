@@ -15,9 +15,9 @@ namespace Tassel.Services.Contract {
         ILikeableServiceComponent<Status, Error, LikesEntry>, 
         ICommentableServiceComponent<Status, Error, Comment> {
 
-        ValueTask<(IEnumerable<Status> entry, JsonStatus status, Error error)> GetCollectionAbstractAsync(Expression<Func<Status, bool>> where = null);
+        (IEnumerable<Status> entry, JsonStatus status, Error error) GetCollectionAbstract(Expression<Func<Status, bool>> where = null);
 
-        ValueTask<(IEnumerable<Status> entry, JsonStatus status, Error error)> GetCollectionAbstractAsync(long stamp, int? take);
+        ValueTask<(IEnumerable<Status> entry, JsonStatus status, Error error)> GetCollectionAbstractAsync(long? stamp, int? take);
 
         ValueTask<(Status entry, JsonStatus status, Error error)> GetStatusDetailsAsync(string id);
 

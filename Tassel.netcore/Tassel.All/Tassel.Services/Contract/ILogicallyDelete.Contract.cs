@@ -54,11 +54,10 @@ namespace Tassel.Services.Contract {
         /// <summary>
         /// Get the collections are published (in tag-delete mode entries coll) where the filter is passed with skip and take params [ Async Version ].
         /// </summary>
-        /// <param name="where">filter</param>
-        /// <param name="skip">number to skip</param>
+        /// <param name="stamp">stamp</param>
         /// <param name="take">nnumber to take</param>
         /// <returns></returns>
-        ValueTask<(IList<T> collection, bool succeed, TError error)> GetPublishedCollectionsAsync(Expression<Func<T, bool>> where = null, int? skip = null, int? take = null);
+        ValueTask<(IList<T> collection, bool succeed, TError error)> GetPublishedCollectionsAsync(long? stamp, int? take = null);
 
     }
 }

@@ -16,6 +16,7 @@ namespace Tassel.Model.Models.BsonModels {
         LikeEntry = 12,
         Status = 13,
         Post = 14,
+        Message = 21,
         Log = 31,
     }
 
@@ -33,6 +34,7 @@ namespace Tassel.Model.Models.BsonModels {
         public const string Likes = "likes";
         public const string Status = "status";
         public const string Log = "logs";
+        public const string Message = "messages";
     }
 
     public interface IBaseModel {

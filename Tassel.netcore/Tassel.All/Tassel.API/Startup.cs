@@ -47,6 +47,7 @@ namespace Tassel.Service {
             services.AddScoped<IStatusService, StatusService>();
             services.AddScoped<ICommentServiceProvider, CommentProvider>();
             services.AddScoped<ILikesServiceProvider, LikesService>();
+            services.AddScoped<IMessageService, MessageService>();
             services.AddScoped<ILogService, LogService>();
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

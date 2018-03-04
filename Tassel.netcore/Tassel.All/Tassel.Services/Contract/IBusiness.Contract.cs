@@ -102,29 +102,22 @@ namespace Tassel.Services.Contract {
         (IList<T> collection, bool succeed, TError error) GetCollections(Expression<Func<T, bool>> where = null, int? skip = null, int? take = null);
 
         /// <summary>
-        /// Get the collections where the filter is passed with skip and take params [ Async Version ].
-        /// </summary>
-        /// <param name="where">filter</param>
-        /// <param name="skip">number to skip</param>
-        /// <param name="take">nnumber to take</param>
-        /// <returns></returns>
-        ValueTask<(IList<T> collection, bool succeed, TError error)> GetCollectionsAsync(Expression<Func<T, bool>> where = null, int? skip = null, int? take = null);
-
-        /// <summary>
         /// Get the collections where the filter and stamp is passed take params.
         /// </summary>
         /// <param name="stamp"></param>
         /// <param name="take"></param>
+        /// <param name="where">filter</param>
         /// <returns></returns>
-        (IList<T> collection, bool succeed, TError error) GetCollections(long stamp, int? take = null);
+        (IList<T> collection, bool succeed, TError error) GetCollections(long? stamp, int? take = null, Expression<Func<T, bool>> where = null);
 
         /// <summary>
         /// Get the collections where the filter and stamp is passed take params. [ Async Version ].
         /// </summary>
         /// <param name="stamp"></param>
         /// <param name="take"></param>
+        /// <param name="where">filter</param>
         /// <returns></returns>
-        ValueTask<(IList<T> collection, bool succeed, TError error)> GetCollectionsAsync(long stamp, int? take = null);
+        ValueTask<(IList<T> collection, bool succeed, TError error)> GetCollectionsAsync(long? stamp, int? take = null, Expression<Func<T, bool>> where = null);
 
         /// <summary>
         /// Find entry by _id.

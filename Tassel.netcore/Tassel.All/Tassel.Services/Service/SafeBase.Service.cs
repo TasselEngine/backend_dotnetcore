@@ -109,28 +109,14 @@ namespace Tassel.Services.Service {
         }
 
         /// <summary>
-        /// Get the collections are published (in tag-delete mode entries coll) where the filter is passed with skip and take params [ Async Version ].
-        /// </summary>
-        /// <param name="where">filter</param>
-        /// <param name="skip">number to skip</param>
-        /// <param name="take">nnumber to take</param>
-        /// <returns></returns>
-        public async ValueTask<(IList<T> collection, bool succeed, Error error)> GetPublishedCollectionsAsync(Expression<Func<T, bool>> where = null, int? skip = null, int? take = null) {
-            return await this.GetCollectionsAsync((where ?? (m => true)).And(m => m.State == EntryState.Published), skip, take);
-        }
-
-        /// <summary>
         /// Get the collections are published (in tag-delete mode entries coll) where the filter is passed with stamp( less than stamp) take params [ Async Version ].
         /// </summary>
         /// <param name="where">filter</param>
         /// <param name="skip">number to skip</param>
         /// <param name="take">nnumber to take</param>
         /// <returns></returns>
-        public async ValueTask<(IList<T> collection, bool succeed, Error error)> GetPublishedCollectionsAsync(long stamp, int? take = null) {
-            Expression<Func<T, bool>> where = i => i.CreateTime < stamp;
-            if (stamp <= 0)
-                where = i => true;
-            return await this.GetCollectionsAsync(where.And(m => m.State == EntryState.Published), null, take);
+        public async ValueTask<(IList<T> collection, bool succeed, Error error)> GetPublishedCollectionsAsync(long? stamp, int? take = null) {
+            return await this.GetCollectionsAsync(stamp, take, m => m.State == EntryState.Published);
         }
 
     }

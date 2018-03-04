@@ -57,7 +57,7 @@ namespace Tassel.Services.Service {
 
         #endregion
 
-        public async ValueTask<(IEnumerable<Status> entry, JsonStatus status, Error error)> GetCollectionAbstractAsync(long stamp, int? take) {
+        public async ValueTask<(IEnumerable<Status> entry, JsonStatus status, Error error)> GetCollectionAbstractAsync(long? stamp, int? take) {
             var (coll, succeed, error) = await this.GetPublishedCollectionsAsync(stamp, take.GetValueOrDefault());
             if (!succeed)
                 return (default(IList<Status>), JsonStatus.StatusCollectionLoadFailed, error);
@@ -67,8 +67,8 @@ namespace Tassel.Services.Service {
             }), JsonStatus.Succeed, Error.Empty);
         }
 
-        public async ValueTask<(IEnumerable<Status> entry, JsonStatus status, Error error)> GetCollectionAbstractAsync(Expression<Func<Status, bool>> where = null) {
-            var (coll, succeed, error) = await this.GetPublishedCollectionsAsync(where);
+        public (IEnumerable<Status> entry, JsonStatus status, Error error) GetCollectionAbstract(Expression<Func<Status, bool>> where = null) {
+            var (coll, succeed, error) = this.GetPublishedCollections(where);
             if (!succeed)
                 return (default(IList<Status>), JsonStatus.StatusCollectionLoadFailed, error);
             return (coll.Select(i => {
@@ -90,12 +90,10 @@ namespace Tassel.Services.Service {
             var (entry, status, error) = await this.GetStatusAbstractAsync(id);
             if (entry == null)
                 return (entry, status, error);
-            var (coll, succ02, _) = await this.comments.GetCollectionsAsync(
-                i => i.ParentID == entry.ID && i.ParentType == ModelType.Status && i.State == EntryState.Published);
-            if (succ02) 
+            var (coll, succ02, _) = this.comments.GetCollections(i => i.ParentID == entry.ID && i.ParentType == ModelType.Status && i.State == EntryState.Published);
+            if (succ02)
                 entry.Comments = coll.OrderBy(i => i.CreateTime).ToList();
-            var (likers, succ03, _) = await this.likes.GetCollectionsAsync(
-                i => i.ParentID == entry.ID && i.TargetType == ModelType.Status);
+            var (likers, succ03, _) = this.likes.GetCollections(i => i.ParentID == entry.ID && i.TargetType == ModelType.Status);
             if (succ03)
                 entry.Likes = likers;
             return (entry, JsonStatus.Succeed, Error.Empty);
@@ -103,7 +101,7 @@ namespace Tassel.Services.Service {
 
         public async ValueTask<(JsonStatus status, Error error)> DeleteStatusAsync(string id) {
             var (entry, succeed, error) = await this.FindOneDeleteAsync(id);
-            if(!succeed)
+            if (!succeed)
                 return (JsonStatus.DeleteEntryFailed, error);
             await this.comments.DeleteAllAsync(i => i.ParentID == id);
             await this.likes.DeleteAllAsync(i => i.ParentID == id);

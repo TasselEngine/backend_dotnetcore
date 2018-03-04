@@ -37,7 +37,7 @@ namespace Tassel.Services.Components {
         public async ValueTask<(string user_id, JsonStatus status, Error error)> LikeAsync(string id, LikesEntry like) {
             var (entry, succeed, error) = await this.context.FindOneByIDAsync(id);
             if (!succeed)
-                return (default(string), JsonStatus.StatusNotFound, error);
+                return (default(string), JsonStatus.EntryNotFound, error);
             if (entry.LikerIDs.Contains(like.User.UUID) || entry.Likes.ToList().FirstOrDefault(i => i.User.UUID == like.User.UUID) != null) {
                 (succeed, error) = await this.likes.DeleteAllByIDsAsync(id, like.User.UUID);
                 if (!succeed)

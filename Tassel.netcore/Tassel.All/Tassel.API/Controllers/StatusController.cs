@@ -11,6 +11,7 @@ using Tassel.API.VM.Status;
 using Tassel.API.Utils.Authorization;
 using Tassel.Services.Utils.Constants;
 using Tassel.API.VM;
+using BWS.Utils.NetCore.Format;
 
 namespace Tassel.API.Controllers {
     [Route("status")]
@@ -18,22 +19,24 @@ namespace Tassel.API.Controllers {
 
         private IStatusService status;
         private ILogService logger;
+        private IMessageService message;
 
-        public StatusController(IStatusService status, ILogService logsrv) {
+        public StatusController(IStatusService status, ILogService logsrv, IMessageService msgSrv) {
             this.status = status;
             this.logger = logsrv;
+            this.message = msgSrv;
         }
 
         [HttpGet("all")]
         public async Task<JsonResult> Get() {
-            var (coll, status, error) = await this.status.GetCollectionAbstractAsync();
+            var (coll, status, error) = await this.status.GetCollectionAbstractAsync(DateTime.UtcNow.ToUnix(), null);
             if (status != JsonStatus.Succeed)
                 return this.JsonFormat(false, status, error.Read());
             return this.JsonFormat(true, content: coll);
         }
 
         [HttpGet("gets")]
-        public async Task<JsonResult> Gets(long before, int? take) {
+        public async Task<JsonResult> Gets(long? before, int? take) {
             var (coll, status, error) = await this.status.GetCollectionAbstractAsync(before, take);
             if (status != JsonStatus.Succeed)
                 return this.JsonFormat(false, status, error.Read());
@@ -76,7 +79,7 @@ namespace Tassel.API.Controllers {
                 new Agent(uuid, uname, avatar),
                 new Target(md.ID, vm.Content, $"image_count : {vm.Images.Count}"),
                 ModelType.Status,
-                LogAction.Insert, 
+                LogAction.Insert,
                 role);
 
             return this.JsonFormat(true, content: status.ID);
@@ -112,6 +115,23 @@ namespace Tassel.API.Controllers {
             }
             if (status != JsonStatus.Succeed)
                 return this.JsonFormat(false, status, error.Read());
+
+            // send message
+            var creator = new BaseCreator { UUID = uuid, UserName = uname, AvatarUrl = avatar };
+            var (entry, status02, error02) = await this.status.GetStatusDetailsAsync(id);
+            var source = new MessageSource {
+                Type = ModelType.Comment,
+                HostID = id,
+                TargetID = model.ID,
+                HostType = ModelType.Status,
+                HostAbstract = status02 == JsonStatus.Succeed ? entry.Content : null,
+                Abstract = model.CommentContent
+            };
+            if (vm.IsReply) {
+                await this.message.CreateMessageAsync(creator, model.Creator, MessageType.Reply, null, source);
+            } else {
+                await this.message.CreateMessageAsync(creator, model.Creator, MessageType.Comment, null, source);
+            }
 
             return this.JsonFormat(true, content: model);
         }
@@ -167,13 +187,13 @@ namespace Tassel.API.Controllers {
             return this.JsonFormat(true, content: user_id);
         }
 
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody]string value) {
-        }
+        //[HttpPut("{id}")]
+        //public void Put(int id, [FromBody]string value) {
+        //}
 
         [HttpDelete("{id}")]
         [Token, Admin]
-        public async Task<JsonResult > DeleteAsync(string id) {
+        public async Task<JsonResult> DeleteAsync(string id) {
             if (id == null)
                 return this.JsonFormat(false, JsonStatus.QueryParamsNull);
 
