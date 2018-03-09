@@ -49,6 +49,7 @@ namespace Tassel.Model.Models {
 
         MessageCreateFailed = 26001,
         GetMessagesFailed = 26002,
+        ReadMessageFailed = 26003,
 
         InsertEntryFailed = 30001,
         DeleteEntryFailed = 30002,
@@ -98,6 +99,7 @@ namespace Tassel.Model.Models {
 
             [JsonStatus.MessageCreateFailed] = "try to add new message failed.",
             [JsonStatus.GetMessagesFailed] = "try to load message list failed.",
+            [JsonStatus.ReadMessageFailed] = "try to read message(s) failed.",
 
             [JsonStatus.InsertEntryFailed] = Errors.InsertOneFailed,
             [JsonStatus.DeleteEntryFailed] = Errors.DeleteEntryFailed,

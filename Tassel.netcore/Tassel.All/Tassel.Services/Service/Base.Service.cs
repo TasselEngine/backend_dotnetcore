@@ -109,7 +109,7 @@ namespace Tassel.Services.Service {
             Expression<Func<T, bool>> where = null) {
 
             where = where ?? (i => true);
-            if (stamp == null) 
+            if (stamp == null)
                 stamp = DateTime.UtcNow.ToUnix();
             try {
                 var coll = this.collection.AsQueryable().OrderByDescending(i => i.CreateTime).Where(where).Where(i => i.CreateTime < stamp);
@@ -128,12 +128,12 @@ namespace Tassel.Services.Service {
         /// <param name="take"></param>
         /// <returns></returns>
         public async ValueTask<(IList<T> collection, bool succeed, Error error)> GetCollectionsAsync(
-            long? stamp, 
+            long? stamp,
             int? take = null,
             Expression<Func<T, bool>> where = null) {
 
             where = where ?? (i => true);
-            if (stamp == null) 
+            if (stamp == null)
                 stamp = DateTime.UtcNow.ToUnix();
             try {
                 using (var coll_async = this.collection.AsQueryable().ToCursorAsync()) {
@@ -208,6 +208,42 @@ namespace Tassel.Services.Service {
                 return (default(string), false, Error.Create(Errors.UpdateEntryFailed));
             } catch (Exception e) {
                 return (default(string), false, Error.Create(Errors.UpdateEntryFailed, e.Message));
+            }
+        }
+
+        /// <summary>
+        /// Update entries with definition(if def is null, the override definition will be used) , action model(toDo) and entry ids.
+        /// </summary>
+        /// <param name="ids">entry id of targets to be updated</param>
+        /// <param name="toDo">model contains the new changes</param>
+        /// <param name="updateDef">provider to update</param>
+        /// <returns></returns>
+        public (long counts, bool succeed, Error error) UpdateMany(string[] ids, T toDo = default(T), UpdateDefinition<T> updateDef = null) {
+            try {
+                var result = this.collection.UpdateMany(i => ids.Contains(i.ID), updateDef ?? this.DefineUpdate(toDo));
+                if (result.IsAcknowledged)
+                    return (result.ModifiedCount, true, Error.Empty);
+                return (default(long), false, Error.Create(Errors.UpdateEntryFailed));
+            } catch (Exception e) {
+                return (default(long), false, Error.Create(Errors.UpdateEntryFailed, e.Message));
+            }
+        }
+
+        /// <summary>
+        /// Update entries with definition(if def is null, the override definition will be used) , action model(toDo) and entry ids [ Async Version ] .
+        /// </summary>
+        /// <param name="ids">entry id of targets to be updated</param>
+        /// <param name="toDo">model contains the new changes</param>
+        /// <param name="updateDef">provider to update</param>
+        /// <returns></returns>
+        public async ValueTask<(long counts, bool succeed, Error error)> UpdateManyAsync(string[] ids, T toDo = default(T), UpdateDefinition<T> updateDef = null) {
+            try {
+                var result = await this.collection.UpdateManyAsync(i => ids.Contains(i.ID), updateDef ?? this.DefineUpdate(toDo));
+                if (result.IsAcknowledged)
+                    return (result.ModifiedCount, true, Error.Empty);
+                return (default(long), false, Error.Create(Errors.UpdateEntryFailed));
+            } catch (Exception e) {
+                return (default(long), false, Error.Create(Errors.UpdateEntryFailed, e.Message));
             }
         }
 

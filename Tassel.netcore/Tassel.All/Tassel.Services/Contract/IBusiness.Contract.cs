@@ -47,6 +47,24 @@ namespace Tassel.Services.Contract {
         ValueTask<(string entry_id, bool succeed, TError error)> UpdateOneAsync(string id, T toDo = default(T), UpdateDefinition<T> updateDef = null);
 
         /// <summary>
+        /// Update entries with definition(if def is null, the override definition will be used) , action model(toDo) and entry id.
+        /// </summary>
+        /// <param name="ids">entry ids of targets to be updated</param>
+        /// <param name="toDo">model contains the new changes</param>
+        /// <param name="updateDef">provider to update</param>
+        /// <returns></returns>
+        (long counts, bool succeed, TError error) UpdateMany(string[] ids, T toDo = default(T), UpdateDefinition<T> updateDef = null);
+
+        /// <summary>
+        /// Update entries with definition(if def is null, the override definition will be used) , action model(toDo) and entry id [ Async Version ].
+        /// </summary>
+        /// <param name="ids">entry ids of targets to be updated</param>
+        /// <param name="toDo">model contains the new changes</param>
+        /// <param name="updateDef">provider to update</param>
+        /// <returns></returns>
+        ValueTask<(long counts, bool succeed, TError error)> UpdateManyAsync(string[] ids, T toDo = default(T), UpdateDefinition<T> updateDef = null);
+
+        /// <summary>
         /// Update an entry with definition(if def is null, the override definition will be used) , action model(toDo) and entry id. Then you can get the POCO entry.
         /// </summary>
         /// <param name="id">entry id of target to be update</param>

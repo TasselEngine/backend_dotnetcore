@@ -17,6 +17,12 @@ namespace Tassel.Services.Service {
 
         public MessageService(MongoDBContext db) : base(db, ModelCollectionName.Message) { }
 
+        protected UpdateDefinition<Message> DefineReadMessageUpdate(Message entry) {
+            var define =  base.DefineUpdate(entry);
+            define.Set(i => i.ReadState, ReadType.Read);
+            return define;
+        }
+
         public async ValueTask<(JsonStatus status, Error error)> CreateMessageAsync(
             BaseCreator creator, BaseCreator target, MessageType type, string content, MessageSource source) {
             var message = new Message {
@@ -36,19 +42,31 @@ namespace Tassel.Services.Service {
         }
 
         public async ValueTask<(IEnumerable<Message> msgs, JsonStatus status, Error error)> FetchMessagesAsync(string uuid, long? before, int take, bool? unread = null) {
-            //Expression<Func<Message, bool>> where = i => i.Receiver.UUID == uuid;
-            //if (unread != null) 
-            //    where.And(i => i.ReadState == (unread.GetValueOrDefault() ? ReadType.Unread : ReadType.Read));
-            Expression<Func<Message, bool>> where = i => true;
-            var (coll, succeed, error) = default((IList<Message>, bool, Error));
-            if (before.HasValue) {
-                (coll, succeed, error) = await this.GetCollectionsAsync(before.GetValueOrDefault(), take, where);
-            } else {
-                (coll, succeed, error) = this.GetCollections(where, take: take);
+            try {
+                Expression<Func<Message, bool>> where = i => true;
+                var (coll, succeed, error) = default((IList<Message>, bool, Error));
+                if (before.HasValue) {
+                    (coll, succeed, error) = await this.GetCollectionsAsync(before.GetValueOrDefault(), take, where);
+                } else {
+                    (coll, succeed, error) = this.GetCollections(where, take: take);
+                }
+                if (!succeed)
+                    return (null, JsonStatus.GetMessagesFailed, error);
+                return (coll, JsonStatus.Succeed, Error.Empty);
+            } catch (Exception e) {
+                return (null, JsonStatus.GetMessagesFailed, Error.Create(Errors.GetMessagesFailed, e.Message));
             }
-            if (!succeed)
-                return (null, JsonStatus.GetMessagesFailed, error);
-            return (coll, JsonStatus.Succeed, Error.Empty);
+        }
+
+        public async ValueTask<(long count, JsonStatus status, Error error)> ReadMessagesAsync(string[] ids) {
+            try {
+                var (count, succeed, error) = await this.UpdateManyAsync(ids, null, this.DefineReadMessageUpdate(null));
+                if (succeed)
+                    return (count, JsonStatus.Succeed, Error.Empty);
+                return (count, JsonStatus.ReadMessageFailed, error);
+            } catch(Exception e) {
+                return (0, JsonStatus.GetMessagesFailed, Error.Create(Errors.ReadMessagesFailed, e.Message));
+            }
         }
     }
 }

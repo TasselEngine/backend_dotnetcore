@@ -55,5 +55,7 @@ namespace Tassel.Model.Utils {
         public const string CreateLogFailed = "try to insert a new log entry failed.";
         public const string LogRoleError = "the user role is invaild.";
         public const string MessageCreateFailed = "try create new message for user failed.";
+        public const string GetMessagesFailed = "try fetch messages for user failed.";
+        public const string ReadMessagesFailed = "try to tead messages of user failed.";
     }
 }

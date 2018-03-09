@@ -57,30 +57,27 @@ namespace Tassel.API.Controllers {
 
             if (vm == null)
                 return this.JsonFormat(false, JsonStatus.BodyFormIsNull);
-            this.HttpContext.GetStringEntry(TokenClaimsKey.UUID, out var uuid);
-            if (uuid == null)
+
+            var user = this.GetUser();
+            if (user.UUID == null)
                 return this.JsonFormat(false, JsonStatus.UserNotLogin);
-            if (uuid != vm.UserID)
+            if (user.UUID != vm.UserID)
                 return this.JsonFormat(false, JsonStatus.UserNotMatched);
 
-            this.HttpContext.GetStringEntry(TokenClaimsKey.Avatar, out var avatar);
-            this.HttpContext.GetStringEntry(TokenClaimsKey.UserName, out var uname);
-            this.HttpContext.GetStringEntry(TokenClaimsKey.RoleID, out var role);
-
             if (vm.UserName == null)
-                vm.UserName = uname;
+                vm.UserName = user.UserName;
 
             var md = default(Status);
-            var (status, succeed, error) = await this.status.InsertOneAsync(md = ModelCreator.CreateStatus(vm, avatar));
+            var (status, succeed, error) = await this.status.InsertOneAsync(md = ModelCreator.CreateStatus(vm, user.AvatarUrl));
             if (!succeed)
                 return this.JsonFormat(false, JsonStatus.StatusInsertFailed, error.Read());
 
             await this.logger.Info(
-                new Agent(uuid, uname, avatar),
+                new Agent(user.UUID, user.UserName, user.AvatarUrl),
                 new Target(md.ID, vm.Content, $"image_count : {vm.Images.Count}"),
                 ModelType.Status,
                 LogAction.Insert,
-                role);
+                this.GetRole());
 
             return this.JsonFormat(true, content: status.ID);
         }
@@ -92,32 +89,27 @@ namespace Tassel.API.Controllers {
             if (vm == null)
                 return this.JsonFormat(false, JsonStatus.BodyFormIsNull);
 
-            this.HttpContext.GetStringEntry(TokenClaimsKey.UUID, out var uuid);
-            if (uuid == null)
+            var creator = this.GetUser();
+            if (creator.UUID == null)
                 return this.JsonFormat(false, JsonStatus.UserNotLogin);
-            if (uuid != vm.UID)
+            if (creator.UUID != vm.UID)
                 return this.JsonFormat(false, JsonStatus.UserNotMatched);
-
-            this.HttpContext.GetStringEntry(TokenClaimsKey.Avatar, out var avatar);
-            this.HttpContext.GetStringEntry(TokenClaimsKey.UserName, out var uname);
-
             if (vm.UName == null)
-                vm.UName = uname;
+                vm.UName = creator.UserName;
 
             var model = default(Comment);
             var (status, error) = default((JsonStatus, Model.Utils.Error));
             if (vm.IsReply) {
                 (status, error) = await this.status.Comments.AddReplyForCommentAsync(
-                    vm.CommentID, model = ModelCreator.CreateComment(vm, vm.CommentID, ModelType.Comment, avatar));
+                    vm.CommentID, model = ModelCreator.CreateComment(vm, vm.CommentID, ModelType.Comment, creator.AvatarUrl));
             } else {
                 (status, error) = await this.status.AddCommentAsync(
-                    id, model = ModelCreator.CreateComment(vm, id, ModelType.Status, avatar));
+                    id, model = ModelCreator.CreateComment(vm, id, ModelType.Status, creator.AvatarUrl));
             }
             if (status != JsonStatus.Succeed)
                 return this.JsonFormat(false, status, error.Read());
 
             // send message
-            var creator = new BaseCreator { UUID = uuid, UserName = uname, AvatarUrl = avatar };
             var (entry, status02, error02) = await this.status.GetStatusDetailsAsync(id);
             var source = new MessageSource {
                 Type = ModelType.Comment,
@@ -143,18 +135,17 @@ namespace Tassel.API.Controllers {
             if (string.IsNullOrEmpty(comt_id) || string.IsNullOrEmpty(id))
                 return this.JsonFormat(false, JsonStatus.QueryParamsNull);
 
-            this.HttpContext.GetStringEntry(TokenClaimsKey.UUID, out var uuid);
-
-            if (uuid == null)
+            var user = this.GetUser();
+            if (user.UUID == null)
                 return this.JsonFormat(false, JsonStatus.UserNotLogin);
 
             var (status, error) = default((JsonStatus, Model.Utils.Error));
             if (is_reply) {
                 if (reply_id == null)
                     return this.JsonFormat(false, JsonStatus.CommentRemoveFailed);
-                (status, error) = await this.status.Comments.RemoveReplyForCommentAsync(comt_id, reply_id, uuid);
+                (status, error) = await this.status.Comments.RemoveReplyForCommentAsync(comt_id, reply_id, user.UUID);
             } else {
-                (status, error) = await this.status.RemoveCommentAsync(id, uuid, comt_id);
+                (status, error) = await this.status.RemoveCommentAsync(id, user.UUID, comt_id);
             }
             if (status != JsonStatus.Succeed)
                 return this.JsonFormat(false, status, error.Read());
@@ -168,21 +159,30 @@ namespace Tassel.API.Controllers {
 
             if (vm == null)
                 return this.JsonFormat(false, JsonStatus.BodyFormIsNull);
-            this.HttpContext.GetStringEntry(TokenClaimsKey.UUID, out var uuid);
-            if (uuid == null)
+            var user = this.GetUser();
+            if (user.UUID == null)
                 return this.JsonFormat(false, JsonStatus.UserNotLogin);
-            if (uuid != vm.UserID)
+            if (user.UUID != vm.UserID)
                 return this.JsonFormat(false, JsonStatus.UserNotMatched);
 
-            this.HttpContext.GetStringEntry(TokenClaimsKey.Avatar, out var avatar);
-            this.HttpContext.GetStringEntry(TokenClaimsKey.UserName, out var uname);
-
             if (vm.UserName == null)
-                vm.UserName = uname;
+                vm.UserName = user.UserName;
 
-            var (user_id, status, error) = await this.status.LikeAsync(id, ModelCreator.CreateLike(vm, id, ModelType.Status, avatar));
+            var (user_id, status, error) = await this.status.LikeAsync(id, ModelCreator.CreateLike(vm, id, ModelType.Status, user.AvatarUrl));
             if (status != JsonStatus.Succeed)
                 return this.JsonFormat(false, status, error.Read());
+
+            // send message
+            var (entry, status02, error02) = await this.status.GetStatusDetailsAsync(id);
+            var source = new MessageSource {
+                Type = ModelType.Status,
+                HostID = id,
+                TargetID = id,
+                HostType = ModelType.Status,
+                HostAbstract = status02 == JsonStatus.Succeed ? entry.Content : null,
+                Abstract = entry.Content
+            };
+            await this.message.CreateMessageAsync(user, entry.Creator, MessageType.Like, null, source);
 
             return this.JsonFormat(true, content: user_id);
         }
@@ -197,17 +197,15 @@ namespace Tassel.API.Controllers {
             if (id == null)
                 return this.JsonFormat(false, JsonStatus.QueryParamsNull);
 
-            this.HttpContext.GetStringEntry(TokenClaimsKey.UUID, out var uuid);
-            this.HttpContext.GetStringEntry(TokenClaimsKey.Avatar, out var avatar);
-            this.HttpContext.GetStringEntry(TokenClaimsKey.UserName, out var uname);
-            this.HttpContext.GetStringEntry(TokenClaimsKey.RoleID, out var role);
+            var user = this.GetUser();
+            var role = this.GetRole();
 
             var (status, error) = await this.status.DeleteStatusAsync(id);
             if (status != JsonStatus.Succeed)
                 return this.JsonFormat(false, status, error.Read());
 
             await this.logger.Warn(
-                new Agent(uuid, uname, avatar),
+                new Agent(user.UUID, user.UserName, user.AvatarUrl),
                 new Target(id, null, $"delete status."),
                 ModelType.Status,
                 LogAction.Delete,
