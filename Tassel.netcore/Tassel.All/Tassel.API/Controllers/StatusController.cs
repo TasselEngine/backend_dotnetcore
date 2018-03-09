@@ -173,16 +173,18 @@ namespace Tassel.API.Controllers {
                 return this.JsonFormat(false, status, error.Read());
 
             // send message
-            var (entry, status02, error02) = await this.status.GetStatusDetailsAsync(id);
-            var source = new MessageSource {
-                Type = ModelType.Status,
-                HostID = id,
-                TargetID = id,
-                HostType = ModelType.Status,
-                HostAbstract = status02 == JsonStatus.Succeed ? entry.Content : null,
-                Abstract = entry.Content
-            };
-            await this.message.CreateMessageAsync(user, entry.Creator, MessageType.Like, null, source);
+            if (user_id != "deleted") {
+                var (entry, status02, error02) = await this.status.GetStatusDetailsAsync(id);
+                var source = new MessageSource {
+                    Type = ModelType.Status,
+                    HostID = id,
+                    TargetID = id,
+                    HostType = ModelType.Status,
+                    HostAbstract = status02 == JsonStatus.Succeed ? entry.Content : null,
+                    Abstract = entry.Content
+                };
+                await this.message.CreateMessageAsync(user, entry.Creator, MessageType.Like, null, source);
+            }
 
             return this.JsonFormat(true, content: user_id);
         }

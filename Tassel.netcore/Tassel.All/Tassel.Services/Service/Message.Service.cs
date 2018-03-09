@@ -18,7 +18,7 @@ namespace Tassel.Services.Service {
         public MessageService(MongoDBContext db) : base(db, ModelCollectionName.Message) { }
 
         protected UpdateDefinition<Message> DefineReadMessageUpdate(Message entry) {
-            var define =  base.DefineUpdate(entry);
+            var define = base.DefineUpdate(entry);
             define.Set(i => i.ReadState, ReadType.Read);
             return define;
         }
@@ -41,15 +41,22 @@ namespace Tassel.Services.Service {
             }
         }
 
-        public async ValueTask<(IEnumerable<Message> msgs, JsonStatus status, Error error)> FetchMessagesAsync(string uuid, long? before, int take, bool? unread = null) {
+        public async ValueTask<(IEnumerable<Message> msgs, JsonStatus status, Error error)> FetchMessagesAsync(
+            string uuid,
+            long? before,
+            long? after,
+            int take,
+            bool? unread = null) {
+
             try {
                 Expression<Func<Message, bool>> where = i => true;
-                var (coll, succeed, error) = default((IList<Message>, bool, Error));
-                if (before.HasValue) {
-                    (coll, succeed, error) = await this.GetCollectionsAsync(before.GetValueOrDefault(), take, where);
-                } else {
-                    (coll, succeed, error) = this.GetCollections(where, take: take);
-                }
+                if (before.HasValue)
+                    where = where.And(m => m.CreateTime < before.GetValueOrDefault());
+                if (after.HasValue)
+                    where = where.And(a => a.CreateTime > after.GetValueOrDefault());
+                if (unread.HasValue)
+                    where = where.And(b => b.ReadState == (unread.Value ? ReadType.Unread : ReadType.Read));
+                var (coll, succeed, error) = await this.GetCollectionsAsync(where, take: take);
                 if (!succeed)
                     return (null, JsonStatus.GetMessagesFailed, error);
                 return (coll, JsonStatus.Succeed, Error.Empty);
@@ -64,7 +71,7 @@ namespace Tassel.Services.Service {
                 if (succeed)
                     return (count, JsonStatus.Succeed, Error.Empty);
                 return (count, JsonStatus.ReadMessageFailed, error);
-            } catch(Exception e) {
+            } catch (Exception e) {
                 return (0, JsonStatus.GetMessagesFailed, Error.Create(Errors.ReadMessagesFailed, e.Message));
             }
         }

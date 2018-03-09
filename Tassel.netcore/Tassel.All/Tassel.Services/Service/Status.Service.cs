@@ -57,8 +57,8 @@ namespace Tassel.Services.Service {
 
         #endregion
 
-        public async ValueTask<(IEnumerable<Status> entry, JsonStatus status, Error error)> GetCollectionAbstractAsync(long? stamp, int? take) {
-            var (coll, succeed, error) = await this.GetPublishedCollectionsAsync(stamp, take.GetValueOrDefault());
+        public async ValueTask<(IEnumerable<Status> entry, JsonStatus status, Error error)> GetCollectionAbstractAsync(long? before, int? take) {
+            var (coll, succeed, error) = await this.GetPublishedCollectionsAsync(before, take.GetValueOrDefault());
             if (!succeed)
                 return (default(IList<Status>), JsonStatus.StatusCollectionLoadFailed, error);
             return (coll.Select(i => {

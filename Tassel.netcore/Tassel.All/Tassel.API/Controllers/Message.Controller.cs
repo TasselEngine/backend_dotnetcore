@@ -23,11 +23,11 @@ namespace Tassel.API.Controllers {
         }
 
         [HttpGet("fetch")]
-        public async ValueTask<JsonResult> FetchMessagesAsync(int count = 20, long? before = null, bool? unread = null) {
+        public async ValueTask<JsonResult> FetchMessagesAsync(int count = 20, long? before = null, long? after = null, bool? unread = null) {
             this.HttpContext.GetStringEntry(TokenClaimsKey.UUID, out var uuid);
             if (uuid == null)
                 return this.JsonFormat(false, JsonStatus.UserNotLogin);
-            var (collection, status, error) = await this.srv.FetchMessagesAsync(uuid, before, count, unread);
+            var (collection, status, error) = await this.srv.FetchMessagesAsync(uuid, before, after, count, unread);
             if (status != JsonStatus.Succeed)
                 return this.JsonFormat(false, status, error.Read());
             return this.JsonFormat(true, content: collection);

@@ -12,7 +12,7 @@ namespace Tassel.Services.Contract {
 
         ValueTask<(JsonStatus status, Error error)> CreateMessageAsync(BaseCreator creator, BaseCreator target, MessageType type, string content, MessageSource source);
 
-        ValueTask<(IEnumerable<Message> msgs, JsonStatus status, Error error)> FetchMessagesAsync(string uuid, long? before, int take, bool? unread = null);
+        ValueTask<(IEnumerable<Message> msgs, JsonStatus status, Error error)> FetchMessagesAsync(string uuid, long? before, long? after, int take, bool? unread = null);
 
         ValueTask<(long count, JsonStatus status, Error error)> ReadMessagesAsync(string[] ids);
 

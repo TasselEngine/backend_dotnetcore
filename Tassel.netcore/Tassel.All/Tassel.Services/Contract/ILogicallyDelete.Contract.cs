@@ -57,7 +57,7 @@ namespace Tassel.Services.Contract {
         /// <param name="stamp">stamp</param>
         /// <param name="take">nnumber to take</param>
         /// <returns></returns>
-        ValueTask<(IList<T> collection, bool succeed, TError error)> GetPublishedCollectionsAsync(long? stamp, int? take = null);
+        ValueTask<(IList<T> collection, bool succeed, TError error)> GetPublishedCollectionsAsync(long? before, int? take = null);
 
     }
 }

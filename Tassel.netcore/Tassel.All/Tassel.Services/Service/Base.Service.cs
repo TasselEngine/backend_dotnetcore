@@ -98,46 +98,22 @@ namespace Tassel.Services.Service {
         }
 
         /// <summary>
-        /// Get the collections where the filter and stamp is passed take params.
-        /// </summary>
-        /// <param name="stamp"></param>
-        /// <param name="take"></param>
-        /// <returns></returns>
-        public (IList<T> collection, bool succeed, Error error) GetCollections(
-            long? stamp,
-            int? take = null,
-            Expression<Func<T, bool>> where = null) {
-
-            where = where ?? (i => true);
-            if (stamp == null)
-                stamp = DateTime.UtcNow.ToUnix();
-            try {
-                var coll = this.collection.AsQueryable().OrderByDescending(i => i.CreateTime).Where(where).Where(i => i.CreateTime < stamp);
-                if (take != null)
-                    coll = coll.Take(take.GetValueOrDefault());
-                return (coll.ToList(), true, Error.Empty);
-            } catch (Exception e) {
-                return (default(IList<T>), false, Error.Create(Errors.GetEntryCollFailed, e.Message));
-            }
-        }
-
-        /// <summary>
         /// Get the collections where the filter and stamp is passed take params. [ Async Version ].
         /// </summary>
         /// <param name="stamp"></param>
         /// <param name="take"></param>
         /// <returns></returns>
         public async ValueTask<(IList<T> collection, bool succeed, Error error)> GetCollectionsAsync(
-            long? stamp,
-            int? take = null,
-            Expression<Func<T, bool>> where = null) {
+            Expression<Func<T, bool>> where = null,
+            int? skip = null,
+            int? take = null) {
 
             where = where ?? (i => true);
-            if (stamp == null)
-                stamp = DateTime.UtcNow.ToUnix();
             try {
                 using (var coll_async = this.collection.AsQueryable().ToCursorAsync()) {
-                    IEnumerable<T> coll = (await coll_async).ToEnumerable().Where(where.Compile()).Where(i => i.CreateTime < stamp).OrderByDescending(i => i.CreateTime);
+                    IEnumerable<T> coll = (await coll_async).ToEnumerable().Where(where.Compile()).OrderByDescending(i => i.CreateTime);
+                    if (skip != null)
+                        coll = coll.Skip(skip.GetValueOrDefault());
                     if (take != null)
                         coll = coll.Take(take.GetValueOrDefault());
                     return (coll.ToList(), true, Error.Empty);
