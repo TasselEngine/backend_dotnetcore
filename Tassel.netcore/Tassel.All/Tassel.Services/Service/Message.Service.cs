@@ -49,7 +49,7 @@ namespace Tassel.Services.Service {
             bool? unread = null) {
 
             try {
-                Expression<Func<Message, bool>> where = i => i.Receiver.UUID == uuid;
+                Expression<Func<Message, bool>> where = i => (i.Receiver.UUID == uuid && i.Creator.UUID != uuid);
                 if (before.HasValue)
                     where = where.And(m => m.CreateTime < before.GetValueOrDefault());
                 if (after.HasValue)

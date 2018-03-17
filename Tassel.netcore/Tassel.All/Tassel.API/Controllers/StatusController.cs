@@ -111,18 +111,21 @@ namespace Tassel.API.Controllers {
 
             // send message
             var (entry, status02, error02) = await this.status.GetStatusDetailsAsync(id);
-            var source = new MessageSource {
-                Type = ModelType.Comment,
-                HostID = id,
-                TargetID = model.ID,
-                HostType = ModelType.Status,
-                HostAbstract = status02 == JsonStatus.Succeed ? entry.Content : null,
-                Abstract = model.CommentContent
-            };
-            if (vm.IsReply) {
-                await this.message.CreateMessageAsync(creator, model.Creator, MessageType.Reply, null, source);
-            } else {
-                await this.message.CreateMessageAsync(creator, model.Creator, MessageType.Comment, null, source);
+            var target = new BaseCreator { UUID = vm.MUID ?? entry.Creator.UUID, UserName = vm.MName ?? entry.Creator.UserName };
+            if (creator.UUID != target.UUID) {
+                var source = new MessageSource {
+                    Type = ModelType.Comment,
+                    HostID = id,
+                    TargetID = model.ID,
+                    HostType = ModelType.Status,
+                    HostAbstract = status02 == JsonStatus.Succeed ? entry.Content : null,
+                    Abstract = model.CommentContent
+                };
+                if (vm.IsReply) {
+                    await this.message.CreateMessageAsync(creator, target, MessageType.Reply, null, source);
+                } else {
+                    await this.message.CreateMessageAsync(creator, target, MessageType.Comment, null, source);
+                }
             }
 
             return this.JsonFormat(true, content: model);
@@ -175,15 +178,17 @@ namespace Tassel.API.Controllers {
             // send message
             if (user_id != "deleted") {
                 var (entry, status02, error02) = await this.status.GetStatusDetailsAsync(id);
-                var source = new MessageSource {
-                    Type = ModelType.Status,
-                    HostID = id,
-                    TargetID = id,
-                    HostType = ModelType.Status,
-                    HostAbstract = status02 == JsonStatus.Succeed ? entry.Content : null,
-                    Abstract = entry.Content
-                };
-                await this.message.CreateMessageAsync(user, entry.Creator, MessageType.Like, null, source);
+                if (user.UUID != entry.Creator.UUID) {
+                    var source = new MessageSource {
+                        Type = ModelType.Status,
+                        HostID = id,
+                        TargetID = id,
+                        HostType = ModelType.Status,
+                        HostAbstract = status02 == JsonStatus.Succeed ? entry.Content : null,
+                        Abstract = entry.Content
+                    };
+                    await this.message.CreateMessageAsync(user, entry.Creator, MessageType.Like, null, source);
+                }
             }
 
             return this.JsonFormat(true, content: user_id);
