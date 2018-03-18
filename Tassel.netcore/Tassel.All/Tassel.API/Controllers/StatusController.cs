@@ -113,7 +113,7 @@ namespace Tassel.API.Controllers {
             var (entry, status02, error02) = await this.status.GetStatusDetailsAsync(id);
             var target = default(BaseCreator);
             if (vm.IsReply)
-                target = new BaseCreator { UUID = vm.MContent.UUID , UserName = vm.MContent.UserName };
+                target = new BaseCreator { UUID = vm?.MContent?.UUID , UserName = vm?.MContent?.UserName };
             else
                 target = new BaseCreator { UUID = entry.Creator.UUID, UserName = entry.Creator.UserName };
             if (creator.UUID != target.UUID) {
@@ -124,8 +124,8 @@ namespace Tassel.API.Controllers {
                     HostType = ModelType.Status,
                     HostAbstract = status02 == JsonStatus.Succeed ? entry.Content : null,
                     Abstract = model.CommentContent,
-                    ParentID = vm.MContent.CommentID,
-                    ParentAbstract = vm.MContent?.Content
+                    ParentID = vm?.MContent?.CommentID,
+                    ParentAbstract = vm?.MContent?.Content
                 };
                 if (vm.IsReply) {
                     await this.message.CreateMessageAsync(creator, target, MessageType.Reply, null, source);
