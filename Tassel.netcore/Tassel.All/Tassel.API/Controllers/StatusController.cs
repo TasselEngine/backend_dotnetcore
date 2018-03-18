@@ -101,7 +101,7 @@ namespace Tassel.API.Controllers {
             var (status, error) = default((JsonStatus, Model.Utils.Error));
             if (vm.IsReply) {
                 (status, error) = await this.status.Comments.AddReplyForCommentAsync(
-                    vm.CommentID, model = ModelCreator.CreateComment(vm, vm.CommentID, ModelType.Comment, creator.AvatarUrl));
+                    vm.MContent.CommentID, model = ModelCreator.CreateComment(vm, vm.MContent.CommentID, ModelType.Comment, creator.AvatarUrl));
             } else {
                 (status, error) = await this.status.AddCommentAsync(
                     id, model = ModelCreator.CreateComment(vm, id, ModelType.Status, creator.AvatarUrl));
@@ -111,7 +111,11 @@ namespace Tassel.API.Controllers {
 
             // send message
             var (entry, status02, error02) = await this.status.GetStatusDetailsAsync(id);
-            var target = new BaseCreator { UUID = vm.MUID ?? entry.Creator.UUID, UserName = vm.MName ?? entry.Creator.UserName };
+            var target = default(BaseCreator);
+            if (vm.IsReply)
+                target = new BaseCreator { UUID = vm.MContent.UUID , UserName = vm.MContent.UserName };
+            else
+                target = new BaseCreator { UUID = entry.Creator.UUID, UserName = entry.Creator.UserName };
             if (creator.UUID != target.UUID) {
                 var source = new MessageSource {
                     Type = ModelType.Comment,
@@ -119,7 +123,9 @@ namespace Tassel.API.Controllers {
                     TargetID = model.ID,
                     HostType = ModelType.Status,
                     HostAbstract = status02 == JsonStatus.Succeed ? entry.Content : null,
-                    Abstract = model.CommentContent
+                    Abstract = model.CommentContent,
+                    ParentID = vm.MContent.CommentID,
+                    ParentAbstract = vm.MContent?.Content
                 };
                 if (vm.IsReply) {
                     await this.message.CreateMessageAsync(creator, target, MessageType.Reply, null, source);

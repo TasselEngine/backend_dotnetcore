@@ -36,9 +36,9 @@ namespace Tassel.API.VM {
                     UUID = vm.UID,
                     AvatarUrl = avatar
                 },
-                Mentioned = vm.MUID == null || vm.MName == null ? null :new BaseCreator {
-                    UUID = vm.MUID,
-                    UserName = vm.MName
+                Mentioned = (vm.MContent == null) ? null :new BaseCreator {
+                    UUID = vm.MContent.UUID,
+                    UserName = vm.MContent.UserName
                 },
                 CommentContent = vm.Content,
                 ParentID = parent_id,

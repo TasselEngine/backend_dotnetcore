@@ -19,8 +19,7 @@ namespace Tassel.Services.Service {
 
         protected UpdateDefinition<Message> DefineReadMessageUpdate(Message entry) {
             var define = base.DefineUpdate(entry);
-            define.Set(i => i.ReadState, ReadType.Read);
-            return define;
+            return define.Set(i => i.ReadState, ReadType.Read);
         }
 
         public async ValueTask<(JsonStatus status, Error error)> CreateMessageAsync(

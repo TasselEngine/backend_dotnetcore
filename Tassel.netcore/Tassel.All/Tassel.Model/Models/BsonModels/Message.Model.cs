@@ -94,5 +94,17 @@ namespace Tassel.Model.Models.BsonModels {
         [JsonProperty("host_abst")]
         public string HostAbstract { get; set; }
 
+        [BsonElement("pid")]
+        [JsonProperty("pid")]
+        public string ParentID { get; set; }
+
+        [BsonElement("parent_abst")]
+        [JsonProperty("parent_abst")]
+        public string ParentAbstract { get; set; }
+
+        [BsonElement("target_abst")]
+        [JsonIgnore]
+        private string __target_abst { get; set; }
+
     }
 }
